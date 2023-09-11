@@ -19,6 +19,8 @@ type Sector
     | Seven
     | Eight
 
+
+
 toStringCoordinates : Coordinates -> String
 toStringCoordinates coordinates =
     "Low : " ++ String.fromInt (toIntSector coordinates.low)

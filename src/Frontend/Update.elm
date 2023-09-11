@@ -9,6 +9,7 @@ import Types.Board as Board
 import Array
 import Types.Sector as Sector
 import Types.Player as Player
+import Types.Victory as Victory
 
 
 update : Types.FrontendMsg -> Types.FrontendModel -> ( Types.FrontendModel, Cmd Types.FrontendMsg )
