@@ -1,11 +1,17 @@
 module Frontend.Model exposing (..)
 
 import Browser.Navigation exposing (Key)
-import Parts.Coordinates as Coordinates
+import Types.Coordinates as Coordinates
+import Types.Board as Board
+import Types.Player as Player
 
 type alias FrontendModel =
     { key : Key
     , message : String 
-    , current_coordinate : Maybe Coordinates.Coordinate
-    , next_coordinate : Maybe Coordinates.Coordinate
+    , current_coordinate : Maybe Coordinates.Coordinates
+    , next_coordinate : Maybe Coordinates.Coordinates
+    , board : Board.Board
+    , player_one : Player.Player
+    , player_two : Player.Player
+    , current_player : Player.Player
     }

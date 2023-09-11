@@ -7,6 +7,13 @@ import Html.Attributes as Attr
 import Lamdera
 import Types exposing (..)
 import Url
+import Types.Board as Board
+import Frontend.UI.Home as Home
+import Frontend.Update as FrontendUpdate
+import Frontend.UpdateFromBackend as UpdateFromBackend
+import Html.Styled as HS
+import Html.Styled.Attributes as HSA
+import Types.Player as Player
 
 
 type alias Model =
@@ -18,10 +25,10 @@ app =
         { init = init
         , onUrlRequest = UrlClicked
         , onUrlChange = UrlChanged
-        , update = update
-        , updateFromBackend = updateFromBackend
+        , update = FrontendUpdate.update
+        , updateFromBackend = UpdateFromBackend.updateFromBackend
         , subscriptions = \m -> Sub.none
-        , view = view
+        , view = view 
         }
 
 
@@ -31,51 +38,21 @@ init url key =
       , message = "Welcome to Lamdera! You're looking at the auto-generated base implementation. Check out src/Frontend.elm to start coding!"
       , current_coordinate = Nothing
       , next_coordinate = Nothing
+      , board = Board.Regular Board.boardRegular
+      , player_one = Player.defaultOne
+      , player_two = Player.defaultTwo
+      , current_player = Player.defaultOne
       }
     , Cmd.none
     )
 
 
-update : FrontendMsg -> Model -> ( Model, Cmd FrontendMsg )
-update msg model =
-    case msg of
-        UrlClicked urlRequest ->
-            case urlRequest of
-                Internal url ->
-                    ( model
-                    , Nav.pushUrl model.key (Url.toString url)
-                    )
-
-                External url ->
-                    ( model
-                    , Nav.load url
-                    )
-
-        UrlChanged url ->
-            ( model, Cmd.none )
-
-        NoOpFrontendMsg ->
-            ( model, Cmd.none )
-
-
-updateFromBackend : ToFrontend -> Model -> ( Model, Cmd FrontendMsg )
-updateFromBackend msg model =
-    case msg of
-        NoOpToFrontend ->
-            ( model, Cmd.none )
-
 
 view : Model -> Browser.Document FrontendMsg
 view model =
-    { title = ""
+    { title = "Trick Tac Toe"
     , body =
-        [ Html.div [ Attr.style "text-align" "center", Attr.style "padding-top" "40px" ]
-            [ Html.img [ Attr.src "https://lamdera.app/lamdera-logo-black.png", Attr.width 150 ] []
-            , Html.div
-                [ Attr.style "font-family" "sans-serif"
-                , Attr.style "padding-top" "40px"
-                ]
-                [ Html.text model.message ]
-            ]
+        [ HS.toUnstyled <|
+           Home.root model
         ]
     }

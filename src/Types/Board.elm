@@ -1,0 +1,16 @@
+module Types.Board exposing (..)
+
+import Array
+import Types.Sector as Sector
+import Types.Coordinates as Coordinates
+
+type alias RegularBoard =
+    Array.Array Sector.Sector
+
+type Board
+    = NotSelected
+    | Regular RegularBoard
+
+boardRegular : Array.Array Sector.Sector
+boardRegular =
+    Array.initialize 9 (\i -> Sector.defaultSector <| Coordinates.toSectorFromInt i) 

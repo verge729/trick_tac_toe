@@ -22,6 +22,6 @@ app =
 
 init : ( Model, Cmd BackendMsg )
 init =
-    ( { }
+    ( {}
     , Cmd.none
     )

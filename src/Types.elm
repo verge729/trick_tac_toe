@@ -5,6 +5,8 @@ import Browser.Navigation exposing (Key)
 import Url exposing (Url)
 import Backend.Model as BackendModel
 import Frontend.Model as FrontendModel
+import Types.Sector as Sector
+import Types.Coordinates as Coordinates
 
 
 type alias FrontendModel =
@@ -18,6 +20,8 @@ type FrontendMsg
     = UrlClicked UrlRequest
     | UrlChanged Url
     | NoOpFrontendMsg
+    | NextCoordinateHover (Maybe Coordinates.Sector)
+    | ClaimSector Sector.Sector
 
 
 type ToBackend
