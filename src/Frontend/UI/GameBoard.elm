@@ -17,8 +17,8 @@ import Types.SectorAttribute as SectorAttribute
 import Types.Ultimate.Sector as UltimateSector
 
 
-root : Board.Board -> Victory.PathToVictory -> HS.Html Types.FrontendMsg
-root board claimed_victory =
+root : Board.Board -> Maybe Coordinates.Coordinates -> Victory.PathToVictory -> HS.Html Types.FrontendMsg
+root board m_current_coordinates claimed_victory =
     case board of
         Board.NotSelected ->
             HS.div
@@ -43,10 +43,12 @@ root board claimed_victory =
                     , bottom = Array.slice 6 9 data
                     }
             in
-            boardUltimate matrix claimed_victory
+            boardUltimate matrix m_current_coordinates claimed_victory
 
-boardUltimate : Board.BoardRows Board.UltimateBoard -> Victory.PathToVictory -> HS.Html Types.FrontendMsg
-boardUltimate data claimed_victory =
+{- ANCHOR ultimate board -}
+
+boardUltimate : Board.BoardRows Board.UltimateBoard -> Maybe Coordinates.Coordinates -> Victory.PathToVictory -> HS.Html Types.FrontendMsg
+boardUltimate data m_current_coordinate claimed_victory =
     HS.div
         [ HSA.css
             [ TW.box_border
@@ -67,14 +69,14 @@ boardUltimate data claimed_victory =
                 , TW.z_20
                 ]
             ]
-            [ viewRowUltimate (Array.toList <| data.top) 
-            , viewRowUltimate (Array.toList <| data.middle) 
-            , viewRowUltimate (Array.toList <| data.bottom) 
+            [ viewRowUltimate (Array.toList <| data.top) m_current_coordinate
+            , viewRowUltimate (Array.toList <| data.middle) m_current_coordinate
+            , viewRowUltimate (Array.toList <| data.bottom) m_current_coordinate
             ]
         ]
 
-viewRowUltimate : List UltimateSector.Sector -> HS.Html Types.FrontendMsg
-viewRowUltimate list_board =
+viewRowUltimate : List UltimateSector.Sector -> Maybe Coordinates.Coordinates -> HS.Html Types.FrontendMsg
+viewRowUltimate list_board m_current_coordinate =
     HS.div
         [ HSA.css
             [ TW.box_border
@@ -87,12 +89,21 @@ viewRowUltimate list_board =
             ]
         ]
         ( List.map (\board -> 
-                viewSectorUltimate board 
+                let
+                    is_focused =
+                        case m_current_coordinate of
+                            Just current_coordinate ->
+                                current_coordinate.mid == board.coordinate
+
+                            Nothing ->
+                                True
+                in
+                viewSectorUltimate board is_focused
             ) list_board
         )
 
-viewSectorUltimate : UltimateSector.Sector -> HS.Html Types.FrontendMsg
-viewSectorUltimate sector =
+viewSectorUltimate : UltimateSector.Sector -> Bool -> HS.Html Types.FrontendMsg
+viewSectorUltimate sector focused_sector =
     let
         matrix =
             { top = Array.slice 0 3 sector.board
@@ -100,26 +111,45 @@ viewSectorUltimate sector =
             , bottom = Array.slice 6 9 sector.board
             }
 
+        higlight_or_mask =
+            if focused_sector then
+                selectedBackground
+            else
+                jammerMask
     in
     HS.div
         [ HSA.css
-            (List.append
-                [ TW.box_border
-                , TW.w_full
-                , TW.h_full
-                , TW.border_solid
-                , TW.border_b_0
-                , TW.border_l_0
-                , TW.border_r_0
-                , TW.border_t_0
-                , TW.flex
-                , TW.items_center
-                , TW.justify_center
-                ]
-                (getSectorBorder sector.coordinate Coordinates.Mid)
-            )
+            [ TW.box_border
+            , TW.relative 
+            , TW.w_full
+            , TW.h_full 
+            , TW.flex
+            , TW.items_center
+            , TW.justify_center              
+            ]            
         ]
-        [ boardRegularMidLayer matrix sector.state sector.coordinate          
+        [ HS.div
+            [ HSA.css
+                (List.append
+                    [ TW.box_border
+                    , TW.w_full
+                    , TW.h_full
+                    , TW.border_solid
+                    , TW.border_b_0
+                    , TW.border_l_0
+                    , TW.border_r_0
+                    , TW.border_t_0
+                    , TW.flex
+                    , TW.items_center
+                    , TW.justify_center
+                    , TW.z_20
+                    ]
+                    (getSectorBorder sector.coordinate Coordinates.Mid)
+                )
+            ]
+            [ boardRegularMidLayer matrix sector.state sector.coordinate  
+            ]
+        , higlight_or_mask
         ]
 
 boardRegularMidLayer : Board.BoardRows Board.RegularBoard -> SectorAttribute.State -> Coordinates.Sector -> HS.Html Types.FrontendMsg
@@ -130,6 +160,8 @@ boardRegularMidLayer data claimed_victory mid_coordinate =
         ]
         [ boardRegular data (Victory.toPathToVictoryState claimed_victory)
         ]
+
+{- ANCHOR regular board -}
 
 boardRegular : Board.BoardRows Board.RegularBoard -> Victory.PathToVictory -> HS.Html Types.FrontendMsg
 boardRegular data claimed_victory =
@@ -246,6 +278,37 @@ viewSector sector =
             ]
         ]
 
+{- ANCHOR helpers -}
+
+selectedBackground : HS.Html Types.FrontendMsg
+selectedBackground =
+    HS.div
+        [ HSA.css
+            [ TW.box_border
+            , TW.h_full
+            , TW.w_full
+            , TW.bg_color TW.blue_800
+            , TW.z_0
+            , TW.absolute                
+            ]            
+        ]
+        []
+
+jammerMask : HS.Html Types.FrontendMsg
+jammerMask =    
+    HS.div
+        [ HSA.css
+            [ TW.box_border
+            , TW.h_full
+            , TW.w_full
+            , TW.bg_color TW.white
+            , TW.absolute
+            , TW.bg_opacity_20   
+            , TW.z_40             
+            ]            
+        ]
+        []
+
 
 victoryMask : Player.Player -> HS.Html Types.FrontendMsg
 victoryMask player =
@@ -253,7 +316,7 @@ victoryMask player =
         [ HSA.css
             [ TW.box_border
             , TW.w_full
-            , TW.h_60
+            , TW.h_full
             , TW.bg_color TW.white
             , TW.absolute
             , TW.z_10

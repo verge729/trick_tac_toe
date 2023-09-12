@@ -37,26 +37,12 @@ update msg model =
             ( model, Cmd.none )
 
         Types.NextCoordinateLowHover m_sector ->
-            case m_sector of
-                Just sector ->
                     ( { model | next_coordinate_low = m_sector }
                     , Cmd.none
                     )
 
-                Nothing ->
-                    ( { model | next_coordinate_low = Nothing }
-                    , Cmd.none
-                    )
-
         Types.NextCoordinateMidHover m_sector ->
-            case m_sector of
-                Just sector ->
                     ( { model | next_coordinate_mid = m_sector }
-                    , Cmd.none
-                    )
-
-                Nothing ->
-                    ( { model | next_coordinate_mid = Nothing }
                     , Cmd.none
                     )
 
@@ -142,7 +128,7 @@ update msg model =
 
                             else
                                 Player.defaultOne
-                        , current_coordinate = Just coordinates
+                        , current_coordinate = Just { coordinates | mid = next_low }
                         , path_to_victory = claimed_victory
                       }
                     , Cmd.none

@@ -71,6 +71,6 @@ gameArea model =
                 , TW.h_full
                 ]
             ]
-            [ GameBoard.root model.board model.path_to_victory
+            [ GameBoard.root model.board model.current_coordinate model.path_to_victory
             ]
         ]
