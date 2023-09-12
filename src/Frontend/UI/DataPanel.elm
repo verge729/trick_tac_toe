@@ -12,11 +12,17 @@ import Types.Ultimate.Board as UltimateBoard
 import Array
 import Types.Board as Board
 import Types.SectorAttribute as SectorAttribute
+import Types.Events as Events
 
 root : Types.FrontendModel -> HS.Html Types.FrontendMsg
 root model =
     HS.div
-        []
+        [ HSA.css
+            [ TW.box_border
+            , TW.overflow_auto
+            , TW.overflow_x_clip                
+            ]            
+        ]
         [ sectionTitle "Path to Victory"
         , pathToVictory model.path_to_victory
         , sectionTitle "Coordinates"
@@ -24,7 +30,9 @@ root model =
         , sectionTitle "Current Player"
         , currentPlayer model.current_player
         , sectionTitle "Focused Board" 
-        , focusedBoard model.board model.current_coordinate          
+        , focusedBoard model.board model.current_coordinate   
+        , sectionTitle "Event log"
+        , events model.list_events
         ]
 
 sectionTitle : String -> HS.Html Types.FrontendMsg
@@ -36,6 +44,26 @@ sectionTitle title =
             [ HS.text title                
             ]            
         ]
+
+events : List Events.Event -> HS.Html Types.FrontendMsg
+events list_events =
+    HS.div
+        [ HSA.css
+            [ TW.box_border
+            , TW.m_2                
+            ]            
+        ]
+        ( List.map (\event ->
+            HS.div
+                [ HSA.css
+                    [ TW.box_border
+                    , TW.m_2                    
+                    ]                    
+                ]
+                [ HS.text <| Events.toStringEvent event                    
+                ]
+        ) list_events            
+        )
 
 focusedBoard : Board.Board -> Maybe Coordinates.Coordinates -> HS.Html Types.FrontendMsg
 focusedBoard board m_coordinate =

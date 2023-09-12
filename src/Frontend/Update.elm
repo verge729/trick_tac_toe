@@ -3,7 +3,6 @@ module Frontend.Update exposing (..)
 import Array
 import Browser
 import Browser.Navigation as Nav
-import Frontend.UI.DataPanel exposing (coordinates)
 import Types
 import Types.Base.Board as BaseBoard
 import Types.Base.Sector as Sector
@@ -14,6 +13,12 @@ import Types.SectorAttribute as SectorAttribute
 import Types.Victory as Victory
 import Url
 
+type alias UpdateTurn =
+    { player_one : Player.Player
+    , player_two : Player.Player
+    , current_player : Player.Player   
+    , current_turn : Int     
+    }
 
 update : Types.FrontendMsg -> Types.FrontendModel -> ( Types.FrontendModel, Cmd Types.FrontendMsg )
 update msg model =
@@ -75,17 +80,20 @@ update msg model =
 
                                 claimed_victory =
                                     Victory.checkVictory updated_board model.current_player
-                            in
-                            ( { model
-                                | board = Board.Regular updated_board
-                                , path_to_victory = claimed_victory
-                                , current_player =
-                                    if model.current_player == Player.defaultOne then
-                                        Player.defaultTwo
 
-                                    else
-                                        Player.defaultOne
-                              }
+                                mdl =
+                                    { model
+                                        | board = Board.Regular updated_board
+                                        , path_to_victory = claimed_victory
+                                    }
+                            in
+                            ( mdl
+                                |> updatePlayerAndTurn
+                                    { player_one = model.player_one
+                                    , player_two = model.player_two
+                                    , current_player = model.current_player
+                                    , current_turn = model.turn
+                                    }
                             , Cmd.none
                             )
 
@@ -112,21 +120,39 @@ update msg model =
                             Victory.checkVictory
                                 updated_board
                                 model.current_player
-                    in
-                    ( { model
-                        | board = Board.Ultimate updated_board
-                        , current_player =
-                            if model.current_player == Player.defaultOne then
-                                Player.defaultTwo
+                            
+                        mdl =
+                            { model
+                                | board = Board.Ultimate updated_board
+                                , current_coordinate = Just { coordinates | mid = next_low }
+                                , path_to_victory = claimed_victory
+                            }
 
-                            else
-                                Player.defaultOne
-                        , current_coordinate = Just { coordinates | mid = next_low }
-                        , path_to_victory = claimed_victory
-                      }
+                    in
+                    ( mdl
+                        |> updatePlayerAndTurn
+                            { player_one = model.player_one
+                            , player_two = model.player_two
+                            , current_player = model.current_player
+                            , current_turn = model.turn
+                            }
                     , Cmd.none
                     )
 
+updatePlayerAndTurn : UpdateTurn -> Types.FrontendModel -> Types.FrontendModel
+updatePlayerAndTurn update_turn model =
+    let
+        next_player =
+            if update_turn.current_player == update_turn.player_one then
+                update_turn.player_two
+
+            else
+                update_turn.player_one
+    in
+    { model |
+        turn = update_turn.current_turn + 1
+        , current_player = next_player
+    }
 
 updateUltimateBoard : Coordinates.Coordinates -> Player.Player -> Board.UltimateBoard -> Board.UltimateBoard
 updateUltimateBoard coordinates current_player board =

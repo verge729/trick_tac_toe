@@ -5,6 +5,7 @@ import Types.Coordinates as Coordinates
 import Types.Board as Board
 import Types.Player as Player
 import Types.Victory as Victory
+import Types.Events as Events
 
 type alias FrontendModel =
     { key : Key
@@ -17,4 +18,6 @@ type alias FrontendModel =
     , player_two : Player.Player
     , current_player : Player.Player
     , path_to_victory : Victory.PathToVictory
+    , turn : Int
+    , list_events : List Events.Event
     }

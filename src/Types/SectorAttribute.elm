@@ -1,15 +1,15 @@
 module Types.SectorAttribute exposing (..)
 
 import Types.Player as Player
+import Types.Tricks.Trick as Trick
 
-type Trick
-    = Trick 
 
-type Blessing
-    = Blessing
+type Treat
+    = Treat
 
 type Content
     = Clear
+    | Trick Trick.Trick
 
 type State 
     = Free

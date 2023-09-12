@@ -42,12 +42,15 @@ init url key =
       , current_coordinate = Nothing
       , next_coordinate_low = Nothing
       , next_coordinate_mid = Nothing
-      , board = Board.Ultimate UltimateBoard.boardUltimate
+    --   , board = Board.Ultimate UltimateBoard.boardUltimate
+      , board = Board.Regular BaseBoard.boardRegular
       , player_one = Player.defaultOne
       , player_two = Player.defaultTwo
       , current_player = Player.defaultOne
     --   , path_to_victory = Victory.Acheived Player.defaultOne
       , path_to_victory = Victory.Unacheived 
+      , turn = 0
+      , list_events = []
       }
     , Cmd.none
     )
