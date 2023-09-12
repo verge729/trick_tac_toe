@@ -1,4 +1,4 @@
-module Types.Victory exposing (PathToVictory(..), checkVictory, toStringPathToVictory)
+module Types.Victory exposing (PathToVictory(..), checkVictory, toStringPathToVictory, toPathToVictoryState, toStatePathToVictory)
 
 {-| This module is responsible for checking if a player has won the game.
 -}
@@ -14,7 +14,25 @@ type PathToVictory
     = Acheived Player.Player
     | Unacheived
 
-checkVictory : Board.RegularBoard -> Player.Player -> PathToVictory
+toStatePathToVictory : PathToVictory -> SectorAttribute.State
+toStatePathToVictory path_to_victory =
+    case path_to_victory of
+        Acheived player ->
+            SectorAttribute.Claimed player
+
+        Unacheived ->
+            SectorAttribute.Free
+
+toPathToVictoryState : SectorAttribute.State -> PathToVictory
+toPathToVictoryState state =
+    case state of
+        SectorAttribute.Claimed player ->
+            Acheived player
+
+        SectorAttribute.Free ->
+            Unacheived
+
+checkVictory : Array.Array { a | state : SectorAttribute.State, coordinate : Coordinates.Sector } -> Player.Player -> PathToVictory
 checkVictory board player_current =
     let
         claimed_player_current =

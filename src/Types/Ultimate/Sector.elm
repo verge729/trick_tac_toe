@@ -2,17 +2,17 @@ module Types.Ultimate.Sector exposing (..)
 
 import Types.Coordinates as Coordinates
 import Types.Base.Board as BaseBoard
-import Types.Victory as Victory
+import Types.SectorAttribute as SectorAttribute
 
 type alias Sector =
     { coordinate : Coordinates.Sector
-    , state : Victory.PathToVictory
+    , state : SectorAttribute.State
     , board : BaseBoard.RegularBoard
     }
 
 defaultSector : Coordinates.Sector -> Sector
 defaultSector coordinate =
     { coordinate = coordinate
-    , state = Victory.Unacheived
+    , state = SectorAttribute.Free
     , board = BaseBoard.boardRegular
     }

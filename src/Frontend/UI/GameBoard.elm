@@ -122,13 +122,13 @@ viewSectorUltimate sector =
         [ boardRegularMidLayer matrix sector.state sector.coordinate          
         ]
 
-boardRegularMidLayer : Board.BoardRows Board.RegularBoard -> Victory.PathToVictory -> Coordinates.Sector -> HS.Html Types.FrontendMsg
+boardRegularMidLayer : Board.BoardRows Board.RegularBoard -> SectorAttribute.State -> Coordinates.Sector -> HS.Html Types.FrontendMsg
 boardRegularMidLayer data claimed_victory mid_coordinate =
     HS.div
         [ HSE.onMouseEnter <| Types.NextCoordinateMidHover (Just mid_coordinate)
         , HSE.onMouseLeave <| Types.NextCoordinateMidHover (Nothing)            
         ]
-        [ boardRegular data claimed_victory
+        [ boardRegular data (Victory.toPathToVictoryState claimed_victory)
         ]
 
 boardRegular : Board.BoardRows Board.RegularBoard -> Victory.PathToVictory -> HS.Html Types.FrontendMsg
