@@ -33,7 +33,7 @@ root board m_current_coordinates claimed_victory =
                     , bottom = Array.slice 6 9 data
                     }
             in
-            boardRegular matrix claimed_victory
+            boardRegular matrix claimed_victory False
 
         Board.Ultimate data ->
             let
@@ -147,34 +147,39 @@ viewSectorUltimate sector focused_sector =
                     (getSectorBorder sector.coordinate Coordinates.Mid)
                 )
             ]
-            [ boardRegularMidLayer matrix sector.state sector.coordinate  
+            [ boardRegularMidLayer matrix sector.state sector.coordinate focused_sector 
             ]
         , higlight_or_mask
         ]
 
-boardRegularMidLayer : Board.BoardRows Board.RegularBoard -> SectorAttribute.State -> Coordinates.Sector -> HS.Html Types.FrontendMsg
-boardRegularMidLayer data claimed_victory mid_coordinate =
+boardRegularMidLayer : 
+    Board.BoardRows Board.RegularBoard 
+    -> SectorAttribute.State 
+    -> Coordinates.Sector 
+    -> Bool
+    -> HS.Html Types.FrontendMsg
+boardRegularMidLayer data claimed_victory mid_coordinate is_focused =
     HS.div
         [ HSE.onMouseEnter <| Types.NextCoordinateMidHover (Just mid_coordinate)
         , HSE.onMouseLeave <| Types.NextCoordinateMidHover (Nothing)            
         ]
-        [ boardRegular data (Victory.toPathToVictoryState claimed_victory)
+        [ boardRegular data (Victory.toPathToVictoryState claimed_victory) is_focused
         ]
 
 {- ANCHOR regular board -}
 
-boardRegular : Board.BoardRows Board.RegularBoard -> Victory.PathToVictory -> HS.Html Types.FrontendMsg
-boardRegular data claimed_victory =
+boardRegular : Board.BoardRows Board.RegularBoard -> Victory.PathToVictory -> Bool -> HS.Html Types.FrontendMsg
+boardRegular data claimed_victory is_focused =
     let
         ( mask, opacity ) =
             case claimed_victory of
                 Victory.Unacheived ->
-                    ( HS.div [] []
+                    ( HS.div [ ] []
                     , TW.opacity_100
                     )
 
                 Victory.Acheived player ->
-                    ( victoryMask player
+                    ( victoryMask player is_focused
                     , TW.opacity_30
                     )
     in
@@ -196,33 +201,35 @@ boardRegular data claimed_victory =
                 , TW.flex_col
                 , TW.justify_center
                 , TW.items_center
-                , TW.z_20
+                    , TW.relative
+                    , TW.z_20
                 , opacity
                 ]
             ]
-            [ viewRowBase (Array.toList <| data.top)
-            , viewRowBase (Array.toList <| data.middle)
-            , viewRowBase (Array.toList <| data.bottom)
+            [ viewRowBase (Array.toList <| data.top) is_focused
+            , viewRowBase (Array.toList <| data.middle) is_focused
+            , viewRowBase (Array.toList <| data.bottom) is_focused
             ]
         , mask
         ]
 
 
-viewRowBase : List Sector.Sector ->  HS.Html Types.FrontendMsg
-viewRowBase list_sector  =
+viewRowBase : List Sector.Sector -> Bool ->  HS.Html Types.FrontendMsg
+viewRowBase list_sector is_focused =
     HS.div
         [ HSA.css
             [ TW.box_border
             , TW.flex
+            , TW.z_20
             ]
         ]
-        (List.map (viewSector ) list_sector)
+        (List.map (viewSector is_focused) list_sector)
 
 
-viewSector : Sector.Sector -> HS.Html Types.FrontendMsg
-viewSector sector =
+viewSector : Bool -> Sector.Sector ->  HS.Html Types.FrontendMsg
+viewSector is_focused sector =
     let
-        ( interactions, icon ) =
+        ( additional_interactions, icon ) =
             case sector.state of
                 SectorAttribute.Free ->
                     ( [ HSE.onClick <| Types.ClaimSector sector
@@ -266,7 +273,7 @@ viewSector sector =
                 , HSE.onMouseEnter <| Types.NextCoordinateLowHover (Just sector.coordinate)
                 , HSE.onMouseLeave <| Types.NextCoordinateLowHover Nothing
                 ]
-                interactions
+                additional_interactions
             )
             [ HS.div
                 [ HSA.css
@@ -287,7 +294,8 @@ selectedBackground =
             [ TW.box_border
             , TW.h_full
             , TW.w_full
-            , TW.bg_color TW.blue_800
+            , TW.bg_color TW.white
+            , TW.bg_opacity_10
             , TW.z_0
             , TW.absolute                
             ]            
@@ -301,7 +309,7 @@ jammerMask =
             [ TW.box_border
             , TW.h_full
             , TW.w_full
-            , TW.bg_color TW.white
+            , TW.bg_color TW.black
             , TW.absolute
             , TW.bg_opacity_20   
             , TW.z_40             
@@ -310,22 +318,34 @@ jammerMask =
         []
 
 
-victoryMask : Player.Player -> HS.Html Types.FrontendMsg
-victoryMask player =
+victoryMask : Player.Player -> Bool -> HS.Html Types.FrontendMsg
+victoryMask player is_focused =
+    let
+        attrs =
+            if is_focused then
+                [ TW.opacity_20     
+                , TW.z_0             
+                ]
+            else
+                [ TW.z_30                    
+                ]
+    in
     HS.div
         [ HSA.css
-            [ TW.box_border
-            , TW.w_full
-            , TW.h_full
-            , TW.bg_color TW.white
-            , TW.absolute
-            , TW.z_10
-            , TW.bottom_0
-            , TW.bg_opacity_25
-            , TW.flex
-            , TW.items_center
-            , TW.justify_center
-            ]
+            ( List.append
+                attrs
+                [ TW.box_border
+                , TW.w_full
+                , TW.h_full
+                , TW.bg_color TW.white
+                , TW.absolute
+                , TW.bottom_0
+                , TW.bg_opacity_25
+                , TW.flex
+                , TW.items_center
+                , TW.justify_center
+                ]
+            )
         ]
         [ HS.div
             [ HSA.css

@@ -3,6 +3,7 @@ module Frontend.Update exposing (..)
 import Array
 import Browser
 import Browser.Navigation as Nav
+import Frontend.UI.DataPanel exposing (coordinates)
 import Types
 import Types.Base.Board as BaseBoard
 import Types.Base.Sector as Sector
@@ -12,7 +13,6 @@ import Types.Player as Player
 import Types.SectorAttribute as SectorAttribute
 import Types.Victory as Victory
 import Url
-import Frontend.UI.DataPanel exposing (coordinates)
 
 
 update : Types.FrontendMsg -> Types.FrontendModel -> ( Types.FrontendModel, Cmd Types.FrontendMsg )
@@ -37,14 +37,17 @@ update msg model =
             ( model, Cmd.none )
 
         Types.NextCoordinateLowHover m_sector ->
-                    ( { model | next_coordinate_low = m_sector }
-                    , Cmd.none
-                    )
+            let
+                _ = Debug.log "Here" 0
+            in 
+            ( { model | next_coordinate_low = m_sector }
+            , Cmd.none
+            )
 
         Types.NextCoordinateMidHover m_sector ->
-                    ( { model | next_coordinate_mid = m_sector }
-                    , Cmd.none
-                    )
+            ( { model | next_coordinate_mid = m_sector }
+            , Cmd.none
+            )
 
         Types.ClaimSector sector ->
             case model.board of
@@ -54,11 +57,6 @@ update msg model =
                     )
 
                 Board.Regular board ->
-                    -- sector
-                    -- current player in model
-                    -- board in model
-                    -- update sector in board
-                    -- advance/swap current player
                     let
                         int_sector =
                             Coordinates.toIntSector sector.coordinate
@@ -97,15 +95,10 @@ update msg model =
                             )
 
                 Board.Ultimate board ->
-                    -- get current player
-                    -- get ultimate sector
-                    -- get low sector
-                    -- update low sector
-                    -- update ultimate sector
-                    -- advance/swap current player
                     let
-                        next_low = 
+                        next_low =
                             Maybe.withDefault Coordinates.Zero model.next_coordinate_low
+
                         next_mid =
                             Maybe.withDefault Coordinates.Zero model.next_coordinate_mid
 
@@ -116,12 +109,12 @@ update msg model =
                             updateUltimateBoard coordinates model.current_player board
 
                         claimed_victory =
-                            Victory.checkVictory 
-                                (updated_board) 
+                            Victory.checkVictory
+                                updated_board
                                 model.current_player
                     in
-                    ( { model |
-                        board = Board.Ultimate updated_board
+                    ( { model
+                        | board = Board.Ultimate updated_board
                         , current_player =
                             if model.current_player == Player.defaultOne then
                                 Player.defaultTwo
@@ -134,6 +127,7 @@ update msg model =
                     , Cmd.none
                     )
 
+
 updateUltimateBoard : Coordinates.Coordinates -> Player.Player -> Board.UltimateBoard -> Board.UltimateBoard
 updateUltimateBoard coordinates current_player board =
     let
@@ -143,21 +137,28 @@ updateUltimateBoard coordinates current_player board =
     case Array.get int_sector board of
         Just board_low ->
             let
-                (updated_board, claimed_victory) =
+                ( updated_board, claimed_victory ) =
                     updateBoard coordinates.low current_player board_low.board
 
                 updated_ultimate_sector =
-                    { board_low | board = updated_board, state = Victory.toStatePathToVictory claimed_victory }
+                    case board_low.state of
+                        SectorAttribute.Free ->
+                            { board_low | board = updated_board, state = Victory.toStatePathToVictory claimed_victory }
+
+                        SectorAttribute.Claimed _ ->
+                            { board_low | board = updated_board }
             in
             Array.set int_sector updated_ultimate_sector board
 
         Nothing ->
             let
-                _ = Debug.log "updateUltimateBoard : Nothing branch" 0
-            in 
+                _ =
+                    Debug.log "updateUltimateBoard : Nothing branch" 0
+            in
             board
 
-updateBoard : Coordinates.Sector -> Player.Player -> Board.RegularBoard -> (Board.RegularBoard, Victory.PathToVictory)
+
+updateBoard : Coordinates.Sector -> Player.Player -> Board.RegularBoard -> ( Board.RegularBoard, Victory.PathToVictory )
 updateBoard coordinate current_player board =
     -- sector
     -- current player in model
@@ -183,10 +184,11 @@ updateBoard coordinate current_player board =
                 claimed_victory =
                     Victory.checkVictory updated_board current_player
             in
-            (updated_board, claimed_victory)
+            ( updated_board, claimed_victory )
 
         Nothing ->
             let
-                _ = Debug.log "updateBoard : Nothing branch" 0
-            in 
-            (board, Victory.Unacheived)
+                _ =
+                    Debug.log "updateBoard : Nothing branch" 0
+            in
+            ( board, Victory.Unacheived )
