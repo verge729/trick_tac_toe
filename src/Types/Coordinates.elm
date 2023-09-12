@@ -1,7 +1,8 @@
 module Types.Coordinates exposing (..)
 
 type alias Coordinates =
-    { low : Sector       
+    { low : Sector 
+    , mid : Sector      
     }
 
 type Coordinate
@@ -23,7 +24,8 @@ type Sector
 
 toStringCoordinates : Coordinates -> String
 toStringCoordinates coordinates =
-    "Low : " ++ String.fromInt (toIntSector coordinates.low)
+    "Low : " ++ String.fromInt (toIntSector coordinates.low) ++ "\n" 
+    ++ "Mid : " ++ String.fromInt (toIntSector coordinates.mid) ++ "\n"
 
 toIntSector : Sector -> Int
 toIntSector sector =

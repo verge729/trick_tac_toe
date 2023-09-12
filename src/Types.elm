@@ -5,7 +5,7 @@ import Browser.Navigation exposing (Key)
 import Url exposing (Url)
 import Backend.Model as BackendModel
 import Frontend.Model as FrontendModel
-import Types.Sector as Sector
+import Types.Base.Sector as Sector
 import Types.Coordinates as Coordinates
 
 
@@ -20,7 +20,8 @@ type FrontendMsg
     = UrlClicked UrlRequest
     | UrlChanged Url
     | NoOpFrontendMsg
-    | NextCoordinateHover (Maybe Coordinates.Sector)
+    | NextCoordinateLowHover (Maybe Coordinates.Sector)
+    | NextCoordinateMidHover (Maybe Coordinates.Sector)
     | ClaimSector Sector.Sector
 
 

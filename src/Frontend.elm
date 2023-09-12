@@ -8,6 +8,7 @@ import Lamdera
 import Types exposing (..)
 import Url
 import Types.Board as Board
+import Types.Base.Board as BaseBoard
 import Frontend.UI.Home as Home
 import Frontend.Update as FrontendUpdate
 import Frontend.UpdateFromBackend as UpdateFromBackend
@@ -15,6 +16,7 @@ import Html.Styled as HS
 import Html.Styled.Attributes as HSA
 import Types.Player as Player
 import Types.Victory as Victory
+import Types.Ultimate.Board as UltimateBoard
 
 
 type alias Model =
@@ -38,8 +40,9 @@ init url key =
     ( { key = key
       , message = "Welcome to Lamdera! You're looking at the auto-generated base implementation. Check out src/Frontend.elm to start coding!"
       , current_coordinate = Nothing
-      , next_coordinate = Nothing
-      , board = Board.Regular Board.boardRegular
+      , next_coordinate_low = Nothing
+      , next_coordinate_mid = Nothing
+      , board = Board.Ultimate UltimateBoard.boardUltimate
       , player_one = Player.defaultOne
       , player_two = Player.defaultTwo
       , current_player = Player.defaultOne

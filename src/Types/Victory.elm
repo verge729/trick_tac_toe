@@ -5,9 +5,10 @@ module Types.Victory exposing (PathToVictory(..), checkVictory, toStringPathToVi
 
 import Types.Player as Player
 import Types.Coordinates as Coordinates
-import Types.Board as Board
+import Types.Base.Board as Board
 import Array
-import Types.Sector as Sector
+import Types.Base.Sector as Sector
+import Types.SectorAttribute as SectorAttribute
 
 type PathToVictory
     = Acheived Player.Player
@@ -17,7 +18,7 @@ checkVictory : Board.RegularBoard -> Player.Player -> PathToVictory
 checkVictory board player_current =
     let
         claimed_player_current =
-            Array.filter (\sector -> sector.state == Sector.Claimed player_current) board
+            Array.filter (\sector -> sector.state == SectorAttribute.Claimed player_current) board
                 |> Array.toList
                 |> List.map (\sector -> Coordinates.toIntSector sector.coordinate)
                 |> List.sort

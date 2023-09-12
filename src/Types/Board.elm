@@ -1,16 +1,16 @@
 module Types.Board exposing (..)
 
+import Types.Base.Board as BaseBoard
+import Types.Ultimate.Board as UltimateBoard
 import Array
-import Types.Sector as Sector
-import Types.Coordinates as Coordinates
-import Url.Parser exposing (top)
+import Types.Base.Sector as BaseSector
+import Types.Ultimate.Sector as UltimateSector
 
 type alias RegularBoard =
-    Array.Array Sector.Sector
+    Array.Array BaseSector.Sector
 
-type Board
-    = NotSelected
-    | Regular RegularBoard
+type alias UltimateBoard =
+    Array.Array UltimateSector.Sector
 
 type alias BoardRows a =
     { top : a
@@ -18,6 +18,7 @@ type alias BoardRows a =
     , bottom : a
     }
 
-boardRegular : Array.Array Sector.Sector
-boardRegular =
-    Array.initialize 9 (\i -> Sector.defaultSector <| Coordinates.toSectorFromInt i) 
+type Board
+    = NotSelected
+    | Regular RegularBoard
+    | Ultimate UltimateBoard

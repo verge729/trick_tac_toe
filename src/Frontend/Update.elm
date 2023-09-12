@@ -1,15 +1,17 @@
 module Frontend.Update exposing (..)
 
-import Types
+import Array
 import Browser
 import Browser.Navigation as Nav
-import Url
-import Types.Coordinates as Coordinates
+import Types
+import Types.Base.Board as Board
+import Types.Base.Sector as Sector
 import Types.Board as Board
-import Array
-import Types.Sector as Sector
+import Types.Coordinates as Coordinates
 import Types.Player as Player
+import Types.SectorAttribute as SectorAttribute
 import Types.Victory as Victory
+import Url
 
 
 update : Types.FrontendMsg -> Types.FrontendModel -> ( Types.FrontendModel, Cmd Types.FrontendMsg )
@@ -33,23 +35,27 @@ update msg model =
         Types.NoOpFrontendMsg ->
             ( model, Cmd.none )
 
-        Types.NextCoordinateHover m_sector -> 
+        Types.NextCoordinateLowHover m_sector ->
             case m_sector of
                 Just sector ->
-                    let
-                        current_next_coordinate = model.next_coordinate
-                        updated_next_coordinate =
-                            case current_next_coordinate of
-                                Nothing -> { low = sector }
-                                Just next_coordinate -> 
-                                    { next_coordinate | low = sector }
-                    in 
-                    ( {model | next_coordinate = Just updated_next_coordinate}
+                    ( { model | next_coordinate_low = m_sector }
                     , Cmd.none
                     )
 
                 Nothing ->
-                    ( {model | next_coordinate = Nothing}
+                    ( { model | next_coordinate_low = Nothing }
+                    , Cmd.none
+                    )
+
+        Types.NextCoordinateMidHover m_sector ->
+            case m_sector of
+                Just sector ->
+                    ( { model | next_coordinate_mid = m_sector }
+                    , Cmd.none
+                    )
+
+                Nothing ->
+                    ( { model | next_coordinate_mid = Nothing }
                     , Cmd.none
                     )
 
@@ -60,34 +66,38 @@ update msg model =
                     , Cmd.none
                     )
 
-                Board.Regular board -> 
+                Board.Regular board ->
                     -- sector
                     -- current player in model
                     -- board in model
-
                     -- update sector in board
                     -- advance/swap current player
                     let
-                        int_sector = Coordinates.toIntSector sector.coordinate
-                        m_target_sector = Array.get int_sector board
+                        int_sector =
+                            Coordinates.toIntSector sector.coordinate
+
+                        m_target_sector =
+                            Array.get int_sector board
                     in
                     case m_target_sector of
                         Just target_sector ->
                             let
                                 updated_target_sector =
-                                    { target_sector | state = Sector.Claimed model.current_player }
+                                    { target_sector | state = SectorAttribute.Claimed model.current_player }
+
                                 updated_board =
-                                     (Array.set int_sector updated_target_sector board) 
+                                    Array.set int_sector updated_target_sector board
+
                                 claimed_victory =
                                     Victory.checkVictory updated_board model.current_player
-    
-                            in 
-                            ( { model 
+                            in
+                            ( { model
                                 | board = Board.Regular updated_board
                                 , path_to_victory = claimed_victory
                                 , current_player =
                                     if model.current_player == Player.defaultOne then
                                         Player.defaultTwo
+
                                     else
                                         Player.defaultOne
                               }
@@ -98,3 +108,8 @@ update msg model =
                             ( model
                             , Cmd.none
                             )
+
+                Board.Ultimate board ->
+                    ( model
+                    , Cmd.none
+                    )

@@ -10,7 +10,8 @@ type alias FrontendModel =
     { key : Key
     , message : String 
     , current_coordinate : Maybe Coordinates.Coordinates
-    , next_coordinate : Maybe Coordinates.Coordinates
+    , next_coordinate_low : Maybe Coordinates.Sector
+    , next_coordinate_mid : Maybe Coordinates.Sector
     , board : Board.Board
     , player_one : Player.Player
     , player_two : Player.Player

@@ -16,7 +16,7 @@ root model =
         [ sectionTitle "Path to Victory"
         , pathToVictory model.path_to_victory
         , sectionTitle "Coordinates"
-        , coordinates model.current_coordinate model.next_coordinate 
+        , coordinates model.current_coordinate model.next_coordinate_low model.next_coordinate_mid
         , sectionTitle "Current Player"
         , currentPlayer model.current_player           
         ]
@@ -72,31 +72,8 @@ currentPlayer player =
             ]
         ]
 
-coordinates : Maybe Coordinates.Coordinates -> Maybe Coordinates.Coordinates -> HS.Html Types.FrontendMsg
-coordinates m_current m_next =
-    let
-        (current_text, next_text) =
-            case (m_current, m_next) of
-                (Just current, Just next) ->
-                    ( Just <| Coordinates.toStringCoordinates current
-                    , Just <| Coordinates.toStringCoordinates next
-                    )
-
-                (Just current, Nothing) ->
-                    ( Just <| Coordinates.toStringCoordinates current
-                    , Nothing
-                    )
-
-                (Nothing, Just next) ->
-                    ( Nothing
-                    , Just <| Coordinates.toStringCoordinates next
-                    )
-
-                (Nothing, Nothing) ->
-                    ( Nothing
-                    , Nothing
-                    )
-    in
+coordinates : Maybe Coordinates.Coordinates -> Maybe Coordinates.Sector -> Maybe Coordinates.Sector -> HS.Html Types.FrontendMsg
+coordinates m_current m_next_low m_next_mid =
     HS.div
         [ HSA.css
             [ TW.box_border
@@ -111,7 +88,8 @@ coordinates m_current m_next =
                 ]                
             ]
             [ HS.text "Current: "
-            , HS.text <| Maybe.withDefault "No Coordinates selected" current_text
+            , HS.text <| Maybe.withDefault "No Coordinates selected" <|
+                Maybe.map Coordinates.toStringCoordinates m_current
             ]
         , HS.div
             [ HSA.css
@@ -120,8 +98,20 @@ coordinates m_current m_next =
                 , TW.ml_2                    
                 ]                
             ]
-            [ HS.text "Next: "
-            , HS.text <| Maybe.withDefault "No Coordinates selected" next_text
+            [ HS.text "Next low: "
+            , HS.text <| Maybe.withDefault "No Coordinates selected" <|
+                Maybe.map Coordinates.toStringSector m_next_low
+            ]
+        , HS.div
+            [ HSA.css
+                [ TW.box_border
+                , TW.w_10over12
+                , TW.ml_2                    
+                ]                
+            ]
+            [ HS.text "Next mid: "
+            , HS.text <| Maybe.withDefault "No Coordinates selected" <|
+                Maybe.map Coordinates.toStringSector m_next_mid
             ]
         ]            
         
