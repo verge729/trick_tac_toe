@@ -15,6 +15,7 @@ import Types.Player as Player
 import Types.SectorAttribute as SectorAttribute
 import Types.Ultimate.Sector as UltimateSector
 import Types.Victory as Victory
+import Types.Coordinates exposing (Sector)
 
 
 root : Board.Board -> Maybe Coordinates.Coordinates -> Victory.PathToVictory -> HS.Html Types.FrontendMsg
@@ -284,15 +285,29 @@ viewRowBase list_sector is_focused =
 viewSector : Bool -> Sector.Sector -> HS.Html Types.FrontendMsg
 viewSector is_focused sector =
     let
+        bg_trick =
+            case sector.content of
+                SectorAttribute.Clear ->
+                    []
+
+                SectorAttribute.Trick _ ->
+                    [ TW.bg_color TW.pink_600
+                    , TW.bg_opacity_20
+                    ]
+
         shared_portion =
             [ HSA.css
-                [ TW.box_border
-                , TW.w_11over12
-                , TW.h_5over6
-                , TW.flex
-                , TW.items_center
-                , TW.justify_center
-                ]
+                (List.append
+                    [ TW.box_border
+                    , TW.w_11over12
+                    , TW.h_5over6
+                    , TW.flex
+                    , TW.items_center
+                    , TW.justify_center
+                    , TW.m_2
+                    ]
+                    bg_trick
+                )
             , HSE.onMouseEnter <| Types.NextCoordinateLowHover (Just sector.coordinate)
             , HSE.onMouseLeave <| Types.NextCoordinateLowHover Nothing
             ]

@@ -14,7 +14,7 @@ type alias Event =
     { turn : Int
     , event : EventType
     , player : Player.Player
-    , coordinates : Coordinates.Coordinates
+    , coordinates : Coordinates.Sector--Coordinates
     }
 
 

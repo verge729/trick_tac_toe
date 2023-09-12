@@ -4,18 +4,18 @@ type TrickType
     = Vanish
 
 type alias Trick =
-    { trickType : TrickType
+    { trick_type : TrickType
     , description : String      
     }
 
 toString : Trick -> String
 toString trick =
-    case trick.trickType of
+    case trick.trick_type of
         Vanish ->
             "Vanish"
 
 vanish : Trick
 vanish =
-    { trickType = Vanish
+    { trick_type = Vanish
     , description = "Vanish"
     }

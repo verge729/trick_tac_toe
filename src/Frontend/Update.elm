@@ -12,6 +12,7 @@ import Types.Player as Player
 import Types.SectorAttribute as SectorAttribute
 import Types.Victory as Victory
 import Url
+import Engine.Engine as Engine
 
 type alias UpdateTurn =
     { player_one : Player.Player
@@ -63,44 +64,66 @@ update msg model =
 
                 Board.Regular board ->
                     let
-                        int_sector =
-                            Coordinates.toIntSector sector.coordinate
+                        other_player =
+                            if model.current_player == model.player_one then
+                                model.player_two
 
-                        m_target_sector =
-                            Array.get int_sector board
-                    in
-                    case m_target_sector of
-                        Just target_sector ->
-                            let
-                                updated_target_sector =
-                                    { target_sector | state = SectorAttribute.Claimed model.current_player }
+                            else
+                                model.player_one
+                        processed_claim =
+                            Engine.processTurn
+                                ( Engine.Claim
+                                    model.current_player
+                                    other_player
+                                    sector 
+                                    sector.coordinate
+                                    model.turn
+                                    board
 
-                                updated_board =
-                                    Array.set int_sector updated_target_sector board
+                                )
+                    in 
+                    ( updateModelwithProcessedClaim model processed_claim
+                    , Cmd.none
+                    )
+                    -- let
+                    --     int_sector =
+                    --         Coordinates.toIntSector sector.coordinate
 
-                                claimed_victory =
-                                    Victory.checkVictory updated_board model.current_player
+                    --     m_target_sector =
+                    --         Array.get int_sector board
+                    -- in
+                    -- case m_target_sector of
+                    --     Just target_sector ->
+                    --         let
+                    --             updated_target_sector =
+                    --                 { target_sector | state = SectorAttribute.Claimed model.current_player }
 
-                                mdl =
-                                    { model
-                                        | board = Board.Regular updated_board
-                                        , path_to_victory = claimed_victory
-                                    }
-                            in
-                            ( mdl
-                                |> updatePlayerAndTurn
-                                    { player_one = model.player_one
-                                    , player_two = model.player_two
-                                    , current_player = model.current_player
-                                    , current_turn = model.turn
-                                    }
-                            , Cmd.none
-                            )
+                    --             updated_board =
+                    --                 Array.set int_sector updated_target_sector board
 
-                        Nothing ->
-                            ( model
-                            , Cmd.none
-                            )
+                    --             claimed_victory =
+                    --                 Victory.checkVictory updated_board model.current_player
+
+                    --             mdl =
+                    --                 { model
+                    --                     | board = Board.Regular updated_board
+                    --                     , path_to_victory = claimed_victory
+                    --                 }
+                    --         in
+                    --         ( mdl
+                    --             |> updatePlayerAndTurn
+                    --                 { player_one = model.player_one
+                    --                 , player_two = model.player_two
+                    --                 , current_player = model.current_player
+                    --                 , current_turn = model.turn
+                    --                 }
+                    --         , Cmd.none
+                    --         )
+
+                        -- Nothing ->
+                        --     ( model
+                        --     , Cmd.none
+                        --     )
 
                 Board.Ultimate board ->
                     let
@@ -138,6 +161,16 @@ update msg model =
                             }
                     , Cmd.none
                     )
+
+updateModelwithProcessedClaim : Types.FrontendModel -> Engine.ClaimResult -> Types.FrontendModel
+updateModelwithProcessedClaim model claim_result =
+    { model
+        | turn = claim_result.turn
+        , board = Board.Regular claim_result.board
+        , current_player = claim_result.next_player
+        , path_to_victory = claim_result.path_to_victory
+        , list_events = claim_result.event ::  model.list_events
+    }
 
 updatePlayerAndTurn : UpdateTurn -> Types.FrontendModel -> Types.FrontendModel
 updatePlayerAndTurn update_turn model =
