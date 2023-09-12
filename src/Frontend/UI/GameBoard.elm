@@ -19,33 +19,75 @@ import Types.Victory as Victory
 
 root : Board.Board -> Maybe Coordinates.Coordinates -> Victory.PathToVictory -> HS.Html Types.FrontendMsg
 root board m_current_coordinates claimed_victory =
-    case board of
-        Board.NotSelected ->
-            HS.div
-                []
-                [ HS.text "No board selected" ]
+    let
+        main_view =
+            case board of
+                Board.NotSelected ->
+                    HS.div
+                        []
+                        [ HS.text "No board selected" ]
 
-        Board.Regular data ->
-            let
-                matrix =
-                    { top = Array.slice 0 3 data
-                    , middle = Array.slice 3 6 data
-                    , bottom = Array.slice 6 9 data
-                    }
-            in
-            boardRegular matrix claimed_victory False
+                Board.Regular data ->
+                    let
+                        matrix =
+                            { top = Array.slice 0 3 data
+                            , middle = Array.slice 3 6 data
+                            , bottom = Array.slice 6 9 data
+                            }
+                    in
+                    boardRegular matrix claimed_victory False
 
-        Board.Ultimate data ->
-            let
-                matrix =
-                    { top = Array.slice 0 3 data
-                    , middle = Array.slice 3 6 data
-                    , bottom = Array.slice 6 9 data
-                    }
-            in
-            boardUltimate matrix m_current_coordinates claimed_victory
+                Board.Ultimate data ->
+                    let
+                        matrix =
+                            { top = Array.slice 0 3 data
+                            , middle = Array.slice 3 6 data
+                            , bottom = Array.slice 6 9 data
+                            }
+                    in
+                    boardUltimate matrix m_current_coordinates claimed_victory
 
-
+        (victory_view, victory_attrs, jammer_mask) =
+            case claimed_victory of
+                Victory.Unacheived ->
+                    ( HS.div [] []
+                    , []
+                    , HS.div [] []
+                    )
+                
+                Victory.Acheived player ->
+                    ( HS.div 
+                        [ HSA.css
+                            [ TW.box_border
+                            , TW.flex
+                            , TW.justify_center
+                            , TW.items_center                                
+                            ]                            
+                        ] 
+                        [ HS.h2
+                            []
+                            [ HS.text <| player.username ++ " has won the game!"                                
+                            ]                            
+                        ]
+                    , [ TW.border_solid
+                      , TW.border_4                        
+                      ]
+                    , jammerMask
+                    )
+    in
+    HS.div
+        [ HSA.css
+            ( List.append
+                [ TW.box_border  
+                , TW.relative           
+                ]
+                victory_attrs
+            )
+        ]
+        [ victory_view
+        , main_view
+        , jammer_mask
+        ]
 
 {- ANCHOR ultimate board -}
 
@@ -55,6 +97,7 @@ boardUltimate data m_current_coordinate claimed_victory =
     HS.div
         [ HSA.css
             [ TW.box_border
+            , TW.absolute
             , TW.h_fit
             , TW.w_fit
             , TW.relative
@@ -339,6 +382,7 @@ jammerMask =
             , TW.absolute
             , TW.bg_opacity_20
             , TW.z_40
+            , TW.top_0
             ]
         ]
         []

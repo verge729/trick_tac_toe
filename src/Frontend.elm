@@ -46,7 +46,8 @@ init url key =
       , player_one = Player.defaultOne
       , player_two = Player.defaultTwo
       , current_player = Player.defaultOne
-      , path_to_victory = Victory.Unacheived
+    --   , path_to_victory = Victory.Acheived Player.defaultOne
+      , path_to_victory = Victory.Unacheived 
       }
     , Cmd.none
     )
