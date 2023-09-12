@@ -76,9 +76,15 @@ update msg model =
                             let
                                 updated_target_sector =
                                     { target_sector | state = Sector.Claimed model.current_player }
+                                updated_board =
+                                     (Array.set int_sector updated_target_sector board) 
+                                claimed_victory =
+                                    Victory.checkVictory updated_board model.current_player
+    
                             in 
                             ( { model 
-                                | board = Board.Regular (Array.set int_sector updated_target_sector board) 
+                                | board = Board.Regular updated_board
+                                , path_to_victory = claimed_victory
                                 , current_player =
                                     if model.current_player == Player.defaultOne then
                                         Player.defaultTwo

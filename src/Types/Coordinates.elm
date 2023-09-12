@@ -55,6 +55,66 @@ toIntSector sector =
         Eight ->
             8
 
+toCharSector : Sector -> Char   
+toCharSector sector =
+    case sector of
+        Zero ->
+            '0'
+
+        One ->
+            '1'
+
+        Two ->
+            '2'
+
+        Three ->
+            '3'
+
+        Four ->
+            '4'
+
+        Five ->
+            '5'
+
+        Six ->
+            '6'
+
+        Seven ->
+            '7'
+
+        Eight ->
+            '8'
+
+toStringSector : Sector -> String
+toStringSector sector =
+    case sector of
+        Zero ->
+            "0"
+
+        One ->
+            "1"
+
+        Two ->
+            "2"
+
+        Three ->
+            "3"
+
+        Four ->
+            "4"
+
+        Five ->
+            "5"
+
+        Six ->
+            "6"
+
+        Seven ->
+            "7"
+
+        Eight ->
+            "8"
+
 toSectorFromInt : Int -> Sector
 toSectorFromInt int =
     case int of

@@ -7,12 +7,15 @@ import Types.Coordinates as Coordinates
 import Tailwind.Theme as TW
 import Tailwind.Utilities as TW
 import Types.Player as Player
+import Types.Victory as Victory
 
 root : Types.FrontendModel -> HS.Html Types.FrontendMsg
 root model =
     HS.div
         []
-        [ sectionTitle "Coordinates"
+        [ sectionTitle "Path to Victory"
+        , pathToVictory model.path_to_victory
+        , sectionTitle "Coordinates"
         , coordinates model.current_coordinate model.next_coordinate 
         , sectionTitle "Current Player"
         , currentPlayer model.current_player           
@@ -26,6 +29,21 @@ sectionTitle title =
             []
             [ HS.text title                
             ]            
+        ]
+
+pathToVictory : Victory.PathToVictory -> HS.Html Types.FrontendMsg
+pathToVictory path_to_victory =
+    HS.div
+        []
+        [ HS.div
+            [ HSA.css
+                [ TW.box_border
+                , TW.w_10over12
+                , TW.ml_2                    
+                ]                
+            ]
+            [ HS.text <| Victory.toStringPathToVictory path_to_victory
+            ]
         ]
 
 currentPlayer : Player.Player -> HS.Html Types.FrontendMsg

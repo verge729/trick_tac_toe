@@ -14,6 +14,7 @@ import Frontend.UpdateFromBackend as UpdateFromBackend
 import Html.Styled as HS
 import Html.Styled.Attributes as HSA
 import Types.Player as Player
+import Types.Victory as Victory
 
 
 type alias Model =
@@ -42,6 +43,7 @@ init url key =
       , player_one = Player.defaultOne
       , player_two = Player.defaultTwo
       , current_player = Player.defaultOne
+      , path_to_victory = Victory.Unacheived
       }
     , Cmd.none
     )

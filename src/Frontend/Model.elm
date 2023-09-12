@@ -4,6 +4,7 @@ import Browser.Navigation exposing (Key)
 import Types.Coordinates as Coordinates
 import Types.Board as Board
 import Types.Player as Player
+import Types.Victory as Victory
 
 type alias FrontendModel =
     { key : Key
@@ -14,4 +15,5 @@ type alias FrontendModel =
     , player_one : Player.Player
     , player_two : Player.Player
     , current_player : Player.Player
+    , path_to_victory : Victory.PathToVictory
     }

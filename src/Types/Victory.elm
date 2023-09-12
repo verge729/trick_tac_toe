@@ -1,4 +1,7 @@
-module Types.Victory exposing (..)
+module Types.Victory exposing (PathToVictory(..), checkVictory, toStringPathToVictory)
+
+{-| This module is responsible for checking if a player has won the game.
+-}
 
 import Types.Player as Player
 import Types.Coordinates as Coordinates
@@ -33,9 +36,9 @@ checkVictory board player_current =
 checkVictoryHorizontal : List Coordinates.Sector -> Bool
 checkVictoryHorizontal list_sector =
     let
-        top = list_sector == horizontalVictoryGroups.top
-        mid = list_sector == horizontalVictoryGroups.mid
-        bottom = list_sector == horizontalVictoryGroups.bottom 
+        top = compareLists list_sector horizontalVictoryGroups.top
+        mid = compareLists list_sector horizontalVictoryGroups.mid
+        bottom = compareLists list_sector horizontalVictoryGroups.bottom 
     in
     top || mid || bottom
 
@@ -45,9 +48,9 @@ checkVictoryVertical list_sector claimed =
         claimed 
     else
         let
-            left = list_sector == verticalVictoryGroups.left
-            center = list_sector == verticalVictoryGroups.center
-            right = list_sector == verticalVictoryGroups.right 
+            left = compareLists list_sector verticalVictoryGroups.left
+            center = compareLists list_sector verticalVictoryGroups.center
+            right = compareLists list_sector verticalVictoryGroups.right 
         in
         left || center || right
 
@@ -57,11 +60,28 @@ checkVictoryDiagonal list_sector claimed =
         claimed 
     else
         let
-            left_to_right = list_sector == diagonalVictoryGroups.left_to_right
-            right_to_left = list_sector == diagonalVictoryGroups.right_to_left
+            left_to_right = compareLists list_sector diagonalVictoryGroups.left_to_right
+            right_to_left = compareLists list_sector diagonalVictoryGroups.right_to_left
         in
         left_to_right || right_to_left
 
+compareLists : List Coordinates.Sector -> List Coordinates.Sector -> Bool
+compareLists claimed victory =
+    List.foldl (\sector acheived ->
+        if List.member sector claimed then
+            acheived
+        else
+            False
+    ) True victory
+
+toStringPathToVictory : PathToVictory -> String
+toStringPathToVictory path_to_victory =
+    case path_to_victory of
+        Acheived player ->
+            "Player " ++ player.username ++ " has won the game!"
+
+        Unacheived ->
+            "No one has won the game yet."
 
 type alias VictoryGrouping =
     List Coordinates.Sector
