@@ -14,5 +14,5 @@ defaultSector : Coordinates.Sector -> Sector
 defaultSector coordinate =
     { coordinate = coordinate
     , state = SectorAttribute.Free
-    , board = BaseBoard.boardRegular
+    , board = Tuple.first BaseBoard.boardRegular
     }

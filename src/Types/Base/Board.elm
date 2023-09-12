@@ -14,9 +14,15 @@ type alias RegularBoard =
     Array.Array Sector.Sector
 
 
-boardRegular : RegularBoard
+boardRegular : (RegularBoard, Int)
 boardRegular =
-    Array.initialize 9 (\i -> Sector.defaultSector <| Coordinates.toSectorFromInt i)
+    let
+        board_size =
+            9
+    in
+    ( Array.initialize board_size (\i -> Sector.defaultSector <| Coordinates.toSectorFromInt i)
+    , board_size
+    )
 
 updateBoard : RegularBoard -> Coordinates.Sector -> SectorAttribute.State -> RegularBoard
 updateBoard board coordinate state =

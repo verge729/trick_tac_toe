@@ -56,12 +56,15 @@ update msg model =
 
         Types.CatchRandomGeneratorSeed seed ->
             let
-                (board, new_seed) =
-                    BaseBoard.addTricks BaseBoard.boardRegular seed
+                (board, max_turns) = 
+                    BaseBoard.boardRegular
+
+                (tricked_board, new_seed) =
+                    BaseBoard.addTricks board seed
             in
             ( { model
                 | seed = new_seed
-                , board = Board.Regular board
+                , board = Board.Regular tricked_board
                 }
             , Cmd.none
             )
