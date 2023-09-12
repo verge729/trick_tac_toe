@@ -116,7 +116,7 @@ viewSectorUltimate sector =
                 , TW.items_center
                 , TW.justify_center
                 ]
-                (getSectorBorder sector.coordinate)
+                (getSectorBorder sector.coordinate Coordinates.Mid)
             )
         ]
         [ boardRegularMidLayer matrix sector.state sector.coordinate          
@@ -218,7 +218,7 @@ viewSector sector =
                 , TW.items_center
                 , TW.justify_center
                 ]
-                (getSectorBorder sector.coordinate)
+                (getSectorBorder sector.coordinate Coordinates.Low)
             )
         ]
         [ HS.div
@@ -277,26 +277,54 @@ victoryMask player =
             ]
         ]
 
+type alias BorderWidth =
+    { top : Css.Style
+    , right : Css.Style
+    , bottom : Css.Style
+    , left : Css.Style        
+    }
 
-getSectorBorder : Coordinates.Sector -> List Css.Style
-getSectorBorder sector =
+getSectorBorder : Coordinates.Sector -> Coordinates.Level -> List Css.Style
+getSectorBorder sector level =
+    let
+        (border_width, border_color) =
+            case level of
+                Coordinates.Low ->
+                    ({ top = TW.border_t
+                    , right = TW.border_r
+                    , bottom = TW.border_b
+                    , left = TW.border_l                      
+                    }
+                    , TW.white
+                    )
+
+                Coordinates.Mid ->
+                    ({ top = TW.border_t_4
+                    , right = TW.border_r_4
+                    , bottom = TW.border_b_4
+                    , left = TW.border_l_4                      
+                    }
+                    , TW.stone_600
+                    )
+    in
+    (TW.border_color border_color) ::
     case sector of
         Coordinates.Zero ->
-            [ TW.border_r
-            , TW.border_b
+            [ border_width.right
+            , border_width.bottom
             ]
 
         Coordinates.One ->
-            [ TW.border_b
+            [ border_width.bottom
             ]
 
         Coordinates.Two ->
-            [ TW.border_l
-            , TW.border_b
+            [ border_width.left
+            , border_width.bottom
             ]
 
         Coordinates.Three ->
-            [ TW.border_r
+            [ border_width.right
             ]
 
         Coordinates.Four ->
@@ -304,19 +332,19 @@ getSectorBorder sector =
             []
 
         Coordinates.Five ->
-            [ TW.border_l
+            [ border_width.left
             ]
 
         Coordinates.Six ->
-            [ TW.border_r
-            , TW.border_t
+            [ border_width.right
+            , border_width.top
             ]
 
         Coordinates.Seven ->
-            [ TW.border_t
+            [ border_width.top
             ]
 
         Coordinates.Eight ->
-            [ TW.border_l
-            , TW.border_t
+            [ border_width.left
+            , border_width.top
             ]

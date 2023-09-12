@@ -5,8 +5,9 @@ type alias Coordinates =
     , mid : Sector      
     }
 
-type Coordinate
-    = Low Sector
+type Level
+    = Low
+    | Mid
 
 
 type Sector
