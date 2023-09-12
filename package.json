@@ -1,0 +1,8 @@
+{
+  "devDependencies": {
+    "elm-tooling": "1.14.1"
+  },
+  "scripts": {
+    "postinstall": "npx elm-tooling install"
+  }
+}
