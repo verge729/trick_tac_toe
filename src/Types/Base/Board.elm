@@ -48,15 +48,6 @@ addTricks board seed =
     let
         (sectors, new_seed) =
             Random.step Coordinates.randomGeneratorRegular seed
-
-        updated_board =
-            Array.map (\sector ->
-                if List.member sector.coordinate sectors then
-                    sector
-                else
-                    sector
-            ) board
-
     in
     Array.foldl (\sector (array, next_seed) ->
         let

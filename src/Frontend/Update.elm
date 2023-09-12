@@ -13,6 +13,7 @@ import Types.Player as Player
 import Types.SectorAttribute as SectorAttribute
 import Types.Victory as Victory
 import Url
+import Types.Ultimate.Board as UltimateBoard
 
 
 type alias UpdateTurn =
@@ -44,27 +45,19 @@ update msg model =
         Types.NoOpFrontendMsg ->
             ( model, Cmd.none )
 
-        Types.CatchRandomGeneratorSector list_sector ->
-            ( model
-            , Cmd.none
-            )
-
-        Types.CatchRandomGeneratorTrick list_trick ->
-            ( model
-            , Cmd.none
-            )
-
         Types.CatchRandomGeneratorSeed seed ->
             let
                 (board, max_turns) = 
-                    BaseBoard.boardRegular
+                    -- BaseBoard.boardRegular
+                    UltimateBoard.boardUltimate
 
                 (tricked_board, new_seed) =
-                    BaseBoard.addTricks board seed
+                    -- BaseBoard.addTricks board seed
+                    UltimateBoard.addTricks board seed
             in
             ( { model
                 | seed = new_seed
-                , board = Board.Regular tricked_board
+                , board = Board.Ultimate tricked_board
                 }
             , Cmd.none
             )

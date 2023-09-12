@@ -25,8 +25,6 @@ type FrontendMsg
     | NextCoordinateLowHover (Maybe Coordinates.Sector)
     | NextCoordinateMidHover (Maybe Coordinates.Sector)
     | ClaimSector Sector.Sector
-    | CatchRandomGeneratorSector (List Coordinates.Sector)
-    | CatchRandomGeneratorTrick (List Trick.TrickType)
     | CatchRandomGeneratorSeed Random.Seed
 
 

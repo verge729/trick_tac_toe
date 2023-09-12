@@ -2,6 +2,9 @@ module Types.Coordinates exposing (..)
 
 import Random
 
+randomGeneratorUltimate : Random.Generator (List Sector)
+randomGeneratorUltimate =
+    randomGeneratorList 3 8 randomGeneratorSector
 
 randomGeneratorRegular : Random.Generator (List Sector)
 randomGeneratorRegular =
@@ -20,6 +23,21 @@ randomGeneratorSector : Random.Generator Sector
 randomGeneratorSector =
     Random.uniform Zero [ One, Two, Three, Four, Five, Six, Seven, Eight ]
 
+type alias RandomCoordinates =
+    { coordinates : Coordinates
+    , seed : Random.Seed       
+    }
+
+generateRandomCoordinates : Random.Seed -> RandomCoordinates
+generateRandomCoordinates seed =
+    let
+        (low, seed1) =
+            Random.step randomGeneratorSector seed
+
+        (mid, seed2) =
+            Random.step randomGeneratorSector seed1
+    in
+    { coordinates = { low = low, mid = mid }, seed = seed2 }
 
 type alias Coordinates =
     { low : Sector

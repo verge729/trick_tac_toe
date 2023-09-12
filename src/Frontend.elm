@@ -58,10 +58,6 @@ init url key =
       , seed = Random.initialSeed 42
       }
     , Random.generate Types.CatchRandomGeneratorSeed Random.independentSeed
-    -- Cmd.batch 
-    --     [ Random.generate Types.CatchRandomGeneratorSector Coordinates.randomGenerator
-    --     , Random.generate Types.CatchRandomGeneratorTrick Trick.randomGeneratorRegular
-    --     ]
     )
 
 
