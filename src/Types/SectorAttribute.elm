@@ -13,4 +13,17 @@ type Content
 
 type State 
     = Free
+    | Blocked
     | Claimed Player.Player
+
+toStringState : State -> String
+toStringState state =
+    case state of
+        Free ->
+            "Free"
+
+        Blocked ->
+            "Blocked"
+
+        Claimed player ->
+            "Claimed by " ++ player.username

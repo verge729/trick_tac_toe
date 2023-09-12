@@ -29,7 +29,7 @@ toPathToVictoryState state =
         SectorAttribute.Claimed player ->
             Acheived player
 
-        SectorAttribute.Free ->
+        _ ->
             Unacheived
 
 checkVictory : Array.Array { a | state : SectorAttribute.State, coordinate : Coordinates.Sector } -> Player.Player -> PathToVictory

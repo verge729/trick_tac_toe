@@ -147,14 +147,17 @@ updateUltimateBoard coordinates current_player board =
 
                         SectorAttribute.Claimed _ ->
                             { board_low | board = updated_board }
+
+                        SectorAttribute.Blocked ->
+                            board_low
+
+                finalized_board =
+                    Array.set int_sector updated_ultimate_sector board
+                        |> Board.checkAndUpdateForBlock
             in
-            Array.set int_sector updated_ultimate_sector board
+            finalized_board
 
         Nothing ->
-            let
-                _ =
-                    Debug.log "updateUltimateBoard : Nothing branch" 0
-            in
             board
 
 

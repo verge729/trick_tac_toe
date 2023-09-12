@@ -8,13 +8,13 @@ import Html.Styled.Events as HSE
 import Tailwind.Theme as TW
 import Tailwind.Utilities as TW
 import Types
+import Types.Base.Sector as Sector
 import Types.Board as Board
 import Types.Coordinates as Coordinates
 import Types.Player as Player
-import Types.Base.Sector as Sector
-import Types.Victory as Victory
 import Types.SectorAttribute as SectorAttribute
 import Types.Ultimate.Sector as UltimateSector
+import Types.Victory as Victory
 
 
 root : Board.Board -> Maybe Coordinates.Coordinates -> Victory.PathToVictory -> HS.Html Types.FrontendMsg
@@ -45,7 +45,10 @@ root board m_current_coordinates claimed_victory =
             in
             boardUltimate matrix m_current_coordinates claimed_victory
 
+
+
 {- ANCHOR ultimate board -}
+
 
 boardUltimate : Board.BoardRows Board.UltimateBoard -> Maybe Coordinates.Coordinates -> Victory.PathToVictory -> HS.Html Types.FrontendMsg
 boardUltimate data m_current_coordinate claimed_victory =
@@ -75,6 +78,7 @@ boardUltimate data m_current_coordinate claimed_victory =
             ]
         ]
 
+
 viewRowUltimate : List UltimateSector.Sector -> Maybe Coordinates.Coordinates -> HS.Html Types.FrontendMsg
 viewRowUltimate list_board m_current_coordinate =
     HS.div
@@ -88,7 +92,8 @@ viewRowUltimate list_board m_current_coordinate =
             , TW.z_20
             ]
         ]
-        ( List.map (\board -> 
+        (List.map
+            (\board ->
                 let
                     is_focused =
                         case m_current_coordinate of
@@ -99,8 +104,10 @@ viewRowUltimate list_board m_current_coordinate =
                                 True
                 in
                 viewSectorUltimate board is_focused
-            ) list_board
+            )
+            list_board
         )
+
 
 viewSectorUltimate : UltimateSector.Sector -> Bool -> HS.Html Types.FrontendMsg
 viewSectorUltimate sector focused_sector =
@@ -114,19 +121,20 @@ viewSectorUltimate sector focused_sector =
         higlight_or_mask =
             if focused_sector then
                 selectedBackground
+
             else
                 jammerMask
     in
     HS.div
         [ HSA.css
             [ TW.box_border
-            , TW.relative 
+            , TW.relative
             , TW.w_full
-            , TW.h_full 
+            , TW.h_full
             , TW.flex
             , TW.items_center
-            , TW.justify_center              
-            ]            
+            , TW.justify_center
+            ]
         ]
         [ HS.div
             [ HSA.css
@@ -147,26 +155,30 @@ viewSectorUltimate sector focused_sector =
                     (getSectorBorder sector.coordinate Coordinates.Mid)
                 )
             ]
-            [ boardRegularMidLayer matrix sector.state sector.coordinate focused_sector 
+            [ boardRegularMidLayer matrix sector.state sector.coordinate focused_sector
             ]
         , higlight_or_mask
         ]
 
-boardRegularMidLayer : 
-    Board.BoardRows Board.RegularBoard 
-    -> SectorAttribute.State 
-    -> Coordinates.Sector 
+
+boardRegularMidLayer :
+    Board.BoardRows Board.RegularBoard
+    -> SectorAttribute.State
+    -> Coordinates.Sector
     -> Bool
     -> HS.Html Types.FrontendMsg
 boardRegularMidLayer data claimed_victory mid_coordinate is_focused =
     HS.div
         [ HSE.onMouseEnter <| Types.NextCoordinateMidHover (Just mid_coordinate)
-        , HSE.onMouseLeave <| Types.NextCoordinateMidHover (Nothing)            
+        , HSE.onMouseLeave <| Types.NextCoordinateMidHover Nothing
         ]
         [ boardRegular data (Victory.toPathToVictoryState claimed_victory) is_focused
         ]
 
+
+
 {- ANCHOR regular board -}
+
 
 boardRegular : Board.BoardRows Board.RegularBoard -> Victory.PathToVictory -> Bool -> HS.Html Types.FrontendMsg
 boardRegular data claimed_victory is_focused =
@@ -174,7 +186,7 @@ boardRegular data claimed_victory is_focused =
         ( mask, opacity ) =
             case claimed_victory of
                 Victory.Unacheived ->
-                    ( HS.div [ ] []
+                    ( HS.div [] []
                     , TW.opacity_100
                     )
 
@@ -201,8 +213,8 @@ boardRegular data claimed_victory is_focused =
                 , TW.flex_col
                 , TW.justify_center
                 , TW.items_center
-                    , TW.relative
-                    , TW.z_20
+                , TW.relative
+                , TW.z_20
                 , opacity
                 ]
             ]
@@ -214,7 +226,7 @@ boardRegular data claimed_victory is_focused =
         ]
 
 
-viewRowBase : List Sector.Sector -> Bool ->  HS.Html Types.FrontendMsg
+viewRowBase : List Sector.Sector -> Bool -> HS.Html Types.FrontendMsg
 viewRowBase list_sector is_focused =
     HS.div
         [ HSA.css
@@ -226,21 +238,53 @@ viewRowBase list_sector is_focused =
         (List.map (viewSector is_focused) list_sector)
 
 
-viewSector : Bool -> Sector.Sector ->  HS.Html Types.FrontendMsg
+viewSector : Bool -> Sector.Sector -> HS.Html Types.FrontendMsg
 viewSector is_focused sector =
     let
-        ( additional_interactions, icon ) =
+        shared_portion =
+            [ HSA.css
+                [ TW.box_border
+                , TW.w_11over12
+                , TW.h_5over6
+                , TW.flex
+                , TW.items_center
+                , TW.justify_center
+                ]
+            , HSE.onMouseEnter <| Types.NextCoordinateLowHover (Just sector.coordinate)
+            , HSE.onMouseLeave <| Types.NextCoordinateLowHover Nothing
+            ]
+
+        div_sector =
             case sector.state of
-                SectorAttribute.Free ->
-                    ( [ HSE.onClick <| Types.ClaimSector sector
-                      ]
-                    , HS.text ""
-                    )
+                SectorAttribute.Blocked ->
+                    HS.div
+                        shared_portion
+                        [ HS.div
+                            [ HSA.css
+                                [ TW.box_border
+                                ]
+                            ]
+                            [ HS.text "BLK"
+                            ]                            
+                        ]
 
                 SectorAttribute.Claimed player ->
-                    ( []
-                    , HS.text player.icon
-                    )
+                    HS.div
+                        shared_portion
+                        [ HS.div
+                            [ HSA.css
+                                [ TW.box_border
+                                ]
+                            ]
+                            [ HS.text player.icon
+                            ]                            
+                        ]
+
+                SectorAttribute.Free ->
+                    HS.div
+                        ((HSE.onClick <| Types.ClaimSector sector) :: shared_portion)
+                        [                             
+                        ]
     in
     HS.div
         [ HSA.css
@@ -260,32 +304,13 @@ viewSector is_focused sector =
                 (getSectorBorder sector.coordinate Coordinates.Low)
             )
         ]
-        [ HS.div
-            (List.append
-                [ HSA.css
-                    [ TW.box_border
-                    , TW.w_11over12
-                    , TW.h_5over6
-                    , TW.flex
-                    , TW.items_center
-                    , TW.justify_center
-                    ]
-                , HSE.onMouseEnter <| Types.NextCoordinateLowHover (Just sector.coordinate)
-                , HSE.onMouseLeave <| Types.NextCoordinateLowHover Nothing
-                ]
-                additional_interactions
-            )
-            [ HS.div
-                [ HSA.css
-                    [ TW.box_border
-                    ]
-                ]
-                [ icon
-                ]
-            ]
+        [ div_sector
         ]
 
+
+
 {- ANCHOR helpers -}
+
 
 selectedBackground : HS.Html Types.FrontendMsg
 selectedBackground =
@@ -297,13 +322,14 @@ selectedBackground =
             , TW.bg_color TW.white
             , TW.bg_opacity_10
             , TW.z_0
-            , TW.absolute                
-            ]            
+            , TW.absolute
+            ]
         ]
         []
 
+
 jammerMask : HS.Html Types.FrontendMsg
-jammerMask =    
+jammerMask =
     HS.div
         [ HSA.css
             [ TW.box_border
@@ -311,9 +337,9 @@ jammerMask =
             , TW.w_full
             , TW.bg_color TW.black
             , TW.absolute
-            , TW.bg_opacity_20   
-            , TW.z_40             
-            ]            
+            , TW.bg_opacity_20
+            , TW.z_40
+            ]
         ]
         []
 
@@ -323,16 +349,17 @@ victoryMask player is_focused =
     let
         attrs =
             if is_focused then
-                [ TW.opacity_20     
-                , TW.z_0             
+                [ TW.opacity_20
+                , TW.z_0
                 ]
+
             else
-                [ TW.z_30                    
+                [ TW.z_30
                 ]
     in
     HS.div
         [ HSA.css
-            ( List.append
+            (List.append
                 attrs
                 [ TW.box_border
                 , TW.w_full
@@ -360,74 +387,77 @@ victoryMask player is_focused =
             ]
         ]
 
+
 type alias BorderWidth =
     { top : Css.Style
     , right : Css.Style
     , bottom : Css.Style
-    , left : Css.Style        
+    , left : Css.Style
     }
+
 
 getSectorBorder : Coordinates.Sector -> Coordinates.Level -> List Css.Style
 getSectorBorder sector level =
     let
-        (border_width, border_color) =
+        ( border_width, border_color ) =
             case level of
                 Coordinates.Low ->
-                    ({ top = TW.border_t
-                    , right = TW.border_r
-                    , bottom = TW.border_b
-                    , left = TW.border_l                      
-                    }
+                    ( { top = TW.border_t
+                      , right = TW.border_r
+                      , bottom = TW.border_b
+                      , left = TW.border_l
+                      }
                     , TW.white
                     )
 
                 Coordinates.Mid ->
-                    ({ top = TW.border_t_4
-                    , right = TW.border_r_4
-                    , bottom = TW.border_b_4
-                    , left = TW.border_l_4                      
-                    }
+                    ( { top = TW.border_t_4
+                      , right = TW.border_r_4
+                      , bottom = TW.border_b_4
+                      , left = TW.border_l_4
+                      }
                     , TW.stone_600
                     )
     in
-    (TW.border_color border_color) ::
-    case sector of
-        Coordinates.Zero ->
-            [ border_width.right
-            , border_width.bottom
-            ]
+    TW.border_color border_color
+        :: (case sector of
+                Coordinates.Zero ->
+                    [ border_width.right
+                    , border_width.bottom
+                    ]
 
-        Coordinates.One ->
-            [ border_width.bottom
-            ]
+                Coordinates.One ->
+                    [ border_width.bottom
+                    ]
 
-        Coordinates.Two ->
-            [ border_width.left
-            , border_width.bottom
-            ]
+                Coordinates.Two ->
+                    [ border_width.left
+                    , border_width.bottom
+                    ]
 
-        Coordinates.Three ->
-            [ border_width.right
-            ]
+                Coordinates.Three ->
+                    [ border_width.right
+                    ]
 
-        Coordinates.Four ->
-            -- this is center
-            []
+                Coordinates.Four ->
+                    -- this is center
+                    []
 
-        Coordinates.Five ->
-            [ border_width.left
-            ]
+                Coordinates.Five ->
+                    [ border_width.left
+                    ]
 
-        Coordinates.Six ->
-            [ border_width.right
-            , border_width.top
-            ]
+                Coordinates.Six ->
+                    [ border_width.right
+                    , border_width.top
+                    ]
 
-        Coordinates.Seven ->
-            [ border_width.top
-            ]
+                Coordinates.Seven ->
+                    [ border_width.top
+                    ]
 
-        Coordinates.Eight ->
-            [ border_width.left
-            , border_width.top
-            ]
+                Coordinates.Eight ->
+                    [ border_width.left
+                    , border_width.top
+                    ]
+           )

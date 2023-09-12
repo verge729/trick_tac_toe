@@ -8,6 +8,10 @@ import Tailwind.Theme as TW
 import Tailwind.Utilities as TW
 import Types.Player as Player
 import Types.Victory as Victory
+import Types.Ultimate.Board as UltimateBoard
+import Array
+import Types.Board as Board
+import Types.SectorAttribute as SectorAttribute
 
 root : Types.FrontendModel -> HS.Html Types.FrontendMsg
 root model =
@@ -18,7 +22,9 @@ root model =
         , sectionTitle "Coordinates"
         , coordinates model.current_coordinate model.next_coordinate_low model.next_coordinate_mid
         , sectionTitle "Current Player"
-        , currentPlayer model.current_player           
+        , currentPlayer model.current_player
+        , sectionTitle "Focused Board" 
+        , focusedBoard model.board model.current_coordinate          
         ]
 
 sectionTitle : String -> HS.Html Types.FrontendMsg
@@ -30,6 +36,48 @@ sectionTitle title =
             [ HS.text title                
             ]            
         ]
+
+focusedBoard : Board.Board -> Maybe Coordinates.Coordinates -> HS.Html Types.FrontendMsg
+focusedBoard board m_coordinate =
+    HS.div
+        [] 
+        (case board of
+            Board.Ultimate board_ultimate ->
+                (case m_coordinate of
+                    Just coordinate ->
+                            case Array.get (Coordinates.toIntSector coordinate.mid) board_ultimate of
+                                Just sector ->
+                                    List.map (\entry ->
+                                        HS.div
+                                            [ HSA.css
+                                                [ TW.box_border
+                                                , TW.m_2                                                    
+                                                ]                                                
+                                            ]
+                                            [ HS.div 
+                                                [] 
+                                                [ HS.text <| "Coordinate : " ++ (Coordinates.toStringSector entry.coordinate)                                                
+                                                ]
+                                            , HS.div
+                                                []
+                                                [ HS.text <| "State : " ++ (SectorAttribute.toStringState entry.state)
+                                                ]
+                                            ]
+                                    ) (Array.toList sector.board)
+
+                                Nothing ->
+                                    [ HS.text "No board selected"                    
+                                    ]
+                            
+                    
+                    Nothing ->
+                        [ HS.text "No board selected (lacking coordinates)"                    
+                        ]
+                )
+            _ ->
+                [ HS.text "No board selected (incompatiable board)"                    
+                ]
+        )
 
 pathToVictory : Victory.PathToVictory -> HS.Html Types.FrontendMsg
 pathToVictory path_to_victory =
