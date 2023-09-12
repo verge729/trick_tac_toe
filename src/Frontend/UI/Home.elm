@@ -55,7 +55,6 @@ gameArea model =
         [ HSA.css
             [ TW.w_8over12
             , TW.box_border
-            , TW.border_solid
             , TW.h_full
             , TW.p_1
             , TW.flex
