@@ -101,6 +101,7 @@ update msg model =
                                     sector.coordinate
                                     model.turn
                                     board
+                                    model.seed
                                 )
                     in
                     ( updateModelwithProcessedClaim model processed_claim

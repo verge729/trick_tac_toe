@@ -10,6 +10,7 @@ import Types.Tricks.TrickHandlers as TrickHandlers
 import Types.Victory as Victory
 import Types.SectorAttribute as SectorAttribute
 import Types.Tricks.Trick as Trick
+import Random
 
 type alias Claim =
     { submitting_player : Player.Player
@@ -18,6 +19,7 @@ type alias Claim =
     , coordinate : Coordinates.Sector
     , turn : Int
     , board : Board.RegularBoard
+    , seed : Random.Seed
     }
 
 type alias ClaimResult =
@@ -30,7 +32,8 @@ type alias ClaimResult =
 
 type alias ProcessContentResult =
     { board : Board.RegularBoard
-    , event : Events.Event        
+    , event : Events.Event  
+    , seed : Random.Seed      
     }
 
 
@@ -72,7 +75,7 @@ processContent claim =
     case claim.claim.content of
         SectorAttribute.Trick trick ->
             let
-                tricked_out = 
+                (tricked_out, seed) = 
                     TrickHandlers.handleTrickRegular 
                         ( TrickHandlers.TrickHandler 
                             trick.trick_type 
@@ -80,6 +83,7 @@ processContent claim =
                             claim.turn 
                             claim.coordinate
                             claim.board
+                            claim.seed
                         )
             in
             ProcessContentResult 
@@ -90,6 +94,7 @@ processContent claim =
                     claim.submitting_player 
                     claim.coordinate
                 )
+                seed
 
 
         SectorAttribute.Clear ->
@@ -101,6 +106,7 @@ processContent claim =
                     claim.submitting_player 
                     claim.coordinate
                 )
+                claim.seed
 
 checkVictory : Board.RegularBoard -> Player.Player -> Victory.PathToVictory
 checkVictory board player =
