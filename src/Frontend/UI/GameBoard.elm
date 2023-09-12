@@ -62,6 +62,22 @@ viewRow list_sector =
 
 viewSector : Sector.Sector -> HS.Html Types.FrontendMsg
 viewSector sector =
+    let
+        (interactions, icon) =
+            case sector.state of
+                Sector.Free ->
+                    ( [ HSE.onMouseEnter <| Types.NextCoordinateHover (Just sector.coordinate)
+                      , HSE.onMouseLeave <| Types.NextCoordinateHover Nothing  
+                      , HSE.onClick <| Types.ClaimSector sector
+                      ]
+                    , HS.text ""
+                    )
+                
+                Sector.Claimed player ->
+                    ( []
+                    , HS.text player.icon
+                    )
+    in
     HS.div
         [ HSA.css
             ( List.append
@@ -81,31 +97,24 @@ viewSector sector =
             )            
         ]
         [ HS.div
-            [ HSA.css
-                [ TW.box_border
-                , TW.border_solid
-                , TW.w_11over12  
-                , TW.h_5over6 
-                , TW.flex 
-                , TW.items_center
-                , TW.justify_center                
-                ]  
-            -- put these events into Free sections and not Claimed sections
-            , HSE.onMouseEnter <| Types.NextCoordinateHover (Just sector.coordinate)
-            , HSE.onMouseLeave <| Types.NextCoordinateHover Nothing  
-            , HSE.onClick <| Types.ClaimSector sector       
-            ]
+            (List.append
+                [ HSA.css
+                    [ TW.box_border
+                    , TW.w_11over12  
+                    , TW.h_5over6 
+                    , TW.flex 
+                    , TW.items_center
+                    , TW.justify_center                
+                    ]        
+                ]
+                interactions
+            )
             [ HS.div
                 [ HSA.css
                     [ TW.box_border                  
                     ]                
                 ]
-                [ case sector.state of
-                    Sector.Free ->
-                        HS.text ""
-
-                    Sector.Claimed player ->
-                        HS.text player.icon                
+                [ icon               
                 ]  
             ]          
         ]           
