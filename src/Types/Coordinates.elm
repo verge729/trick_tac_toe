@@ -1,5 +1,11 @@
 module Types.Coordinates exposing (..)
 
+import Random
+
+randomGenerator : Random.Generator (List Sector)
+randomGenerator =
+    Random.list 20 (Random.uniform Zero [ One, Two, Three, Four, Five, Six, Seven, Eight ])
+
 type alias Coordinates =
     { low : Sector 
     , mid : Sector      

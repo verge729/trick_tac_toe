@@ -39,9 +39,9 @@ addTricks : RegularBoard -> RegularBoard
 addTricks board  =
     Array.map (\sector ->
         if sector.coordinate == Coordinates.Two then
-            { sector | content = SectorAttribute.Trick Trick.vanish }
+            { sector | content = SectorAttribute.Trick <| Trick.getTrickFromType Trick.Vanish }
         else if sector.coordinate == Coordinates.Three then
-            { sector | content = SectorAttribute.Trick Trick.wrongDestination }
+            { sector | content = SectorAttribute.Trick <| Trick.getTrickFromType Trick.WrongDestination }
         else
             sector
     ) board

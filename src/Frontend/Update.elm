@@ -42,6 +42,22 @@ update msg model =
         Types.NoOpFrontendMsg ->
             ( model, Cmd.none )
 
+        Types.CatchRandomGeneratorSector list_sector ->
+            let
+                _ = Debug.log "CatchRandomGeneratorSector" list_sector
+            in 
+            ( model
+            , Cmd.none
+            )
+
+        Types.CatchRandomGeneratorTrick list_trick ->
+            let
+                _ = Debug.log "CatchRandomGeneratorTrick" list_trick
+            in 
+            ( model
+            , Cmd.none
+            )
+
         Types.NextCoordinateLowHover m_sector ->
             let
                 _ = Debug.log "Here" 0

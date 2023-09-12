@@ -17,7 +17,10 @@ import Html.Styled.Attributes as HSA
 import Types.Player as Player
 import Types.Victory as Victory
 import Types.Ultimate.Board as UltimateBoard
-
+import Task
+import Random
+import Types.Coordinates as Coordinates
+import Types.Tricks.Trick as Trick
 
 type alias Model =
     FrontendModel
@@ -51,8 +54,12 @@ init url key =
       , path_to_victory = Victory.Unacheived 
       , turn = 0
       , list_events = []
+      , random_list_sectors = []
       }
-    , Cmd.none
+    , Cmd.batch 
+        [ Random.generate Types.CatchRandomGeneratorSector Coordinates.randomGenerator
+        , Random.generate Types.CatchRandomGeneratorTrick Trick.randomGeneratorRegular
+        ]
     )
 
 

@@ -20,4 +20,5 @@ type alias FrontendModel =
     , path_to_victory : Victory.PathToVictory
     , turn : Int
     , list_events : List Events.Event
+    , random_list_sectors : List Coordinates.Sector
     }

@@ -7,6 +7,7 @@ import Backend.Model as BackendModel
 import Frontend.Model as FrontendModel
 import Types.Base.Sector as Sector
 import Types.Coordinates as Coordinates
+import Types.Tricks.Trick as Trick
 
 
 type alias FrontendModel =
@@ -23,6 +24,8 @@ type FrontendMsg
     | NextCoordinateLowHover (Maybe Coordinates.Sector)
     | NextCoordinateMidHover (Maybe Coordinates.Sector)
     | ClaimSector Sector.Sector
+    | CatchRandomGeneratorSector (List Coordinates.Sector)
+    | CatchRandomGeneratorTrick (List Trick.TrickType)
 
 
 type ToBackend
