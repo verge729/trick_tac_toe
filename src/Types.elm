@@ -8,6 +8,7 @@ import Frontend.Model as FrontendModel
 import Types.Base.Sector as Sector
 import Types.Coordinates as Coordinates
 import Types.Tricks.Trick as Trick
+import Random
 
 
 type alias FrontendModel =
@@ -26,6 +27,7 @@ type FrontendMsg
     | ClaimSector Sector.Sector
     | CatchRandomGeneratorSector (List Coordinates.Sector)
     | CatchRandomGeneratorTrick (List Trick.TrickType)
+    | CatchRandomGeneratorSeed Random.Seed
 
 
 type ToBackend

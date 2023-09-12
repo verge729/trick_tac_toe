@@ -6,6 +6,7 @@ import Types.Board as Board
 import Types.Player as Player
 import Types.Victory as Victory
 import Types.Events as Events
+import Random
 
 type alias FrontendModel =
     { key : Key
@@ -21,4 +22,5 @@ type alias FrontendModel =
     , turn : Int
     , list_events : List Events.Event
     , random_list_sectors : List Coordinates.Sector
+    , seed : Random.Seed
     }

@@ -4,6 +4,7 @@ module Types.Tricks.Trick exposing
     , getTrickFromType
     , randomGeneratorRegular
     , randomGeneratorUltimate
+    , randomGeneratorTrick
     , toString
     )
 

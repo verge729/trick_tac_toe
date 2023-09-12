@@ -6,6 +6,8 @@ import Types.Coordinates as Coordinates
 import Types.SectorAttribute as SectorAttribute
 import Types.Tricks.Trick as Trick
 import Types.Player as Player
+import Random
+import Types.Tricks.Trick as Trick
 
 
 type alias RegularBoard =
@@ -35,13 +37,32 @@ updateBoard board coordinate state =
         Nothing ->
             board
 
-addTricks : RegularBoard -> RegularBoard
-addTricks board  =
-    Array.map (\sector ->
-        if sector.coordinate == Coordinates.Two then
-            { sector | content = SectorAttribute.Trick <| Trick.getTrickFromType Trick.Vanish }
-        else if sector.coordinate == Coordinates.Three then
-            { sector | content = SectorAttribute.Trick <| Trick.getTrickFromType Trick.WrongDestination }
-        else
-            sector
-    ) board
+addTricks : RegularBoard -> Random.Seed -> (RegularBoard, Random.Seed)
+addTricks board seed =
+    let
+        (sectors, new_seed) =
+            Random.step Coordinates.randomGeneratorRegular seed
+
+        updated_board =
+            Array.map (\sector ->
+                if List.member sector.coordinate sectors then
+                    sector
+                else
+                    sector
+            ) board
+
+    in
+    Array.foldl (\sector (array, next_seed) ->
+        let
+            (trick, new_next_seed) =
+                if List.member sector.coordinate sectors then
+                    let
+                        (tr, n_seed) =
+                            Random.step Trick.randomGeneratorTrick next_seed
+                    in
+                        (SectorAttribute.Trick <| Trick.getTrickFromType tr, n_seed)
+                else
+                    (SectorAttribute.Clear, next_seed)
+        in 
+        (Array.push {sector | content = trick} array, new_next_seed)
+    ) (Array.empty, new_seed) board

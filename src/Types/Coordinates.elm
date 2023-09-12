@@ -2,14 +2,30 @@ module Types.Coordinates exposing (..)
 
 import Random
 
-randomGenerator : Random.Generator (List Sector)
-randomGenerator =
-    Random.list 20 (Random.uniform Zero [ One, Two, Three, Four, Five, Six, Seven, Eight ])
+
+randomGeneratorRegular : Random.Generator (List Sector)
+randomGeneratorRegular =
+    randomGeneratorList 1 3 randomGeneratorSector
+
+randomGeneratorList : Int -> Int -> Random.Generator Sector -> Random.Generator (List Sector)
+randomGeneratorList start end generator =
+    Random.int start end
+        |> Random.andThen
+            (\length ->
+                Random.list length generator
+            )
+
+
+randomGeneratorSector : Random.Generator Sector
+randomGeneratorSector =
+    Random.uniform Zero [ One, Two, Three, Four, Five, Six, Seven, Eight ]
+
 
 type alias Coordinates =
-    { low : Sector 
-    , mid : Sector      
+    { low : Sector
+    , mid : Sector
     }
+
 
 type Level
     = Low
@@ -28,11 +44,15 @@ type Sector
     | Eight
 
 
-
 toStringCoordinates : Coordinates -> String
 toStringCoordinates coordinates =
-    "Low : " ++ String.fromInt (toIntSector coordinates.low) ++ "\n" 
-    ++ "Mid : " ++ String.fromInt (toIntSector coordinates.mid) ++ "\n"
+    "Low : "
+        ++ String.fromInt (toIntSector coordinates.low)
+        ++ "\n"
+        ++ "Mid : "
+        ++ String.fromInt (toIntSector coordinates.mid)
+        ++ "\n"
+
 
 toIntSector : Sector -> Int
 toIntSector sector =
@@ -64,7 +84,8 @@ toIntSector sector =
         Eight ->
             8
 
-toCharSector : Sector -> Char   
+
+toCharSector : Sector -> Char
 toCharSector sector =
     case sector of
         Zero ->
@@ -93,6 +114,7 @@ toCharSector sector =
 
         Eight ->
             '8'
+
 
 toStringSector : Sector -> String
 toStringSector sector =
@@ -123,6 +145,7 @@ toStringSector sector =
 
         Eight ->
             "8"
+
 
 toSectorFromInt : Int -> Sector
 toSectorFromInt int =

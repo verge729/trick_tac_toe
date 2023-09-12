@@ -3,6 +3,7 @@ module Frontend.Update exposing (..)
 import Array
 import Browser
 import Browser.Navigation as Nav
+import Engine.Engine as Engine
 import Types
 import Types.Base.Board as BaseBoard
 import Types.Base.Sector as Sector
@@ -12,14 +13,15 @@ import Types.Player as Player
 import Types.SectorAttribute as SectorAttribute
 import Types.Victory as Victory
 import Url
-import Engine.Engine as Engine
+
 
 type alias UpdateTurn =
     { player_one : Player.Player
     , player_two : Player.Player
-    , current_player : Player.Player   
-    , current_turn : Int     
+    , current_player : Player.Player
+    , current_turn : Int
     }
+
 
 update : Types.FrontendMsg -> Types.FrontendModel -> ( Types.FrontendModel, Cmd Types.FrontendMsg )
 update msg model =
@@ -43,25 +45,28 @@ update msg model =
             ( model, Cmd.none )
 
         Types.CatchRandomGeneratorSector list_sector ->
-            let
-                _ = Debug.log "CatchRandomGeneratorSector" list_sector
-            in 
             ( model
             , Cmd.none
             )
 
         Types.CatchRandomGeneratorTrick list_trick ->
-            let
-                _ = Debug.log "CatchRandomGeneratorTrick" list_trick
-            in 
             ( model
             , Cmd.none
             )
 
-        Types.NextCoordinateLowHover m_sector ->
+        Types.CatchRandomGeneratorSeed seed ->
             let
-                _ = Debug.log "Here" 0
-            in 
+                (board, new_seed) =
+                    BaseBoard.addTricks BaseBoard.boardRegular seed
+            in
+            ( { model
+                | seed = new_seed
+                , board = Board.Regular board
+                }
+            , Cmd.none
+            )
+
+        Types.NextCoordinateLowHover m_sector ->
             ( { model | next_coordinate_low = m_sector }
             , Cmd.none
             )
@@ -86,61 +91,56 @@ update msg model =
 
                             else
                                 model.player_one
+
                         processed_claim =
                             Engine.processTurn
-                                ( Engine.Claim
+                                (Engine.Claim
                                     model.current_player
                                     other_player
-                                    sector 
+                                    sector
                                     sector.coordinate
                                     model.turn
                                     board
-
                                 )
-                    in 
+                    in
                     ( updateModelwithProcessedClaim model processed_claim
                     , Cmd.none
                     )
-                    -- let
-                    --     int_sector =
-                    --         Coordinates.toIntSector sector.coordinate
 
-                    --     m_target_sector =
-                    --         Array.get int_sector board
-                    -- in
-                    -- case m_target_sector of
-                    --     Just target_sector ->
-                    --         let
-                    --             updated_target_sector =
-                    --                 { target_sector | state = SectorAttribute.Claimed model.current_player }
-
-                    --             updated_board =
-                    --                 Array.set int_sector updated_target_sector board
-
-                    --             claimed_victory =
-                    --                 Victory.checkVictory updated_board model.current_player
-
-                    --             mdl =
-                    --                 { model
-                    --                     | board = Board.Regular updated_board
-                    --                     , path_to_victory = claimed_victory
-                    --                 }
-                    --         in
-                    --         ( mdl
-                    --             |> updatePlayerAndTurn
-                    --                 { player_one = model.player_one
-                    --                 , player_two = model.player_two
-                    --                 , current_player = model.current_player
-                    --                 , current_turn = model.turn
-                    --                 }
-                    --         , Cmd.none
-                    --         )
-
-                        -- Nothing ->
-                        --     ( model
-                        --     , Cmd.none
-                        --     )
-
+                -- let
+                --     int_sector =
+                --         Coordinates.toIntSector sector.coordinate
+                --     m_target_sector =
+                --         Array.get int_sector board
+                -- in
+                -- case m_target_sector of
+                --     Just target_sector ->
+                --         let
+                --             updated_target_sector =
+                --                 { target_sector | state = SectorAttribute.Claimed model.current_player }
+                --             updated_board =
+                --                 Array.set int_sector updated_target_sector board
+                --             claimed_victory =
+                --                 Victory.checkVictory updated_board model.current_player
+                --             mdl =
+                --                 { model
+                --                     | board = Board.Regular updated_board
+                --                     , path_to_victory = claimed_victory
+                --                 }
+                --         in
+                --         ( mdl
+                --             |> updatePlayerAndTurn
+                --                 { player_one = model.player_one
+                --                 , player_two = model.player_two
+                --                 , current_player = model.current_player
+                --                 , current_turn = model.turn
+                --                 }
+                --         , Cmd.none
+                --         )
+                -- Nothing ->
+                --     ( model
+                --     , Cmd.none
+                --     )
                 Board.Ultimate board ->
                     let
                         next_low =
@@ -159,14 +159,13 @@ update msg model =
                             Victory.checkVictory
                                 updated_board
                                 model.current_player
-                            
+
                         mdl =
                             { model
                                 | board = Board.Ultimate updated_board
                                 , current_coordinate = Just { coordinates | mid = next_low }
                                 , path_to_victory = claimed_victory
                             }
-
                     in
                     ( mdl
                         |> updatePlayerAndTurn
@@ -178,6 +177,7 @@ update msg model =
                     , Cmd.none
                     )
 
+
 updateModelwithProcessedClaim : Types.FrontendModel -> Engine.ClaimResult -> Types.FrontendModel
 updateModelwithProcessedClaim model claim_result =
     { model
@@ -185,8 +185,9 @@ updateModelwithProcessedClaim model claim_result =
         , board = Board.Regular claim_result.board
         , current_player = claim_result.next_player
         , path_to_victory = claim_result.path_to_victory
-        , list_events = claim_result.event ::  model.list_events
+        , list_events = claim_result.event :: model.list_events
     }
+
 
 updatePlayerAndTurn : UpdateTurn -> Types.FrontendModel -> Types.FrontendModel
 updatePlayerAndTurn update_turn model =
@@ -198,10 +199,11 @@ updatePlayerAndTurn update_turn model =
             else
                 update_turn.player_one
     in
-    { model |
-        turn = update_turn.current_turn + 1
+    { model
+        | turn = update_turn.current_turn + 1
         , current_player = next_player
     }
+
 
 updateUltimateBoard : Coordinates.Coordinates -> Player.Player -> Board.UltimateBoard -> Board.UltimateBoard
 updateUltimateBoard coordinates current_player board =

@@ -46,7 +46,7 @@ init url key =
       , next_coordinate_low = Nothing
       , next_coordinate_mid = Nothing
     --   , board = Board.Ultimate UltimateBoard.boardUltimate
-      , board = Board.Regular <| BaseBoard.addTricks BaseBoard.boardRegular
+      , board = Board.NotSelected--Board.Regular <| BaseBoard.addTricks BaseBoard.boardRegular
       , player_one = Player.defaultOne
       , player_two = Player.defaultTwo
       , current_player = Player.defaultOne
@@ -55,11 +55,13 @@ init url key =
       , turn = 0
       , list_events = []
       , random_list_sectors = []
+      , seed = Random.initialSeed 42
       }
-    , Cmd.batch 
-        [ Random.generate Types.CatchRandomGeneratorSector Coordinates.randomGenerator
-        , Random.generate Types.CatchRandomGeneratorTrick Trick.randomGeneratorRegular
-        ]
+    , Random.generate Types.CatchRandomGeneratorSeed Random.independentSeed
+    -- Cmd.batch 
+    --     [ Random.generate Types.CatchRandomGeneratorSector Coordinates.randomGenerator
+    --     , Random.generate Types.CatchRandomGeneratorTrick Trick.randomGeneratorRegular
+    --     ]
     )
 
 
