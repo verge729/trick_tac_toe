@@ -9,6 +9,7 @@ import Types.Events as Events
 import Types.Tricks.TrickHandlers as TrickHandlers
 import Types.Victory as Victory
 import Types.SectorAttribute as SectorAttribute
+import Types.Tricks.Trick as Trick
 
 type alias Claim =
     { submitting_player : Player.Player
@@ -36,11 +37,21 @@ type alias ProcessContentResult =
 processTurn : Claim -> ClaimResult
 processTurn claim =
     let
-        updated_board =
-            updateBoard claim.board claim.coordinate claim.submitting_player
-
         proccess_content =
-            processContent { claim | board = updated_board } 
+            case claim.claim.content of
+                SectorAttribute.Trick trick ->
+                    case trick.trick_type of
+                        Trick.Vanish ->
+                            processContent claim 
+
+                        Trick.WrongDestination ->
+                            processContent claim
+
+                _ ->
+                    processContent 
+                        { claim 
+                            | board = updateBoard claim.board claim.coordinate claim.submitting_player 
+                        } 
 
         path_to_victory =
             checkVictory proccess_content.board claim.submitting_player

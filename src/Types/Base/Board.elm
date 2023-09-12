@@ -37,13 +37,11 @@ updateBoard board coordinate state =
 
 addTricks : RegularBoard -> RegularBoard
 addTricks board  =
-    let
-        m_sector =
-            Array.get 0 board
-    in
-    case m_sector of
-        Just sector ->
-            Array.set 0 { sector | content = SectorAttribute.Trick Trick.vanish } board
-
-        Nothing ->
-            board
+    Array.map (\sector ->
+        if sector.coordinate == Coordinates.Two then
+            { sector | content = SectorAttribute.Trick Trick.vanish }
+        else if sector.coordinate == Coordinates.Three then
+            { sector | content = SectorAttribute.Trick Trick.wrongDestination }
+        else
+            sector
+    ) board
