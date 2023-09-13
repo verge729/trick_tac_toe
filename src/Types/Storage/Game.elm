@@ -14,7 +14,7 @@ type alias Game =
     , player_two : Player.Player
     , current_player : Player.Player
     , turn : Int 
-    -- , event_log : List Event.Event   
+    , event_log : List Event.Event   
     }
 
 generateGameId : GameId

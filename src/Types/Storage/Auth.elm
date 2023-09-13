@@ -8,7 +8,7 @@ type Authenicated
     | Fail String
 
 type alias AuthReqs =
-    { username : String
+    { handle : String
     , keyphrase : String        
     }
 
