@@ -49,6 +49,9 @@ type Level
     = Low
     | Mid
 
+type CoordinateSystem 
+    = Regular Sector
+    | Ultimate Coordinates
 
 type Sector
     = Zero

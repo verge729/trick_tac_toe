@@ -15,11 +15,11 @@ type EventType
     | Trick Trick.Trick
 
 
-type alias Event a =
+type alias Event =
     { turn : Int
     , event : EventType
     , player : Player.Player
-    , coordinates : a
+    , coordinates : Coordinates.CoordinateSystem
     }
 
 toStringEventUltimate : Event Coordinates.Coordinates -> String
