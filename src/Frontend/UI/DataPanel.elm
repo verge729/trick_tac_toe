@@ -32,7 +32,7 @@ root model =
         -- , sectionTitle "Focused Board" 
         -- , focusedBoard model.board model.current_coordinate   
         , sectionTitle "Event log"
-        , eventsRegular model.list_events_regular model.list_events_ultimate
+        , eventsRegular model.list_events
         ]
 
 sectionTitle : String -> HS.Html Types.FrontendMsg
@@ -45,10 +45,10 @@ sectionTitle title =
             ]            
         ]
 
-eventsRegular : List (Events.Event Coordinates.Sector) -> List (Events.Event Coordinates.Coordinates) -> HS.Html Types.FrontendMsg
-eventsRegular list_events_regular list_events_ultimate =
+eventsRegular : List Events.Event -> HS.Html Types.FrontendMsg
+eventsRegular list_events =
     let
-        regular =
+        events =
             List.map (\event ->
                     HS.div
                         [ HSA.css
@@ -56,21 +56,10 @@ eventsRegular list_events_regular list_events_ultimate =
                             , TW.m_2                    
                             ]                    
                         ]
-                        [ HS.text <| Events.toStringEventRegular event                    
+                        [ HS.text <| Events.toStringEvent event                    
                         ]
-                ) list_events_regular     
-
-        ultimate =
-            List.map (\event -> 
-                HS.div
-                    [ HSA.css
-                        [ TW.box_border
-                        , TW.m_2                    
-                        ]                    
-                    ]
-                    [ HS.text <| Events.toStringEventUltimate event                    
-                    ]
-            ) list_events_ultimate       
+                ) list_events  
+     
     in
     HS.div
         [ HSA.css
@@ -78,10 +67,7 @@ eventsRegular list_events_regular list_events_ultimate =
             , TW.m_2                
             ]            
         ]
-        ( List.append
-            regular
-            ultimate
-        )
+        events
 
 focusedBoard : Board.Board -> Maybe Coordinates.Coordinates -> HS.Html Types.FrontendMsg
 focusedBoard board m_coordinate =

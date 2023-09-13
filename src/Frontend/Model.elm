@@ -20,8 +20,6 @@ type alias FrontendModel =
     , current_player : Player.Player
     , path_to_victory : Victory.PathToVictory
     , turn : Int
-    , list_events_regular : List (Events.Event Coordinates.Sector)
-    , list_events_ultimate : List (Events.Event Coordinates.Coordinates)
-    , random_list_sectors : List Coordinates.Sector
+    , list_events : List Events.Event
     , seed : Random.Seed
     }
