@@ -1,6 +1,7 @@
 module Types.Storage.Response exposing (..)
 
 import Types.Storage.User as User
+import Types.Storage.Game as Game
 
 type Base 
     = Success String
@@ -13,3 +14,19 @@ type Registration
 type Login
     = SuccessLogin User.User
     | FailureLogin String
+
+type CreateGame
+    = SuccessCreateGame Game.Game
+    | FailureCreateGame String
+
+type RequestGames
+    = SuccessRequestGames (List Game.Game)
+    | FailureRequestGames String
+
+type JoinGame 
+    = SuccessJoinGame Game.Game
+    | FailureJoinGame String
+
+type UpdateGame
+    = SuccessUpdateGame Game.Game
+    | FailureUpdateGame String

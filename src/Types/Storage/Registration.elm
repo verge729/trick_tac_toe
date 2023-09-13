@@ -28,7 +28,7 @@ checkHandle dict_users reqs client_id seed =
         (Failure "Handle already exists", seed)
     else
         let
-            id = IdGenerator.generateIdString seed
+            id = IdGenerator.generateIdUser seed
         in
         ( Success 
             { handle = reqs.handle

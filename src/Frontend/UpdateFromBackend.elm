@@ -29,3 +29,43 @@ updateFromBackend msg model =
 
                 Response.FailureLogin error ->
                     ( model, Cmd.none)
+
+        Types.CreateGameRespnse response ->
+            case response of
+                Response.SuccessCreateGame game ->
+                    ( { model | game = Just game }
+                    , Cmd.none
+                    )
+
+                Response.FailureCreateGame error ->
+                    ( model, Cmd.none)
+
+        Types.RequestGamesResponse response ->
+            case response of
+                Response.SuccessRequestGames games ->
+                    ( { model | user_games = games }
+                    , Cmd.none
+                    )
+
+                Response.FailureRequestGames error ->
+                    ( model, Cmd.none)
+
+        Types.JoinGameResponse response ->
+            case response of
+                Response.SuccessJoinGame game ->
+                    ( { model | game = Just game }
+                    , Cmd.none
+                    )
+
+                Response.FailureJoinGame error ->
+                    ( model, Cmd.none)
+
+        Types.UpdateGameResponse response ->
+            case response of
+                Response.SuccessUpdateGame game ->
+                    ( { model | game = Just game }
+                    , Cmd.none
+                    )
+
+                Response.FailureUpdateGame error ->
+                    ( model, Cmd.none)

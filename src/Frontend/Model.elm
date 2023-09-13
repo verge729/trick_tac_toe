@@ -8,6 +8,7 @@ import Types.Victory as Victory
 import Types.Events as Events
 import Random
 import Types.Storage.User as User
+import Types.Storage.Game as StorageGame
 
 type alias FrontendModel =
     { key : Key
@@ -24,4 +25,6 @@ type alias FrontendModel =
     , list_events : List Events.Event
     , seed : Random.Seed
     , user : Maybe User.User
+    , game : Maybe StorageGame.Game
+    , user_games : List StorageGame.Game
     }

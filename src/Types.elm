@@ -7,10 +7,11 @@ import Frontend.Model as FrontendModel
 import Types.Base.Sector as Sector
 import Types.Coordinates as Coordinates
 import Lamdera exposing (ClientId, SessionId)
-import Types.Tricks.Trick as Trick
 import Random
 import Types.Storage.Auth as StorageAuth
 import Types.Storage.Response as StorageResponse
+import Types.Storage.Game as StorageGame
+import Types.Storage.User as StorageUser
 
 
 type alias FrontendModel =
@@ -34,6 +35,10 @@ type ToBackend
     = NoOpToBackend
     | AddUser StorageAuth.AuthReqs
     | LoginUser StorageAuth.AuthReqs
+    | CreateGame StorageGame.GameCreationReqs
+    | RequestGames StorageUser.User
+    | JoinGame StorageGame.GameJoinReqs
+    | UpdateGame StorageGame.Game
 
 
 type BackendMsg
@@ -47,3 +52,7 @@ type ToFrontend
     = NoOpToFrontend
     | RegistrationResponse StorageResponse.Registration
     | LoginResponse StorageResponse.Login
+    | CreateGameRespnse StorageResponse.CreateGame
+    | RequestGamesResponse StorageResponse.RequestGames
+    | JoinGameResponse StorageResponse.JoinGame
+    | UpdateGameResponse StorageResponse.UpdateGame
