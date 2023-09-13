@@ -45,7 +45,7 @@ update msg model =
         Types.NoOpFrontendMsg ->
             ( model, Cmd.none )
 
-        Types.CatchRandomGeneratorSeed seed ->
+        Types.CatchRandomGeneratorSeedFE seed ->
             let
                 ( board, max_turns ) =
                     -- BaseBoard.boardRegular

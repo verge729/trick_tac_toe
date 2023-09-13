@@ -55,8 +55,9 @@ init url key =
       , turn = 0
       , list_events = [] 
       , seed = Random.initialSeed 42
+      , user = Nothing
       }
-    , Random.generate Types.CatchRandomGeneratorSeed Random.independentSeed
+    , Random.generate Types.CatchRandomGeneratorSeedFE Random.independentSeed
     )
 
 

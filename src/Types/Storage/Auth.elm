@@ -12,10 +12,19 @@ type alias AuthReqs =
     , keyphrase : String        
     }
 
-findUser : Dict.Dict String User.User -> String -> Authenicated
-findUser dict_users username =
-    Fail "WIP - findUser"
+
+authenticateUser : Dict.Dict String User.User -> AuthReqs -> Authenicated
+authenticateUser dict_users reqs =
+    case Dict.get reqs.handle dict_users of
+        Just user ->
+            compareKeyphrase user reqs.keyphrase
+
+        Nothing ->
+            Fail "User not found"
 
 compareKeyphrase : User.User -> String -> Authenicated
 compareKeyphrase user submitted_phrase =
-    Fail "WIP - compareKeyphrase"
+    if user.keyphrase == submitted_phrase then
+        Pass user
+    else
+        Fail "Incorrect keyphrase"

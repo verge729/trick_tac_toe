@@ -1,5 +1,7 @@
 module Types.Storage.Connectivity exposing (..)
 
-type Connected
-    = Connected
+import Lamdera exposing (ClientId)
+
+type Connectivity
+    = Connected ClientId
     | Disconnected

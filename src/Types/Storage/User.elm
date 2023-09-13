@@ -5,9 +5,5 @@ type alias User =
     { handle : String
     , keyphrase : String
     , id : String
-    , state : Connectivity.Connected
+    , state : Connectivity.Connectivity
     }
-
-generateUserId : String
-generateUserId =
-    ""
