@@ -1,8 +1,7 @@
 module Types.Events exposing 
     ( EventType(..)
     , Event
-    , toStringEventUltimate
-    , toStringEventRegular        
+    , toStringEvent        
     )
 
 import Types.Coordinates as Coordinates
@@ -22,13 +21,10 @@ type alias Event =
     , coordinates : Coordinates.CoordinateSystem
     }
 
-toStringEventUltimate : Event Coordinates.Coordinates -> String
-toStringEventUltimate event =
+toStringEvent : Event -> String
+toStringEvent event =
     toString event.turn event.player event.event
 
-toStringEventRegular : Event Coordinates.Sector -> String
-toStringEventRegular event =
-    toString event.turn event.player event.event
 
 toString : Int -> Player.Player -> EventType -> String
 toString turn player eventType =

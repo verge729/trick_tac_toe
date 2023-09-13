@@ -18,32 +18,32 @@ import Types.Tricks.Trick as Trick
 import Random
 import Types.Ultimate.Board as UltimateBoard
 
-type alias Claim a b =
+type alias Claim a =
     { submitting_player : Player.Player
     , other_player : Player.Player
     , claim : Sector.Sector
-    , coordinate : b
+    , coordinate : Coordinates.CoordinateSystem
     , turn : Int
     , board : a
     , seed : Random.Seed
     }
 
-type alias ClaimResult a b =
+type alias ClaimResult a =
     { turn : Int
     , board : a   
-    , event : Events.Event b
+    , event : Events.Event
     , next_player : Player.Player   
     , path_to_victory : Victory.PathToVictory 
     }
 
-type alias ProcessContentResult a b =
+type alias ProcessContentResult a=
     { board : a
-    , event : Events.Event b  
+    , event : Events.Event  
     , seed : Random.Seed      
     }
 
 {- ANCHOR process Ultimate board -}
-processTurnUltimate : Claim Board.UltimateBoard Coordinates.Coordinates-> ClaimResult Board.UltimateBoard Coordinates.Coordinates
+processTurnUltimate : Claim Board.UltimateBoard -> ClaimResult Board.UltimateBoard
 processTurnUltimate claim =
     let
         process_content =
@@ -72,7 +72,7 @@ processTurnUltimate claim =
         claim.other_player
         path_to_victory
         
-processContentUltimate : Claim Board.UltimateBoard Coordinates.Coordinates -> ProcessContentResult Board.UltimateBoard Coordinates.Coordinates
+processContentUltimate : Claim Board.UltimateBoard -> ProcessContentResult Board.UltimateBoard
 processContentUltimate claim =
     case claim.claim.content of
         SectorAttribute.Trick trick ->
@@ -119,7 +119,7 @@ checkVictoryUltimate board player =
 
 {- ANCHOR process Regular board -}
 
-processTurnRegular : Claim Board.RegularBoard Coordinates.Sector -> ClaimResult Board.RegularBoard Coordinates.Sector
+processTurnRegular : Claim Board.RegularBoard  -> ClaimResult Board.RegularBoard 
 processTurnRegular claim =
     let
         proccess_content =
@@ -152,7 +152,7 @@ updateBoardRegular : Board.RegularBoard -> Coordinates.Sector -> Player.Player -
 updateBoardRegular board coordinate player =
     BaseBoard.updateBoard board coordinate (SectorAttribute.Claimed player)
 
-processContentRegular : Claim Board.RegularBoard Coordinates.Sector -> ProcessContentResult Board.RegularBoard Coordinates.Sector
+processContentRegular : Claim Board.RegularBoard -> ProcessContentResult Board.RegularBoard
 processContentRegular claim =
     case claim.claim.content of
         SectorAttribute.Trick trick ->
