@@ -1,6 +1,5 @@
 module Engine.Engine exposing 
-    ( processTurnRegular
-    , processTurnUltimate
+    ( processTurn
     , Claim
     , ClaimResult
     )
@@ -18,52 +17,51 @@ import Types.Tricks.Trick as Trick
 import Random
 import Types.Ultimate.Board as UltimateBoard
 
-type alias Claim a =
+type alias Claim =
     { submitting_player : Player.Player
     , other_player : Player.Player
     , claim : Sector.Sector
     , coordinate : Coordinates.CoordinateSystem
     , turn : Int
-    , board : a
+    , board : Board.Board
     , seed : Random.Seed
     }
 
-type alias ClaimResult a =
+type alias ClaimResult =
     { turn : Int
-    , board : a   
+    , board : Board.Board  
     , event : Events.Event
     , next_player : Player.Player   
     , path_to_victory : Victory.PathToVictory 
     }
 
-type alias ProcessContentResult a=
-    { board : a
+type alias ProcessContentResult =
+    { board : Board.Board
     , event : Events.Event  
     , seed : Random.Seed      
     }
 
-{- ANCHOR process Ultimate board -}
-processTurnUltimate : Claim Board.UltimateBoard -> ClaimResult Board.UltimateBoard
-processTurnUltimate claim =
+processTurn : Claim -> ClaimResult
+processTurn claim =
     let
         process_content =
             case claim.claim.content of
                 SectorAttribute.Trick trick ->
                     case trick.trick_type of
                         Trick.Vanish ->
-                            processContentUltimate claim 
+                            processContent claim 
 
                         Trick.WrongDestination ->
-                            processContentUltimate claim
+                            processContent claim
 
                 _ ->
-                    processContentUltimate 
+                    processContent 
                         { claim 
-                            | board = updateBoardUltimate claim.board claim.coordinate claim.submitting_player 
+                            | board = updateBoard claim.board claim.coordinate claim.submitting_player 
                         }
 
         path_to_victory =
-            checkVictoryUltimate process_content.board claim.submitting_player
+            Victory.checkVictory process_content.board claim.submitting_player
     in
     ClaimResult 
         (advanceTurn claim.turn) 
@@ -71,94 +69,14 @@ processTurnUltimate claim =
         process_content.event
         claim.other_player
         path_to_victory
-        
-processContentUltimate : Claim Board.UltimateBoard -> ProcessContentResult Board.UltimateBoard
-processContentUltimate claim =
+
+processContent : Claim -> ProcessContentResult
+processContent claim =
     case claim.claim.content of
         SectorAttribute.Trick trick ->
             let
                 (tricked_out, seed) = 
-                    TrickHandlers.handleTrickUltimate 
-                        ( TrickHandlers.TrickHandler 
-                            trick.trick_type 
-                            claim.submitting_player 
-                            claim.turn 
-                            claim.coordinate
-                            claim.board
-                            claim.seed
-                        )
-            in
-            ProcessContentResult 
-                tricked_out 
-                ( Events.Event 
-                    claim.turn 
-                    (Events.Trick trick) 
-                    claim.submitting_player 
-                    claim.coordinate
-                )
-                seed
-
-        SectorAttribute.Clear ->
-            ProcessContentResult 
-                claim.board 
-                ( Events.Event 
-                    claim.turn 
-                    Events.Turn 
-                    claim.submitting_player 
-                    claim.coordinate
-                )
-                claim.seed
-
-updateBoardUltimate : Board.UltimateBoard -> Coordinates.Coordinates -> Player.Player -> Board.UltimateBoard       
-updateBoardUltimate board coordinate player =
-    UltimateBoard.updateBoard board coordinate (SectorAttribute.Claimed player) player
-
-checkVictoryUltimate : Board.UltimateBoard -> Player.Player -> Victory.PathToVictory
-checkVictoryUltimate board player =
-    Victory.checkVictory board player
-
-{- ANCHOR process Regular board -}
-
-processTurnRegular : Claim Board.RegularBoard  -> ClaimResult Board.RegularBoard 
-processTurnRegular claim =
-    let
-        proccess_content =
-            case claim.claim.content of
-                SectorAttribute.Trick trick ->
-                    case trick.trick_type of
-                        Trick.Vanish ->
-                            processContentRegular claim 
-
-                        Trick.WrongDestination ->
-                            processContentRegular claim
-
-                _ ->
-                    processContentRegular 
-                        { claim 
-                            | board = updateBoardRegular claim.board claim.coordinate claim.submitting_player 
-                        } 
-
-        path_to_victory =
-            checkVictoryRegular proccess_content.board claim.submitting_player
-    in
-    ClaimResult 
-        (advanceTurn claim.turn) 
-        proccess_content.board 
-        proccess_content.event
-        claim.other_player
-        path_to_victory
-
-updateBoardRegular : Board.RegularBoard -> Coordinates.Sector -> Player.Player -> Board.RegularBoard
-updateBoardRegular board coordinate player =
-    BaseBoard.updateBoard board coordinate (SectorAttribute.Claimed player)
-
-processContentRegular : Claim Board.RegularBoard -> ProcessContentResult Board.RegularBoard
-processContentRegular claim =
-    case claim.claim.content of
-        SectorAttribute.Trick trick ->
-            let
-                (tricked_out, seed) = 
-                    TrickHandlers.handleTrickRegular 
+                    TrickHandlers.handleTrick
                         ( TrickHandlers.TrickHandler 
                             trick.trick_type 
                             claim.submitting_player 
@@ -190,10 +108,17 @@ processContentRegular claim =
                 )
                 claim.seed
 
-checkVictoryRegular : Board.RegularBoard -> Player.Player -> Victory.PathToVictory
-checkVictoryRegular board player =
-    Victory.checkVictory board player
+updateBoard : Board.Board -> Coordinates.CoordinateSystem -> Player.Player -> Board.Board
+updateBoard board coordinates player =
+    case (board, coordinates) of
+        (Board.Regular regular, Coordinates.Regular sector) ->
+            Board.Regular <| BaseBoard.updateBoard regular sector (SectorAttribute.Claimed player)
 
+        (Board.Ultimate ultimate, Coordinates.Ultimate coordinate) ->
+            Board.Ultimate <| UltimateBoard.updateBoard ultimate coordinate (SectorAttribute.Claimed player) player
+            
+        _ ->
+            board
 
 advanceTurn : Int -> Int
 advanceTurn turn =

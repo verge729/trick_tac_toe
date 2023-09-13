@@ -1,7 +1,5 @@
 module Types.Board exposing (..)
 
-import Types.Base.Board as BaseBoard
-import Types.Ultimate.Board as UltimateBoard
 import Array
 import Types.Base.Sector as BaseSector
 import Types.Ultimate.Sector as UltimateSector

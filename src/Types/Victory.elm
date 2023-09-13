@@ -9,6 +9,8 @@ import Types.Base.Board as Board
 import Array
 import Types.Base.Sector as Sector
 import Types.SectorAttribute as SectorAttribute
+import Types.Board as Board
+
 
 type PathToVictory
     = Acheived Player.Player
@@ -32,8 +34,20 @@ toPathToVictoryState state =
         _ ->
             Unacheived
 
-checkVictory : Array.Array { a | state : SectorAttribute.State, coordinate : Coordinates.Sector } -> Player.Player -> PathToVictory
-checkVictory board player_current =
+checkVictory : Board.Board -> Player.Player -> PathToVictory
+checkVictory board player =
+    case board of
+        Board.Regular regular ->
+            checkVictory1 regular player
+
+        Board.Ultimate ultimate ->
+            checkVictory1 ultimate player
+
+        Board.NotSelected ->
+            Unacheived
+
+checkVictory1 : Array.Array { a | state : SectorAttribute.State, coordinate : Coordinates.Sector } -> Player.Player -> PathToVictory
+checkVictory1 board player_current =
     let
         claimed_player_current =
             Array.filter (\sector -> sector.state == SectorAttribute.Claimed player_current) board

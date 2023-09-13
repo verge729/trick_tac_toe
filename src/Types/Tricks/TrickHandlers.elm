@@ -1,4 +1,7 @@
-module Types.Tricks.TrickHandlers exposing (..)
+module Types.Tricks.TrickHandlers exposing 
+    ( handleTrick
+    , TrickHandler        
+    )
 
 import Types.Tricks.Trick as Trick
 import Types.Board as Board
@@ -12,7 +15,7 @@ import Types.Ultimate.Board as UltimateBoard
 
 {- ANCHOR TrickHandler -}
 
-type alias TrickHandler a b =
+type alias TrickHandlerSpecialized a b =
     { trick_type : Trick.TrickType
     , player : Player.Player
     , turn : Int
@@ -21,9 +24,52 @@ type alias TrickHandler a b =
     , seed : Random.Seed   
     }
 
+type alias TrickHandler =
+    { trick_type : Trick.TrickType
+    , player : Player.Player
+    , turn : Int
+    , coordinates : Coordinates.CoordinateSystem
+    , board : Board.Board
+    , seed : Random.Seed        
+    }
+
+handleTrick : TrickHandler -> (Board.Board, Random.Seed)
+handleTrick handler_info =
+    case (handler_info.board, handler_info.coordinates) of
+        (Board.Regular regular, Coordinates.Regular sector) ->
+            let
+                (updated_board, seed) =
+                    handleTrickRegular
+                        { trick_type = handler_info.trick_type
+                        , player = handler_info.player
+                        , turn = handler_info.turn
+                        , coordinates = sector
+                        , board = regular
+                        , seed = handler_info.seed
+                        }
+            in
+            (Board.Regular updated_board, seed)
+
+        (Board.Ultimate ultimate, Coordinates.Ultimate coordinates) ->
+            let
+                (updated_board, seed) =
+                    handleTrickUltimate
+                        { trick_type = handler_info.trick_type
+                        , player = handler_info.player
+                        , turn = handler_info.turn
+                        , coordinates = coordinates
+                        , board = ultimate
+                        , seed = handler_info.seed
+                        }
+            in
+            (Board.Ultimate updated_board, seed)
+            
+        _ ->
+            (handler_info.board, handler_info.seed)
+
 {- ANCHOR handle ultimate -}
 
-handleTrickUltimate : TrickHandler Board.UltimateBoard Coordinates.Coordinates -> (Board.UltimateBoard, Random.Seed)
+handleTrickUltimate : TrickHandlerSpecialized Board.UltimateBoard Coordinates.Coordinates -> (Board.UltimateBoard, Random.Seed)
 handleTrickUltimate handler_info =
     (case handler_info.trick_type of
         Trick.Vanish ->
@@ -103,7 +149,7 @@ findFreeCoordinateUltimate board start_coordinate seed =
 
 {- ANCHOR handler regular -}
 
-handleTrickRegular : TrickHandler Board.RegularBoard Coordinates.Sector -> (Board.RegularBoard, Random.Seed)
+handleTrickRegular : TrickHandlerSpecialized Board.RegularBoard Coordinates.Sector -> (Board.RegularBoard, Random.Seed)
 handleTrickRegular handler_info =
     ( case handler_info.trick_type of
         Trick.Vanish ->
