@@ -31,15 +31,17 @@ handleTrickUltimate handler_info =
         
         Trick.WrongDestination ->
             let
+                new_coordinates =
+                    Coordinates.generateRandomCoordinates handler_info.seed
+
                 (coordinate, seed) =
-                    findFreeCoordinateUltimate handler_info.board handler_info.coordinates handler_info.seed
+                    findFreeCoordinateUltimate handler_info.board new_coordinates.coordinates new_coordinates.seed
             in
             ( UltimateBoard.updateBoard 
                 handler_info.board 
                 coordinate 
                 (SectorAttribute.Claimed handler_info.player)
                 (handler_info.player)
-            -- (handler_info.board, handler_info.seed)
             , seed
             )
     ) |> removeTrickUltimate handler_info.coordinates
@@ -75,11 +77,8 @@ removeTrickUltimate coordinate (board, seed) =
 findFreeCoordinateUltimate : Board.UltimateBoard -> Coordinates.Coordinates -> Random.Seed -> (Coordinates.Coordinates, Random.Seed)
 findFreeCoordinateUltimate board start_coordinate seed =
     let
-        new_coordinate =
-            Coordinates.generateRandomCoordinates seed
-
         (int_low, int_mid) =
-            (Coordinates.toIntSector new_coordinate.coordinates.low, Coordinates.toIntSector new_coordinate.coordinates.mid)
+            (Coordinates.toIntSector start_coordinate.low, Coordinates.toIntSector start_coordinate.mid)
     in
     case Array.get int_mid board of
         Just sector ->
