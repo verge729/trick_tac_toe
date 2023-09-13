@@ -1,18 +1,18 @@
 module Types.Player exposing (..)
 
 type alias Player =
-    { username : String
+    { handle : String
     , icon : String        
     }
 
 defaultOne : Player
 defaultOne =
-    { username = "Player 1"
+    { handle = "Player 1"
     , icon = "X"
     }
 
 defaultTwo : Player
 defaultTwo =
-    { username = "Player 2"
+    { handle = "Player 2"
     , icon = "O"
     }

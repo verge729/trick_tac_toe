@@ -137,8 +137,8 @@ currentPlayer player =
                 , TW.ml_2                    
                 ]                
             ]
-            [ HS.text "Username: "
-            , HS.text player.username
+            [ HS.text "Handle: "
+            , HS.text player.handle
             ]
         , HS.div
             [ HSA.css

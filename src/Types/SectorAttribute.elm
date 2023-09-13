@@ -26,4 +26,4 @@ toStringState state =
             "Blocked"
 
         Claimed player ->
-            "Claimed by " ++ player.username
+            "Claimed by " ++ player.handle

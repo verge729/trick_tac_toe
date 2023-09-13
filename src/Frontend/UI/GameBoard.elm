@@ -67,7 +67,7 @@ root board m_current_coordinates claimed_victory =
                         ] 
                         [ HS.h2
                             []
-                            [ HS.text <| player.username ++ " has won the game!"                                
+                            [ HS.text <| player.handle ++ " has won the game!"                                
                             ]                            
                         ]
                     , [ TW.border_solid

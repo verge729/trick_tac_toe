@@ -111,7 +111,7 @@ toStringPathToVictory : PathToVictory -> String
 toStringPathToVictory path_to_victory =
     case path_to_victory of
         Acheived player ->
-            "Player " ++ player.username ++ " has won the game!"
+            "Player " ++ player.handle ++ " has won the game!"
 
         Unacheived ->
             "No one has won the game yet."

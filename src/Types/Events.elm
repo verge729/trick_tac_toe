@@ -28,7 +28,7 @@ toStringEvent event =
 
 toString : Int -> Player.Player -> EventType -> String
 toString turn player eventType =
-    "Turn " ++ String.fromInt turn ++ ": " ++ player.username ++ " has " ++ toStringEventType eventType
+    "Turn " ++ String.fromInt turn ++ ": " ++ player.handle ++ " has " ++ toStringEventType eventType
 
 toStringEventType : EventType -> String
 toStringEventType eventType =
