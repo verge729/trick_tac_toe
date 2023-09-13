@@ -53,7 +53,8 @@ init url key =
     --   , path_to_victory = Victory.Acheived Player.defaultOne
       , path_to_victory = Victory.Unacheived 
       , turn = 0
-      , list_events = []
+      , list_events_regular = [] 
+      , list_events_ultimate = []
       , random_list_sectors = []
       , seed = Random.initialSeed 42
       }

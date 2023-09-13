@@ -8,17 +8,103 @@ import Types.Base.Board as BaseBoard
 import Types.SectorAttribute as SectorAttribute
 import Array
 import Random
+import Types.Ultimate.Board as UltimateBoard
 
-type alias TrickHandler a =
+{- ANCHOR TrickHandler -}
+
+type alias TrickHandler a b =
     { trick_type : Trick.TrickType
     , player : Player.Player
     , turn : Int
-    , coordinates : Coordinates.Sector
+    , coordinates : b
     , board : a     
     , seed : Random.Seed   
     }
 
-handleTrickRegular : TrickHandler Board.RegularBoard -> (Board.RegularBoard, Random.Seed)
+{- ANCHOR handle ultimate -}
+
+handleTrickUltimate : TrickHandler Board.UltimateBoard Coordinates.Coordinates -> (Board.UltimateBoard, Random.Seed)
+handleTrickUltimate handler_info =
+    (case handler_info.trick_type of
+        Trick.Vanish ->
+            (handler_info.board, handler_info.seed)
+        
+        Trick.WrongDestination ->
+            let
+                (coordinate, seed) =
+                    findFreeCoordinateUltimate handler_info.board handler_info.coordinates handler_info.seed
+            in
+            ( UltimateBoard.updateBoard 
+                handler_info.board 
+                coordinate 
+                (SectorAttribute.Claimed handler_info.player)
+                (handler_info.player)
+            -- (handler_info.board, handler_info.seed)
+            , seed
+            )
+    ) |> removeTrickUltimate handler_info.coordinates
+
+removeTrickUltimate : Coordinates.Coordinates -> (Board.UltimateBoard, Random.Seed) -> (Board.UltimateBoard, Random.Seed)
+removeTrickUltimate coordinate (board, seed) =
+    let
+        int_coordinate =
+            Coordinates.toIntSector coordinate.mid
+
+        m_target_sector =
+            Array.get int_coordinate board
+
+        (updated_board, n_seed) =
+            case m_target_sector of
+                Just target_sector ->
+                    let
+                        (new_board, new_seed) =
+                            removeTrickRegular coordinate.low (target_sector.board, seed) 
+                    in
+                    (Array.set 
+                        int_coordinate 
+                        { target_sector | board = new_board} 
+                        board
+                    , new_seed
+                    )
+
+                Nothing ->
+                    (board, seed)
+    in 
+    (updated_board, n_seed)
+
+findFreeCoordinateUltimate : Board.UltimateBoard -> Coordinates.Coordinates -> Random.Seed -> (Coordinates.Coordinates, Random.Seed)
+findFreeCoordinateUltimate board start_coordinate seed =
+    let
+        new_coordinate =
+            Coordinates.generateRandomCoordinates seed
+
+        (int_low, int_mid) =
+            (Coordinates.toIntSector new_coordinate.coordinates.low, Coordinates.toIntSector new_coordinate.coordinates.mid)
+    in
+    case Array.get int_mid board of
+        Just sector ->
+            case Array.get int_low sector.board of
+                Just sector_low ->
+                    case sector_low.state of
+                        SectorAttribute.Free ->
+                            (start_coordinate, seed)
+
+                        _ ->
+                            let
+                                n_coord =
+                                    Coordinates.generateRandomCoordinates seed
+                            in
+                            findFreeCoordinateUltimate board { start_coordinate | mid = n_coord.coordinates.mid, low = n_coord.coordinates.low } n_coord.seed
+
+                Nothing ->
+                    (start_coordinate, seed)
+
+        Nothing ->
+            (start_coordinate, seed)
+
+{- ANCHOR handler regular -}
+
+handleTrickRegular : TrickHandler Board.RegularBoard Coordinates.Sector -> (Board.RegularBoard, Random.Seed)
 handleTrickRegular handler_info =
     ( case handler_info.trick_type of
         Trick.Vanish ->
@@ -27,7 +113,7 @@ handleTrickRegular handler_info =
         Trick.WrongDestination ->
             let
                 (sector, seed) =
-                    findFreeCoordinate handler_info.board handler_info.coordinates handler_info.seed
+                    findFreeCoordinateRegular handler_info.board handler_info.coordinates handler_info.seed
             in
             ( BaseBoard.updateBoard 
                 handler_info.board 
@@ -35,10 +121,10 @@ handleTrickRegular handler_info =
                 (SectorAttribute.Claimed handler_info.player)
             , seed
             )   
-    ) |> removeTrick handler_info.coordinates
+    ) |> removeTrickRegular handler_info.coordinates
 
-removeTrick : Coordinates.Sector -> (Board.RegularBoard, Random.Seed) -> (Board.RegularBoard, Random.Seed)
-removeTrick coordinate (board, seed) =
+removeTrickRegular : Coordinates.Sector -> (Board.RegularBoard, Random.Seed) -> (Board.RegularBoard, Random.Seed)
+removeTrickRegular coordinate (board, seed) =
     let
         int_sector =
             Coordinates.toIntSector coordinate
@@ -59,8 +145,8 @@ removeTrick coordinate (board, seed) =
     in 
     (updated_board, seed)
 
-findFreeCoordinate : Board.RegularBoard -> Coordinates.Sector -> Random.Seed -> (Coordinates.Sector, Random.Seed)
-findFreeCoordinate board start_coordinate seed =
+findFreeCoordinateRegular : Board.RegularBoard -> Coordinates.Sector -> Random.Seed -> (Coordinates.Sector, Random.Seed)
+findFreeCoordinateRegular board start_coordinate seed =
     let
         int_sector =
             Coordinates.toIntSector start_coordinate
@@ -76,7 +162,7 @@ findFreeCoordinate board start_coordinate seed =
                         (new_sector, new_seed) =
                             Random.step Coordinates.randomGeneratorSector seed
                     in
-                    findFreeCoordinate board new_sector new_seed
+                    findFreeCoordinateRegular board new_sector new_seed
 
         Nothing ->
             (start_coordinate, seed)

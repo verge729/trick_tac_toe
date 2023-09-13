@@ -11,9 +11,9 @@ import Types.Board as Board
 import Types.Coordinates as Coordinates
 import Types.Player as Player
 import Types.SectorAttribute as SectorAttribute
+import Types.Ultimate.Board as UltimateBoard
 import Types.Victory as Victory
 import Url
-import Types.Ultimate.Board as UltimateBoard
 
 
 type alias UpdateTurn =
@@ -47,18 +47,18 @@ update msg model =
 
         Types.CatchRandomGeneratorSeed seed ->
             let
-                (board, max_turns) = 
+                ( board, max_turns ) =
                     -- BaseBoard.boardRegular
                     UltimateBoard.boardUltimate
 
-                (tricked_board, new_seed) =
+                ( tricked_board, new_seed ) =
                     -- BaseBoard.addTricks board seed
                     UltimateBoard.addTricks board seed
             in
             ( { model
                 | seed = new_seed
                 , board = Board.Ultimate tricked_board
-                }
+              }
             , Cmd.none
             )
 
@@ -73,6 +73,14 @@ update msg model =
             )
 
         Types.ClaimSector sector ->
+            let
+                other_player =
+                    if model.current_player == model.player_one then
+                        model.player_two
+
+                    else
+                        model.player_one
+            in
             case model.board of
                 Board.NotSelected ->
                     ( model
@@ -81,15 +89,8 @@ update msg model =
 
                 Board.Regular board ->
                     let
-                        other_player =
-                            if model.current_player == model.player_one then
-                                model.player_two
-
-                            else
-                                model.player_one
-
                         processed_claim =
-                            Engine.processTurn
+                            Engine.processTurnRegular
                                 (Engine.Claim
                                     model.current_player
                                     other_player
@@ -100,44 +101,10 @@ update msg model =
                                     model.seed
                                 )
                     in
-                    ( updateModelwithProcessedClaim model processed_claim
+                    ( updateModelwithProcessedClaimRegular model processed_claim
                     , Cmd.none
                     )
 
-                -- let
-                --     int_sector =
-                --         Coordinates.toIntSector sector.coordinate
-                --     m_target_sector =
-                --         Array.get int_sector board
-                -- in
-                -- case m_target_sector of
-                --     Just target_sector ->
-                --         let
-                --             updated_target_sector =
-                --                 { target_sector | state = SectorAttribute.Claimed model.current_player }
-                --             updated_board =
-                --                 Array.set int_sector updated_target_sector board
-                --             claimed_victory =
-                --                 Victory.checkVictory updated_board model.current_player
-                --             mdl =
-                --                 { model
-                --                     | board = Board.Regular updated_board
-                --                     , path_to_victory = claimed_victory
-                --                 }
-                --         in
-                --         ( mdl
-                --             |> updatePlayerAndTurn
-                --                 { player_one = model.player_one
-                --                 , player_two = model.player_two
-                --                 , current_player = model.current_player
-                --                 , current_turn = model.turn
-                --                 }
-                --         , Cmd.none
-                --         )
-                -- Nothing ->
-                --     ( model
-                --     , Cmd.none
-                --     )
                 Board.Ultimate board ->
                     let
                         next_low =
@@ -149,40 +116,45 @@ update msg model =
                         coordinates =
                             { low = next_low, mid = next_mid }
 
-                        updated_board =
-                            updateUltimateBoard coordinates model.current_player board
-
-                        claimed_victory =
-                            Victory.checkVictory
-                                updated_board
-                                model.current_player
-
-                        mdl =
-                            { model
-                                | board = Board.Ultimate updated_board
-                                , current_coordinate = Just { coordinates | mid = next_low }
-                                , path_to_victory = claimed_victory
-                            }
+                        processed_claim =
+                            Engine.processTurnUltimate
+                                (Engine.Claim
+                                    model.current_player
+                                    other_player
+                                    sector
+                                    coordinates
+                                    model.turn
+                                    board
+                                    model.seed
+                                )
                     in
-                    ( mdl
-                        |> updatePlayerAndTurn
-                            { player_one = model.player_one
-                            , player_two = model.player_two
-                            , current_player = model.current_player
-                            , current_turn = model.turn
-                            }
+                    ( { model
+                        | current_coordinate = Just { coordinates | mid = next_low }
+                      }
+                        |> updateModelwithProcessedClaimUltimate processed_claim
                     , Cmd.none
                     )
 
 
-updateModelwithProcessedClaim : Types.FrontendModel -> Engine.ClaimResult -> Types.FrontendModel
-updateModelwithProcessedClaim model claim_result =
+updateModelwithProcessedClaimRegular : Types.FrontendModel -> Engine.ClaimResult Board.RegularBoard Coordinates.Sector -> Types.FrontendModel
+updateModelwithProcessedClaimRegular model claim_result =
     { model
         | turn = claim_result.turn
         , board = Board.Regular claim_result.board
         , current_player = claim_result.next_player
         , path_to_victory = claim_result.path_to_victory
-        , list_events = claim_result.event :: model.list_events
+        , list_events_regular = claim_result.event :: model.list_events_regular
+    }
+
+
+updateModelwithProcessedClaimUltimate : Engine.ClaimResult Board.UltimateBoard Coordinates.Coordinates -> Types.FrontendModel -> Types.FrontendModel
+updateModelwithProcessedClaimUltimate claim_result model =
+    { model
+        | turn = claim_result.turn
+        , board = Board.Ultimate claim_result.board
+        , current_player = claim_result.next_player
+        , path_to_victory = claim_result.path_to_victory
+        , list_events_ultimate = claim_result.event :: model.list_events_ultimate
     }
 
 

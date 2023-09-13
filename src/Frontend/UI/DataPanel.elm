@@ -29,10 +29,10 @@ root model =
         , coordinates model.current_coordinate model.next_coordinate_low model.next_coordinate_mid
         , sectionTitle "Current Player"
         , currentPlayer model.current_player
-        , sectionTitle "Focused Board" 
-        , focusedBoard model.board model.current_coordinate   
+        -- , sectionTitle "Focused Board" 
+        -- , focusedBoard model.board model.current_coordinate   
         , sectionTitle "Event log"
-        , events model.list_events
+        , eventsRegular model.list_events_regular model.list_events_ultimate
         ]
 
 sectionTitle : String -> HS.Html Types.FrontendMsg
@@ -45,24 +45,42 @@ sectionTitle title =
             ]            
         ]
 
-events : List Events.Event -> HS.Html Types.FrontendMsg
-events list_events =
+eventsRegular : List (Events.Event Coordinates.Sector) -> List (Events.Event Coordinates.Coordinates) -> HS.Html Types.FrontendMsg
+eventsRegular list_events_regular list_events_ultimate =
+    let
+        regular =
+            List.map (\event ->
+                    HS.div
+                        [ HSA.css
+                            [ TW.box_border
+                            , TW.m_2                    
+                            ]                    
+                        ]
+                        [ HS.text <| Events.toStringEventRegular event                    
+                        ]
+                ) list_events_regular     
+
+        ultimate =
+            List.map (\event -> 
+                HS.div
+                    [ HSA.css
+                        [ TW.box_border
+                        , TW.m_2                    
+                        ]                    
+                    ]
+                    [ HS.text <| Events.toStringEventUltimate event                    
+                    ]
+            ) list_events_ultimate       
+    in
     HS.div
         [ HSA.css
             [ TW.box_border
             , TW.m_2                
             ]            
         ]
-        ( List.map (\event ->
-            HS.div
-                [ HSA.css
-                    [ TW.box_border
-                    , TW.m_2                    
-                    ]                    
-                ]
-                [ HS.text <| Events.toStringEvent event                    
-                ]
-        ) list_events            
+        ( List.append
+            regular
+            ultimate
         )
 
 focusedBoard : Board.Board -> Maybe Coordinates.Coordinates -> HS.Html Types.FrontendMsg

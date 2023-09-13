@@ -1,4 +1,9 @@
-module Types.Events exposing (..)
+module Types.Events exposing 
+    ( EventType(..)
+    , Event
+    , toStringEventUltimate
+    , toStringEventRegular        
+    )
 
 import Types.Coordinates as Coordinates
 import Types.Player as Player
@@ -10,17 +15,24 @@ type EventType
     | Trick Trick.Trick
 
 
-type alias Event =
+type alias Event a =
     { turn : Int
     , event : EventType
     , player : Player.Player
-    , coordinates : Coordinates.Sector--Coordinates
+    , coordinates : a
     }
 
+toStringEventUltimate : Event Coordinates.Coordinates -> String
+toStringEventUltimate event =
+    toString event.turn event.player event.event
 
-toStringEvent : Event -> String
-toStringEvent event =
-    "Turn " ++ String.fromInt event.turn ++ ": " ++ event.player.username ++ " has " ++ toStringEventType event.event
+toStringEventRegular : Event Coordinates.Sector -> String
+toStringEventRegular event =
+    toString event.turn event.player event.event
+
+toString : Int -> Player.Player -> EventType -> String
+toString turn player eventType =
+    "Turn " ++ String.fromInt turn ++ ": " ++ player.username ++ " has " ++ toStringEventType eventType
 
 toStringEventType : EventType -> String
 toStringEventType eventType =
