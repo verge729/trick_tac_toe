@@ -22,6 +22,7 @@ import Types.Tricks.Trick as Trick
 import Types.Ultimate.Board as UltimateBoard
 import Types.Victory as Victory
 import Url
+import Types.Storage.User as User
 
 
 type alias Model =
@@ -59,12 +60,12 @@ init url key =
       , turn = 0
       , list_events = []
       , seed = Random.initialSeed 42
-      , user = Nothing
+      , user = Just User.testing --Nothing
       , game = Nothing
       , user_games = []
-      , view_data_panel = Navigation.GameList
-      , view_game_area = Navigation.Authentication
-      , view_full_area = Navigation.Authenicate
+      , view_data_panel = Navigation.Menu
+      , view_game_area = Navigation.NotIdentified
+      , view_full_area = Navigation.Authenticated
       , login_register_handle = Nothing
       , login_register_keyphrase = Nothing
       , m_error_message = Nothing

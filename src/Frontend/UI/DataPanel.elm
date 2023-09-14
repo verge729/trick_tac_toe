@@ -13,26 +13,67 @@ import Array
 import Types.Board as Board
 import Types.SectorAttribute as SectorAttribute
 import Types.Events as Events
+import Types.Navigation as Navigation
+import Types.Button as Button
 
 root : Types.FrontendModel -> HS.Html Types.FrontendMsg
 root model =
     HS.div
         [ HSA.css
             [ TW.box_border
-            , TW.overflow_auto
-            , TW.overflow_x_clip                
+            , TW.flex
+            -- , TW.flex_col  
+            -- , TW.overflow_clip 
+            , TW.h_full  
+            , TW.w_full   
+            -- , TW.relative      
             ]            
         ]
+        [ panelLayer model
+        ]
+
+panelLayer : Types.FrontendModel -> HS.Html Types.FrontendMsg
+panelLayer model =
+    case model.view_data_panel of
+        Navigation.Menu ->
+            menu model
+
+        Navigation.GameDetails ->
+            gameDetails model
+
+
+menu : Types.FrontendModel -> HS.Html Types.FrontendMsg
+menu model =
+    HS.div
+        [ HSA.css
+            [ TW.box_border
+            , TW.w_full 
+            , TW.h_2over6
+            , TW.space_y_2  
+            , TW.justify_center 
+            , TW.flex
+            , TW.flex_col   
+            , TW.items_center    
+            ]            
+        ]
+        [ Button.button "Create Game" (Types.GameViewAreaNavTo Navigation.CreateGame ) Button.Wide
+        , Button.button "Join Game" (Types.GameViewAreaNavTo Navigation.JoinGame ) Button.Wide
+        , Button.button "View Games" (Types.GameViewAreaNavTo Navigation.GameList ) Button.Wide
+        , Button.button "Help" (Types.GameViewAreaNavTo Navigation.Help ) Button.Wide  
+        ]
+
+gameDetails : Types.FrontendModel -> HS.Html Types.FrontendMsg
+gameDetails model =
+    HS.div
+        []
         [ sectionTitle "Path to Victory"
         , pathToVictory model.path_to_victory
         , sectionTitle "Coordinates"
         , coordinates model.current_coordinate model.next_coordinate_low model.next_coordinate_mid
         , sectionTitle "Current Player"
-        , currentPlayer model.current_player
-        -- , sectionTitle "Focused Board" 
-        -- , focusedBoard model.board model.current_coordinate   
+        , currentPlayer model.current_player 
         , sectionTitle "Event log"
-        , eventsRegular model.list_events
+        , eventsRegular model.list_events            
         ]
 
 sectionTitle : String -> HS.Html Types.FrontendMsg

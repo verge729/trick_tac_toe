@@ -1,17 +1,18 @@
 module Types exposing (..)
 
-import Browser exposing (UrlRequest)
-import Url exposing (Url)
 import Backend.Model as BackendModel
+import Browser exposing (UrlRequest)
 import Frontend.Model as FrontendModel
-import Types.Base.Sector as Sector
-import Types.Coordinates as Coordinates
 import Lamdera exposing (ClientId, SessionId)
 import Random
+import Types.Base.Sector as Sector
+import Types.Coordinates as Coordinates
+import Types.Navigation as Navigation
 import Types.Storage.Auth as StorageAuth
-import Types.Storage.Response as StorageResponse
 import Types.Storage.Game as StorageGame
+import Types.Storage.Response as StorageResponse
 import Types.Storage.User as StorageUser
+import Url exposing (Url)
 
 
 type alias FrontendModel =
@@ -20,6 +21,7 @@ type alias FrontendModel =
 
 type alias BackendModel =
     BackendModel.BackendModel
+
 
 type FrontendMsg
     = UrlClicked UrlRequest
@@ -31,8 +33,9 @@ type FrontendMsg
     | CatchRandomGeneratorSeedFE Random.Seed
     | FillHandler String
     | FillKeyphrase String
-    | Login 
+    | Login
     | Register
+    | GameViewAreaNavTo Navigation.GameArea
 
 
 type ToBackend

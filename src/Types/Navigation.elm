@@ -2,13 +2,17 @@ module Types.Navigation exposing (..)
 
 type GameArea
     = Game
-    | Authentication
+    | GameList
+    | CreateGame
+    | Help
+    | NotIdentified
+    | JoinGame
     
 
 type DataPanel
-    = GameList
+    = Menu
     | GameDetails
 
 type FullView
-    = Authenicate
+    = Authenticate
     | Authenticated

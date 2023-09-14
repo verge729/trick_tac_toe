@@ -46,6 +46,11 @@ update msg model =
         Types.NoOpFrontendMsg ->
             ( model, Cmd.none )
 
+        Types.GameViewAreaNavTo target ->
+            ( { model | view_game_area = target }
+            , Cmd.none
+            )
+
         Types.CatchRandomGeneratorSeedFE seed ->
             let
                 ( board, max_turns ) =

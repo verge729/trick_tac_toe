@@ -6,6 +6,7 @@ import Html.Styled.Events as HSE
 import Tailwind.Theme as TW
 import Tailwind.Utilities as TW 
 import Types
+import Types.Button as Button
 
 type alias AuthData =
     { target : Maybe String 
@@ -52,8 +53,8 @@ root model =
                 , TW.my_3                 
                 ]                
             ]
-            [ button "Login" Types.Login 
-            , button "Register" Types.Register               
+            [ Button.button "Login" Types.Login Button.Regular
+            , Button.button "Register" Types.Register Button.Regular           
             ]   
         , error model.m_error_message      
         ]
@@ -139,18 +140,4 @@ elementInputText { target, handler, placeholder } m_notice =
             ]
             [ HS.text <| Maybe.withDefault "" m_notice                
             ]
-        ]
-
-button : String -> Types.FrontendMsg -> HS.Html Types.FrontendMsg
-button label handler =
-    HS.button
-        [ HSA.css   
-            [ TW.box_border
-            , TW.w_1over2 
-            , TW.h_8
-            , TW.mx_3               
-            ] 
-        , HSE.onClick handler           
-        ]
-        [ HS.text label
         ]
