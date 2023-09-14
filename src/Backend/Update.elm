@@ -37,7 +37,7 @@ update msg model =
                         updated_user =
                             { user | state = Connectivity.Disconnected }
                         updated_user_store =
-                            Dict.insert user.handle updated_user model.user_store
+                            Dict.insert updated_user.handle updated_user model.user_store
                         updated_game_store =
                             Utils.updateConnectivityOnGames updated_user model.game_store
 

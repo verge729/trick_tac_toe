@@ -56,17 +56,24 @@ updateFromFrontend sessionId clientId msg model =
                             Dict.insert user.handle updated_user model.user_store
 
                         updated_connectivity =
-                            Utils.updateConnectivityOnGames user model.game_store
+                            Utils.updateConnectivityOnGames updated_user model.game_store
 
                         clients_to_update =
-                            Game.getFullGames updated_connectivity user
-                                |> Utils.clientsToUpdateGames user
+                            Game.getFullGames updated_connectivity updated_user
+                                |> Utils.clientsToUpdateGames updated_user
 
 
                         cmds =
                             List.map
                                 (\( client, player ) ->
-                                    Lamdera.sendToFrontend client (Types.RequestGamesResponse (Response.SuccessRequestGames <| Game.getGames updated_connectivity player))
+                                    Debug.log client <| 
+                                        Lamdera.sendToFrontend 
+                                            client 
+                                            (Types.RequestGamesResponse 
+                                                (Response.SuccessRequestGames <| 
+                                                    Game.getGames updated_connectivity player
+                                                )
+                                            )
                                 )
                                 clients_to_update
                     in
@@ -77,7 +84,7 @@ updateFromFrontend sessionId clientId msg model =
                     , Cmd.batch
                         (List.append
                             [ Lamdera.sendToFrontend clientId (Types.LoginResponse <| Response.SuccessLogin updated_user)
-                            , Lamdera.sendToFrontend clientId (Types.RequestGamesResponse (Response.SuccessRequestGames <| Game.getGames updated_connectivity user))
+                            , Lamdera.sendToFrontend clientId (Types.RequestGamesResponse (Response.SuccessRequestGames <| Game.getGames updated_connectivity updated_user))
                             ]
                             cmds
                         )
@@ -117,7 +124,7 @@ updateFromFrontend sessionId clientId msg model =
                             Dict.insert (Game.getId game.id) game model.game_store
 
                         updated_connectivity =
-                            Utils.updateConnectivityOnGames reqs.player_two model.game_store
+                            Utils.updateConnectivityOnGames reqs.player_two updated_dict
 
                         -- _ = Debug.log "updated_connectivity" updated_connectivity
                         full_games =
@@ -155,6 +162,8 @@ updateFromFrontend sessionId clientId msg model =
                     let
                         client_id_next_player =
                             Connectivity.getClientId reqs.current_player.state
+
+                        _ = Debug.log "client_id_next_player" client_id_next_player
 
                         updated_games =
                             Game.getGames games reqs.current_player
