@@ -14,6 +14,7 @@ import Types.Storage.Connectivity as Connectivity
 import Frontend.UI.GameList as GameList
 import Frontend.UI.CreateGame as CreateGame
 import Types.Board as Board
+import Frontend.UI.JoinGame as JoinGame
 
 root : Types.FrontendModel -> HS.Html Types.FrontendMsg
 root model =
@@ -213,7 +214,12 @@ displayGameArea : Types.FrontendModel -> HS.Html Types.FrontendMsg
 displayGameArea model =
     case model.view_game_area of
         Navigation.GameList ->
-            GameList.root model.user_games
+            case model.user of
+                Just user ->
+                    GameList.root user model.user_games
+
+                Nothing ->
+                    HS.div [] []
 
         Navigation.Game ->
             let
@@ -237,5 +243,5 @@ displayGameArea model =
             HS.div [] []
 
         Navigation.JoinGame ->
-            HS.div [] []
+            JoinGame.root model
 

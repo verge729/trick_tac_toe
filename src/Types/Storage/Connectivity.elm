@@ -14,3 +14,21 @@ getClientId connectivity =
 
         Disconnected ->
             ""
+
+sort : Connectivity -> Connectivity -> Connectivity
+sort first second =
+    case (first, second) of
+        (Connected _, Disconnected) ->
+            first
+
+        (Disconnected, Connected _) ->
+            second
+
+        (Connected firstId, Connected secondId) ->
+            if firstId < secondId then
+                first
+            else
+                second
+
+        (Disconnected, Disconnected) ->
+            first

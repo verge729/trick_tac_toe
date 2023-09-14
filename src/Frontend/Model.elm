@@ -37,4 +37,5 @@ type alias FrontendModel =
     , m_error_message : Maybe String
     , game_creation_name : Maybe String
     , game_creation_board : Maybe Board.SelectBoard
+    , m_join_code : Maybe String
     }

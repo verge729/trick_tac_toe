@@ -35,12 +35,15 @@ type FrontendMsg
     | FillHandler String
     | FillKeyphrase String
     | FillGameName String
+    | FillJoinCode String
     | SelectBoard Board.SelectBoard
     | Login
     | Register
     | GameViewAreaNavTo Navigation.GameArea
     | SelectGame StorageGame.GameId
     | SubmitGameCreation
+    | SubmitJoinGame
+
 
 
 type ToBackend

@@ -148,7 +148,18 @@ getId (GameId id) =
 getGames : Dict.Dict String Game -> User.User -> List Game
 getGames games user =
     Dict.values games
-        |> List.filter (\game -> game.player_one == user || game.player_two == Just user)
+        |> List.filter (\game -> 
+            let
+                player_two_id =
+                    case game.player_two of
+                        Just player ->
+                            player.id
+
+                        Nothing ->
+                            ""
+            in
+            game.player_one.id == user.id || player_two_id == user.id
+        )
 
 getFullGames : Dict.Dict String Game -> User.User -> List Game
 getFullGames games user =
@@ -189,3 +200,4 @@ updateGame games game =
 
         Nothing ->
             Failed "Game not found"
+

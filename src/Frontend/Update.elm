@@ -157,6 +157,19 @@ update msg model =
             , Cmd.none
             )
 
+        Types.FillJoinCode str ->
+            let
+                value =
+                    if str == "" then
+                        Nothing
+
+                    else
+                        Just str
+            in 
+            ( { model | m_join_code = value }
+            , Cmd.none
+            )
+
         Types.FillGameName str ->
             let
                 value =
@@ -254,6 +267,34 @@ update msg model =
 
                 _ ->
                     ( { model | m_error_message = Just "Missing name and board"}
+                    , Cmd.none
+                    )
+
+        Types.SubmitJoinGame ->
+            case (model.m_join_code, model.user) of
+                (Just code, Just user) -> 
+                    let
+                        join_reqs =
+                            { game_id = code
+                            , player_two = user
+                            }
+                    in  
+                    ( model
+                    , Lamdera.sendToBackend <| Types.JoinGame join_reqs
+                    )
+
+                (Nothing, Just _) ->  
+                    ( { model | m_error_message = Just "Missing join code" }
+                    , Cmd.none
+                    )
+
+                (Just _, Nothing) ->  
+                    ( { model | m_error_message = Just "User not logged in" }
+                    , Cmd.none
+                    )
+
+                _ ->  
+                    ( { model | m_error_message = Just "User not logged in and missing join code" }
                     , Cmd.none
                     )
 

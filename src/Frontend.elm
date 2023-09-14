@@ -24,6 +24,7 @@ import Types.Victory as Victory
 import Url
 import Types.Storage.User as User
 import Types.Storage.Game as StorageGame
+import Types.Storage.Connectivity as Connectivity
 
 
 type alias Model =
@@ -63,12 +64,13 @@ init url key =
       , seed = Random.initialSeed 42
       , user = Nothing--Just User.testing --Nothing
       , game = Nothing
-      , user_games = 
-        [ (Tuple.first <| StorageGame.testGameWaiting <| Random.initialSeed 42 )
-        , (Tuple.first <| StorageGame.testGameConnected <| Random.initialSeed 41 )
-        , (Tuple.first <| StorageGame.testGameDisconnected <| Random.initialSeed 40 )
-        , (Tuple.first <| StorageGame.testGame <| Random.initialSeed 43 ) 
-        ]
+      , user_games = []
+          -- List.sortWith (\a b -> Connectivity.sort a.state b.state)
+          -- [ (Tuple.first <| StorageGame.testGameWaiting <| Random.initialSeed 42 )
+          -- , (Tuple.first <| StorageGame.testGameConnected <| Random.initialSeed 41 )
+          -- , (Tuple.first <| StorageGame.testGameDisconnected <| Random.initialSeed 40 )
+          -- , (Tuple.first <| StorageGame.testGame <| Random.initialSeed 43 ) 
+          -- ]
       , view_data_panel = Navigation.Menu
       , view_game_area = Navigation.GameList
       , view_full_area = Navigation.Authenticate
@@ -77,6 +79,7 @@ init url key =
       , m_error_message = Nothing
       , game_creation_name = Nothing
       , game_creation_board = Nothing
+      , m_join_code = Nothing
       }
     , Random.generate Types.CatchRandomGeneratorSeedFE Random.independentSeed
     )

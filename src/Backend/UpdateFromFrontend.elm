@@ -10,6 +10,7 @@ import Types.Storage.Registration as Registration
 import Types.Storage.Response as Response
 import Types.Storage.Storage as Storage
 import Types.Storage.User as User
+import Backend.Utils as Utils
 
 
 updateFromFrontend :
@@ -50,32 +51,32 @@ updateFromFrontend sessionId clientId msg model =
             case Auth.authenticateUser model.user_store reqs of
                 Auth.Pass user ->
                     let
-                        _ = Debug.log "user" user   
-                        updated_connectivity =
-                            updateConnectivityOnGames user model.game_store
+                        updated_user = { user | state = Connectivity.Connected clientId }
+                        updated_user_store =
+                            Dict.insert user.handle updated_user model.user_store
 
-                        _ = Debug.log "updated_connectivity" updated_connectivity
+                        updated_connectivity =
+                            Utils.updateConnectivityOnGames user model.game_store
 
                         clients_to_update =
                             Game.getFullGames updated_connectivity user
-                                |> clientsToUpdateGames user
+                                |> Utils.clientsToUpdateGames user
 
-                        user_games =
-                            Game.getGames updated_connectivity user
-
-                        _ = Debug.log "user_games" user_games
 
                         cmds =
                             List.map
                                 (\( client, player ) ->
-                                    Lamdera.sendToFrontend client (Types.RequestGamesResponse (Response.SuccessRequestGames <| Game.getGames model.game_store player))
+                                    Lamdera.sendToFrontend client (Types.RequestGamesResponse (Response.SuccessRequestGames <| Game.getGames updated_connectivity player))
                                 )
                                 clients_to_update
                     in
-                    ( { model | game_store = updated_connectivity }
+                    ( { model
+                        | game_store = updated_connectivity
+                        , user_store = updated_user_store
+                      }
                     , Cmd.batch
-                        ( List.append
-                            [ Lamdera.sendToFrontend clientId (Types.LoginResponse <| Response.SuccessLogin { user | state = Connectivity.Connected clientId })
+                        (List.append
+                            [ Lamdera.sendToFrontend clientId (Types.LoginResponse <| Response.SuccessLogin updated_user)
                             , Lamdera.sendToFrontend clientId (Types.RequestGamesResponse (Response.SuccessRequestGames <| Game.getGames updated_connectivity user))
                             ]
                             cmds
@@ -111,8 +112,36 @@ updateFromFrontend sessionId clientId msg model =
         Types.JoinGame reqs ->
             case Game.joinGame model.game_store reqs of
                 Game.Success game ->
-                    ( { model | game_store = Dict.insert (Game.getId game.id) game model.game_store }
-                    , Lamdera.sendToFrontend clientId (Types.JoinGameResponse <| Response.SuccessJoinGame game)
+                    let
+                        updated_dict =
+                            Dict.insert (Game.getId game.id) game model.game_store
+
+                        updated_connectivity =
+                            Utils.updateConnectivityOnGames reqs.player_two model.game_store
+
+                        -- _ = Debug.log "updated_connectivity" updated_connectivity
+                        full_games =
+                            Game.getFullGames updated_connectivity reqs.player_two
+
+                        clients_to_update =
+                            full_games
+                                |> Utils.clientsToUpdateGames reqs.player_two
+
+                        cmds =
+                            List.map
+                                (\( client, player ) ->
+                                    Lamdera.sendToFrontend client (Types.RequestGamesResponse (Response.SuccessRequestGames <| Game.getGames updated_connectivity player))
+                                )
+                                clients_to_update
+                    in
+                    ( { model | game_store = updated_dict }
+                    , Cmd.batch
+                        (List.append
+                            [ Lamdera.sendToFrontend clientId (Types.JoinGameResponse <| Response.SuccessJoinGame game)
+                            , Lamdera.sendToFrontend clientId (Types.RequestGamesResponse <| Response.SuccessRequestGames (Game.getGames updated_dict reqs.player_two))
+                            ]
+                            cmds
+                        )
                     )
 
                 Game.Fail error ->
@@ -133,74 +162,4 @@ updateFromFrontend sessionId clientId msg model =
                     )
 
 
-clientsToUpdateGames : User.User -> List Game.Game -> List ( ClientId, User.User )
-clientsToUpdateGames user list_games =
-    List.foldl
-        (\game clients ->
-            case game.player_two of
-                Just player_two ->
-                    if player_two.handle == user.handle then
-                        clients
 
-                    else
-                        case player_two.state of
-                            Connectivity.Connected client ->
-                                ( client, player_two ) :: clients
-
-                            Connectivity.Disconnected ->
-                                clients
-
-                Nothing ->
-                    if game.player_one.handle == user.handle then
-                        clients
-
-                    else
-                        case game.player_one.state of
-                            Connectivity.Connected client ->
-                                ( client, game.player_one ) :: clients
-
-                            Connectivity.Disconnected ->
-                                clients
-        )
-        []
-        list_games
-
-
-updateConnectivityOnGames : User.User -> Storage.GameStore -> Storage.GameStore
-updateConnectivityOnGames user games =
-    let
-        updated_games_of_user =
-            Game.getGames games user
-                |> List.map
-                    (\game ->
-                        if game.player_one.handle == user.handle then
-                            let
-                                updated_user =
-                                    game.player_one |> (\player -> { player | state = user.state })
-                            in
-                            { game | player_one = updated_user }
-
-                        else
-                            case game.player_two of
-                                Just player_two ->
-                                    let
-                                        updated_user =
-                                            player_two |> (\player -> { player | state = user.state })
-                                    in
-                                    { game | player_two = Just updated_user }
-
-                                Nothing ->
-                                    game
-                    )
-    in
-    List.foldl
-        (\game dict ->
-            case Dict.get (Game.getId game.id) dict of
-                Just _ ->
-                    Dict.insert (Game.getId game.id) game dict
-
-                Nothing ->
-                    dict
-        )
-        games
-        updated_games_of_user
