@@ -9,6 +9,8 @@ import Types.Events as Events
 import Random
 import Types.Storage.User as User
 import Types.Storage.Game as StorageGame
+import Types.Navigation as Navigation
+import Types.Storage.Auth as Auth
 
 type alias FrontendModel =
     { key : Key
@@ -27,4 +29,10 @@ type alias FrontendModel =
     , user : Maybe User.User
     , game : Maybe StorageGame.Game
     , user_games : List StorageGame.Game
+    , view_data_panel : Navigation.DataPanel
+    , view_game_area : Navigation.GameArea
+    , view_full_area : Navigation.FullView
+    , login_register_handle : Maybe String
+    , login_register_keyphrase : Maybe String
+    , m_error_message : Maybe String
     }

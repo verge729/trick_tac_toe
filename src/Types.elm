@@ -29,6 +29,10 @@ type FrontendMsg
     | NextCoordinateMidHover (Maybe Coordinates.Sector)
     | ClaimSector Sector.Sector
     | CatchRandomGeneratorSeedFE Random.Seed
+    | FillHandler String
+    | FillKeyphrase String
+    | Login 
+    | Register
 
 
 type ToBackend

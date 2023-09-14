@@ -14,6 +14,7 @@ import Types.SectorAttribute as SectorAttribute
 import Types.Ultimate.Board as UltimateBoard
 import Types.Victory as Victory
 import Url
+import Lamdera
 
 
 type alias UpdateTurn =
@@ -57,8 +58,91 @@ update msg model =
             in
             ( { model
                 | seed = new_seed
-                , board = Board.Ultimate tricked_board
+                -- , board = Board.Ultimate tricked_board
               }
+            , Cmd.none
+            )
+
+        Types.Login ->
+            case (model.login_register_handle, model.login_register_keyphrase) of
+                (Just handle, Just keyphrase) ->
+                    let
+                        auth_reqs =
+                            { handle = handle
+                            , keyphrase = keyphrase
+                            }
+                    in 
+                    ( model
+                    , Lamdera.sendToBackend <| Types.LoginUser auth_reqs
+                    )
+
+                (Just _, Nothing) ->
+                    ( { model | m_error_message = Just "Missing keyphrase" }
+                    , Cmd.none
+                    )
+
+                (Nothing, Just _ ) ->
+                    ( { model | m_error_message = Just "Missing handle"}
+                    , Cmd.none
+                    )
+
+                _ ->
+                    ( { model | m_error_message = Just "Missing handle and keyphrase"}
+                    , Cmd.none
+                    )
+
+        Types.Register ->
+            case (model.login_register_handle, model.login_register_keyphrase) of
+                (Just handle, Just keyphrase) ->
+                    let
+                        auth_reqs =
+                            { handle = handle
+                            , keyphrase = keyphrase
+                            }
+                    in 
+                    ( model
+                    , Lamdera.sendToBackend <| Types.AddUser auth_reqs
+                    )
+
+                (Just _, Nothing) ->
+                    ( { model | m_error_message = Just "Missing keyphrase" }
+                    , Cmd.none
+                    )
+
+                (Nothing, Just _ ) ->
+                    ( { model | m_error_message = Just "Missing handle"}
+                    , Cmd.none
+                    )
+
+                _ ->
+                    ( { model | m_error_message = Just "Missing handle and keyphrase"}
+                    , Cmd.none
+                    )
+
+        Types.FillHandler str ->
+            let
+                value =
+                    if str == "" then
+                        Nothing
+
+                    else
+                        Just str
+            in 
+            ( { model | login_register_handle = value }
+            , Cmd.none
+            )
+
+        Types.FillKeyphrase str ->
+            let
+                value =
+                    if str == "" then
+                        Nothing
+
+                    else
+                        Just str
+                    
+            in 
+            ( { model | login_register_keyphrase = value }
             , Cmd.none
             )
 

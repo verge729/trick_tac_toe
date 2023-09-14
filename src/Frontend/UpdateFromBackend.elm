@@ -3,6 +3,7 @@ module Frontend.UpdateFromBackend exposing (..)
 import Types
 import Types.Storage.Response as Response
 import Types.Storage.Response as Response
+import Types.Navigation as Navigation
 
 updateFromBackend : Types.ToFrontend -> Types.FrontendModel -> ( Types.FrontendModel, Cmd Types.FrontendMsg )
 updateFromBackend msg model =
@@ -13,22 +14,30 @@ updateFromBackend msg model =
         Types.RegistrationResponse response ->
             case response of
                 Response.SuccessRegistration user ->
-                    ( { model | user = Just user }
+                    ( { model | user = Just user 
+                    , view_full_area = Navigation.Authenticated
+                    }
                     , Cmd.none
                     )
 
                 Response.FailureRegistration error ->
-                    ( model, Cmd.none)
+                    ( { model | m_error_message = Just error }
+                    , Cmd.none
+                    )
 
         Types.LoginResponse response ->
             case response of
                 Response.SuccessLogin user ->
-                    ( { model | user = Just user }
+                    ( { model | user = Just user 
+                    , view_full_area = Navigation.Authenticated
+                    }
                     , Cmd.none
                     )
 
                 Response.FailureLogin error ->
-                    ( model, Cmd.none)
+                    ( { model | m_error_message = Just error }
+                    , Cmd.none
+                    )
 
         Types.CreateGameRespnse response ->
             case response of
