@@ -1,7 +1,8 @@
 module Types.Events exposing 
     ( EventType(..)
     , Event
-    , toStringEvent        
+    , toStringEvent 
+    , test       
     )
 
 import Types.Coordinates as Coordinates
@@ -38,3 +39,56 @@ toStringEventType eventType =
 
         Trick trick ->
             "triggered the " ++ Trick.toString trick ++ " trick!"
+
+testTurn : Event
+testTurn =
+    { turn = 1
+    , event = Turn
+    , player = Player.Player "test" "x"
+    , coordinates = Coordinates.Ultimate { low = Coordinates.Eight, mid = Coordinates.Eight}        
+    }
+
+
+testTrick : Event
+testTrick =
+    { turn = 1
+    , event = Trick <| Trick.getTrickFromType Trick.Vanish
+    , player = Player.Player "test" "x"
+    , coordinates = Coordinates.Ultimate { low = Coordinates.Eight, mid = Coordinates.Eight}        
+    }
+
+test : List Event
+test =
+    [ testTurn
+    , testTrick
+    , testTurn
+    -- , testTrick
+    -- , testTurn
+    -- , testTrick
+    -- , testTurn
+    -- , testTrick
+    -- , testTurn
+    -- , testTrick
+    -- , testTurn
+    -- , testTrick
+    -- , testTurn
+    -- , testTrick
+    -- , testTurn
+    -- , testTrick
+    -- , testTurn
+    -- , testTrick
+    -- , testTurn
+    -- , testTrick
+    -- , testTurn
+    -- , testTrick
+    -- , testTurn
+    -- , testTrick
+    -- , testTurn
+    -- , testTrick
+    -- , testTurn
+    -- , testTrick
+    -- , testTurn
+    -- , testTrick
+    -- , testTurn
+
+    ]

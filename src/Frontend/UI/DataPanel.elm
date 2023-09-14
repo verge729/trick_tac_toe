@@ -15,6 +15,8 @@ import Types.SectorAttribute as SectorAttribute
 import Types.Events as Events
 import Types.Navigation as Navigation
 import Types.Button as Button
+import Types.Storage.Game as StorageGame
+import Types.Button as Button
 
 root : Types.FrontendModel -> HS.Html Types.FrontendMsg
 root model =
@@ -22,11 +24,8 @@ root model =
         [ HSA.css
             [ TW.box_border
             , TW.flex
-            -- , TW.flex_col  
-            -- , TW.overflow_clip 
             , TW.h_full  
-            , TW.w_full   
-            -- , TW.relative      
+            , TW.w_full        
             ]            
         ]
         [ panelLayer model
@@ -39,11 +38,19 @@ panelLayer model =
             menu model
 
         Navigation.GameDetails ->
-            gameDetails model
+            gameDetailsArea model
 
 
 menu : Types.FrontendModel -> HS.Html Types.FrontendMsg
 menu model =
+    let
+        button_game_detail =
+            case model.game of
+                Just _ ->
+                    Button.button "Game Details" (Types.DataPanelNavTo Navigation.GameDetails ) Button.Wide Button.Unselected
+                Nothing ->
+                    HS.div [] []
+    in 
     HS.div
         [ HSA.css
             [ TW.box_border
@@ -56,56 +63,221 @@ menu model =
             , TW.items_center    
             ]            
         ]
-        [ Button.button "Create Game" (Types.GameViewAreaNavTo Navigation.CreateGame ) Button.Wide Button.Unselected
+        [ button_game_detail
+        , Button.button "Create Game" (Types.GameViewAreaNavTo Navigation.CreateGame ) Button.Wide Button.Unselected
         , Button.button "Join Game" (Types.GameViewAreaNavTo Navigation.JoinGame ) Button.Wide Button.Unselected
         , Button.button "View Games" (Types.GameViewAreaNavTo Navigation.GameList ) Button.Wide Button.Unselected
         , Button.button "Help" (Types.GameViewAreaNavTo Navigation.Help ) Button.Wide Button.Unselected
         ]
 
-gameDetails : Types.FrontendModel -> HS.Html Types.FrontendMsg
-gameDetails model =
+gameDetailsArea : Types.FrontendModel -> HS.Html Types.FrontendMsg
+gameDetailsArea model =
+    let
+        opposing_player =
+            case model.user of
+                Just user ->
+                    if (Player.getPlayerFromUser model.player_one model.player_two user) == model.player_one then
+                        model.player_two
+                    else
+                        model.player_one
+
+                Nothing ->
+                    model.player_two
+    in
     HS.div
-        []
-        [ sectionTitle "Path to Victory"
-        , pathToVictory model.path_to_victory
-        , sectionTitle "Coordinates"
-        , coordinates model.current_coordinate model.next_coordinate_low model.next_coordinate_mid
-        , sectionTitle "Current Player"
-        , currentPlayer model.current_player 
-        , sectionTitle "Event log"
-        , eventsRegular model.list_events            
+        [ HSA.css
+            [ TW.box_border
+            , TW.w_full 
+            , TW.h_5over6
+            , TW.space_y_2  
+            , TW.flex
+            , TW.flex_col   
+            , TW.items_end  
+            , TW.overflow_clip 
+            ]            
+        ]
+        [ HS.div
+            [ HSA.css
+                [ TW.box_border
+                , TW.w_full 
+                , TW.flex
+                , TW.flex_col   
+                , TW.items_end   
+                ]            
+            ]
+            [ Button.button "Menu" (Types.DataPanelNavTo Navigation.Menu ) Button.Regular Button.Unselected
+            ]
+        , HS.div
+            [ HSA.css
+                [ TW.box_border
+                , TW.w_full 
+                , TW.flex
+                , TW.flex_col   
+                , TW.items_end   
+                ]            
+            ]
+            [ sectionTitle "Game details"  
+            , gameDetails opposing_player model.game              
+            ]
+        , HS.div
+            [ HSA.css
+                [ TW.box_border
+                , TW.w_full 
+                , TW.flex
+                , TW.flex_col   
+                , TW.items_end   
+                ]            
+            ]
+            [ sectionTitle "Turn details"   
+            , turnDetails model.current_player model.game  
+            ]  
+        , HS.div
+            [ HSA.css
+                [ TW.box_border
+                , TW.w_full 
+                , TW.flex
+                , TW.flex_col   
+                , TW.items_end  
+                , TW.overflow_clip
+                ]            
+            ]
+            [ sectionTitle "Event log"   
+            , eventsRegular model.list_events
+            ]      
         ]
 
 sectionTitle : String -> HS.Html Types.FrontendMsg
 sectionTitle title =
     HS.h3
-        []
+        [ HSA.css
+            [ TW.box_border
+            , TW.w_full
+            -- , TW.border_solid 
+            , TW.my_1     
+            ]            
+        ]
         [ HS.div
             []
             [ HS.text title                
             ]            
         ]
 
+gameDetails : Player.Player -> Maybe StorageGame.Game -> HS.Html Types.FrontendMsg
+gameDetails opposing m_game =
+    case m_game of
+        Just game ->
+            HS.div 
+                [ HSA.css
+                    [ TW.box_border
+                    , TW.flex
+                    , TW.flex_col 
+                    , TW.items_end  
+                    , TW.w_full
+                    -- , TW.border_solid                     
+                    ]                    
+                ]
+                [ HS.div
+                    [ HSA.css
+                        [ TW.box_border
+                        , TW.ml_2  
+                        , TW.flex                
+                        ]                        
+                    ]
+                    [ HS.text <| "Current game: " ++ game.game_name                    
+                    ]  
+                , HS.div
+                    [ HSA.css
+                        [ TW.box_border
+                        , TW.ml_2  
+                        , TW.flex                
+                        ]                        
+                    ]
+                    [ HS.text <| "Opponent: " ++ opposing.handle                    
+                    ]         
+                ]
+
+        Nothing ->
+            HS.div [] []
+
+turnDetails : Player.Player -> Maybe StorageGame.Game -> HS.Html Types.FrontendMsg
+turnDetails current_player m_game =
+    case m_game of
+        Just game ->
+            case game.player_two of
+                Just player_two ->
+                    HS.div
+                        [ HSA.css
+                            [ TW.box_border
+                            , TW.flex
+                            , TW.flex_col 
+                            , TW.items_end  
+                            , TW.w_full
+                            -- , TW.border_solid                     
+                            ]                    
+                        ]
+                        [ HS.div
+                            [ HSA.css
+                                [ TW.box_border
+                                , TW.ml_2  
+                                , TW.flex                
+                                ]                        
+                            ]
+                            [ HS.text <| "Turn: " ++ (String.fromInt game.turn)                    
+                            ]   
+                        , HS.div  
+                            [ HSA.css
+                                [ TW.box_border
+                                , TW.flex
+                                , TW.flex_col 
+                                , TW.items_end  
+                                , TW.w_full                    
+                                ]                    
+                            ]
+                            [ HS.text <| "Current Player: " ++ current_player.handle                    
+                            ]               
+                        ]
+                    
+                Nothing ->
+                    HS.div [] []
+
+        Nothing ->
+            HS.div [] []
+
 eventsRegular : List Events.Event -> HS.Html Types.FrontendMsg
 eventsRegular list_events =
     let
         events =
             List.map (\event ->
-                    HS.div
-                        [ HSA.css
-                            [ TW.box_border
-                            , TW.m_2                    
-                            ]                    
-                        ]
-                        [ HS.text <| Events.toStringEvent event                    
-                        ]
+                let
+                    base_event_attrs =
+                        [ TW.box_border
+                        , TW.m_2                    
+                        ] 
+
+                    altered_event_attrs =
+                        case event.event of
+                            Events.Trick _ ->
+                                (TW.text_color TW.red_400 :: base_event_attrs)
+
+                            _ ->
+                                base_event_attrs
+
+                in
+                HS.div
+                    [ HSA.css
+                        altered_event_attrs                   
+                    ]
+                    [ HS.text <| Events.toStringEvent event                    
+                    ]
                 ) list_events  
      
     in
     HS.div
         [ HSA.css
             [ TW.box_border
-            , TW.m_2                
+            , TW.overflow_auto
+            -- , TW.overflow_y_scroll 
+            , TW.h_5over6              
             ]            
         ]
         events
@@ -235,4 +407,5 @@ coordinates m_current m_next_low m_next_mid =
                 Maybe.map Coordinates.toStringSector m_next_mid
             ]
         ]            
-        
+
+ 

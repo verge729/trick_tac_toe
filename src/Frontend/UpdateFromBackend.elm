@@ -4,6 +4,7 @@ import Lamdera
 import Types
 import Types.Navigation as Navigation
 import Types.Storage.Response as Response
+import Types.Coordinates as Coordinates
 
 
 updateFromBackend : Types.ToFrontend -> Types.FrontendModel -> ( Types.FrontendModel, Cmd Types.FrontendMsg )
@@ -67,7 +68,35 @@ updateFromBackend msg model =
         Types.RequestGamesResponse response ->
             case response of
                 Response.SuccessRequestGames games ->
-                    ( { model | user_games = games }
+                    let
+                        (m_game, coordinates, sector) =
+                            case model.game of
+                                Just game ->
+                                    List.foldl (\g (m_g, m_g_coordinates, m_g_sector) ->
+                                        if g.id == game.id then
+                                            case g.current_coordinate of    
+                                                Just stuff ->
+                                                    case stuff of
+                                                        Coordinates.Ultimate coords ->
+                                                            (Just g, Just coords, Nothing)
+
+                                                        Coordinates.Regular sect ->
+                                                            (Just g, Nothing, Just sect)
+
+                                                Nothing ->
+                                                    (Just g, Nothing, Nothing)
+                                        else
+                                            (m_g, m_g_coordinates, m_g_sector)
+                                    ) (Nothing, Nothing, Nothing) games
+
+                                Nothing ->
+                                    (model.game, model.current_coordinate, model.next_coordinate_mid)
+                    in
+                    ( { model | user_games = games 
+                    , game = m_game
+                    , current_coordinate = coordinates
+                    -- , next_coordinate_mid = sector
+                    }
                     , Cmd.none
                     )
 

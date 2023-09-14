@@ -40,6 +40,7 @@ type FrontendMsg
     | Login
     | Register
     | GameViewAreaNavTo Navigation.GameArea
+    | DataPanelNavTo Navigation.DataPanel
     | SelectGame StorageGame.GameId
     | SubmitGameCreation
     | SubmitJoinGame

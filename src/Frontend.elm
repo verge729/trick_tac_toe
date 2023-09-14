@@ -63,14 +63,14 @@ init url key =
       , list_events = []
       , seed = Random.initialSeed 42
       , user = Nothing--Just User.testing --Nothing
-      , game = Nothing
+      , game = Nothing--Just <| Tuple.first (StorageGame.testGameConnected <| Random.initialSeed 42)--Nothing
       , user_games = []
           -- List.sortWith (\a b -> Connectivity.sort a.state b.state)
-          -- [ (Tuple.first <| StorageGame.testGameWaiting <| Random.initialSeed 42 )
-          -- , (Tuple.first <| StorageGame.testGameConnected <| Random.initialSeed 41 )
-          -- , (Tuple.first <| StorageGame.testGameDisconnected <| Random.initialSeed 40 )
-          -- , (Tuple.first <| StorageGame.testGame <| Random.initialSeed 43 ) 
-          -- ]
+        --   [ (Tuple.first <| StorageGame.testGameWaiting <| Random.initialSeed 42 )
+        --   , (Tuple.first <| StorageGame.testGameConnected <| Random.initialSeed 41 )
+        --   , (Tuple.first <| StorageGame.testGameDisconnected <| Random.initialSeed 40 )
+        --   , (Tuple.first <| StorageGame.testGame <| Random.initialSeed 43 ) 
+        --   ]
       , view_data_panel = Navigation.Menu
       , view_game_area = Navigation.GameList
       , view_full_area = Navigation.Authenticate

@@ -53,6 +53,11 @@ update msg model =
             , Cmd.none
             )
 
+        Types.DataPanelNavTo target ->
+            ( { model | view_data_panel = target }
+            , Cmd.none
+            )
+
         Types.SelectGame game_id ->
             let
                 m_game =
@@ -63,10 +68,89 @@ update msg model =
                         else
                             selected
                     ) Nothing model.user_games
+
+                -- let
+                --         (m_game, coordinates, sector) =
+                --             case model.game of
+                --                 Just game ->
+                --                     List.foldl (\g (m_g, m_g_coordinates, m_g_sector) ->
+                --                         if g.id == game.id then
+                --                             case g.current_coordinate of    
+                --                                 Just stuff ->
+                --                                     case stuff of
+                --                                         Coordinates.Ultimate coords ->
+                --                                             (Just g, Just coords, Nothing)
+
+                --                                         Coordinates.Regular sect ->
+                --                                             (Just g, Nothing, Just sect)
+
+                --                                 Nothing ->
+                --                                     (Just g, Nothing, Nothing)
+                --                         else
+                --                             (m_g, m_g_coordinates, m_g_sector)
+                --                     ) (Nothing, Nothing, Nothing) games
+
+                --                 Nothing ->
+                --                     (model.game, model.current_coordinate, model.next_coordinate_mid)
+                --     in
+
+                (m_coordinates, m_sector) =
+                    case m_game of
+                        Just game ->
+                            case game.current_coordinate of
+                                Just stuff ->
+                                    case stuff of
+                                        Coordinates.Ultimate coords ->
+                                            (Just coords, Nothing)
+
+                                        Coordinates.Regular sect ->
+                                            (Nothing, Just sect)
+
+                                Nothing ->
+                                    (Nothing, Nothing)
+                        Nothing ->
+                            (Nothing, Nothing )
+
+                ( player_one, player_two, current_player ) =
+                    case m_game of
+                        Just game ->
+                            let
+                                created_p_one =
+                                    Player.createPlayerOne game.player_one
+                            in
+                            case game.player_two of
+                                Just p_two ->
+                                    let
+                                        created_p_two =
+                                            Player.createPlayerTwo p_two
+
+                                        current_p =
+                                            Player.getPlayerFromUser created_p_one created_p_two game.current_player
+
+                                    in                                    
+                                    ( created_p_one
+                                    , created_p_two
+                                    , current_p
+                                    )
+                                Nothing ->
+                                    ( created_p_one
+                                    , Player.defaultTwo
+                                    , created_p_one
+                                    )
+
+                        Nothing ->
+                            ( Player.defaultOne
+                            , Player.defaultTwo 
+                            , Player.defaultOne
+                            )
             in
             ( { model | game = m_game 
             , view_game_area = Navigation.Game
             , view_data_panel = Navigation.GameDetails
+            , player_one = player_one
+            , player_two = player_two
+            , current_player = current_player
+            , current_coordinate = m_coordinates
             }
             , Cmd.none
             )
@@ -326,14 +410,6 @@ update msg model =
                 Just game ->
                     case game.player_two of
                         Just player_two ->
-                            let
-                                other_player2 =
-                                    if game.current_player == game.player_one then
-                                        player_two
-
-                                    else
-                                        game.player_one
-                            in
                             case game.board of
                                 Board.NotSelected ->
                                     ( model
@@ -353,9 +429,13 @@ update msg model =
                                                     (Board.Regular board)
                                                     model.seed
                                                 )
+
+                                        updated_game =
+                                            updateGamewithProcessedClaim processed_claim game
                                     in
-                                    ( updateModelwithProcessedClaim processed_claim model
-                                    , Cmd.none
+                                    ( { model | game = Just updated_game }
+                                        |> updateModelwithProcessedClaim processed_claim 
+                                    , Lamdera.sendToBackend <| Types.UpdateGame updated_game
                                     )
 
                                 Board.Ultimate board ->
@@ -380,12 +460,20 @@ update msg model =
                                                     (Board.Ultimate board)
                                                     model.seed
                                                 )
+
+                                        current_coordinate =
+                                            { coordinates | mid = next_low }
+
+                                        updated_game =
+                                            updateGamewithProcessedClaim processed_claim game
+                                                |> (\g -> { g | current_coordinate = Just <| Coordinates.Ultimate current_coordinate })
                                     in
                                     ( { model
-                                        | current_coordinate = Just { coordinates | mid = next_low }
-                                    }
+                                        | current_coordinate = Just current_coordinate
+                                        , game = Just updated_game
+                                        }
                                         |> updateModelwithProcessedClaim processed_claim
-                                    , Cmd.none
+                                    , Lamdera.sendToBackend <| Types.UpdateGame updated_game
                                     )
 
                         Nothing ->
@@ -403,4 +491,23 @@ updateModelwithProcessedClaim claim_result model =
         , current_player = claim_result.next_player
         , path_to_victory = claim_result.path_to_victory
         , list_events = claim_result.event :: model.list_events
+    }
+
+updateGamewithProcessedClaim : Engine.ClaimResult -> StorageGame.Game -> StorageGame.Game
+updateGamewithProcessedClaim result game =
+    let
+        next_user =
+            case game.player_two of
+                Just player_two ->
+                    Player.getUserFromPlayer game.player_one player_two result.next_player
+
+                Nothing ->
+                    game.player_one
+    in
+    { game
+        | current_player = next_user
+        , board = result.board
+        , event_log = result.event :: game.event_log
+        , turn = result.turn
+        , path_to_victory = result.path_to_victory
     }

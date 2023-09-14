@@ -9,6 +9,8 @@ import Dict
 import Types.Storage.User as User
 import Types.Base.Board as BaseBoard
 import Types.Ultimate.Board as UltimateBoard
+import Types.Victory as Victory
+import Types.Coordinates as Coordinates
 
 type GameId
     = GameId String
@@ -32,6 +34,8 @@ type alias Game =
     , turn : Int
     , event_log : List Event.Event
     , game_name : String
+    , path_to_victory : Victory.PathToVictory
+    , current_coordinate : Maybe Coordinates.CoordinateSystem
     }
 
 type alias GameCreationReqs =
@@ -64,6 +68,8 @@ createGame seed reqs =
       , turn = 0
       , event_log = []
       , game_name = reqs.game_name
+      , path_to_victory = Victory.Unacheived
+      , current_coordinate = Nothing
       }
     , game_id.next_seed
     )
@@ -82,6 +88,8 @@ testGameWaiting seed =
       , turn = 0
       , event_log = []
       , game_name = "Waiting"
+      , path_to_victory = Victory.Unacheived
+      , current_coordinate = Nothing
       }
     , game_id.next_seed
     )
@@ -100,6 +108,8 @@ testGameConnected seed =
       , turn = 0
       , event_log = []
       , game_name = "Connected"
+      , path_to_victory = Victory.Unacheived
+      , current_coordinate = Nothing
       }
     , game_id.next_seed
     )
@@ -118,6 +128,8 @@ testGameDisconnected seed =
       , turn = 0
       , event_log = []
       , game_name = "Disconnected"
+      , path_to_victory = Victory.Unacheived
+      , current_coordinate = Nothing
       }
     , game_id.next_seed
     )
@@ -136,6 +148,8 @@ testGame seed =
       , turn = 0
       , event_log = []
       , game_name = "Freedom"
+      , path_to_victory = Victory.Unacheived
+      , current_coordinate = Nothing
       }
     , game_id.next_seed
     )

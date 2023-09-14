@@ -39,3 +39,10 @@ getUserFromPlayer user_one user_two player =
         user_one
     else
         user_two
+
+getPlayerFromUser : Player -> Player -> User.User -> Player
+getPlayerFromUser player_one player_two user =
+    if player_one.handle == user.handle then
+        player_one
+    else
+        player_two

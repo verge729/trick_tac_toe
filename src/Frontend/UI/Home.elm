@@ -82,9 +82,11 @@ titleBar model =
         [ HSA.css
             [ TW.box_border
             , TW.w_full
-            , TW.h_fit
-            , TW.border_solid
-            , TW.border_color TW.blue_500                
+            , TW.border_l_0
+            , TW.border_r_0
+            , TW.border_t_0
+            , TW.border_b
+            , TW.border_solid              
             ]            
         ]
         [ HS.h1
@@ -97,34 +99,15 @@ userCard : Maybe User.User -> Int -> HS.Html Types.FrontendMsg
 userCard m_user num_games =
     case m_user of
         Just user ->
-            let
-                connection_color =
-                    case user.state of
-                        Connectivity.Connected _ ->
-                            TW.green_500
-
-                        Connectivity.Disconnected ->
-                            TW.red_500
-
-                connection =
-                    HS.div
-                        [ HSA.css
-                            [ TW.box_border
-                            , TW.bg_color connection_color
-                            , TW.w_3
-                            , TW.h_3 
-                            , TW.rounded_2xl                                
-                            ]                            
-                        ]
-                        []
-            in 
             HS.div
                 [ HSA.css
                     [ TW.box_border
-                    , TW.w_full
-                    , TW.h_fit
+                    , TW.w_9over12
+                    , TW.border_l_0
+                    , TW.border_r_0
+                    , TW.border_t_0
+                    , TW.border_b
                     , TW.border_solid
-                    , TW.border_color TW.blue_500 
                     , TW.flex 
                     , TW.flex_col
                     , TW.space_x_2 
@@ -138,18 +121,19 @@ userCard m_user num_games =
                         , TW.flex   
                         , TW.space_x_2  
                         , TW.items_center
-                        , TW.justify_center                                    
+                        , TW.justify_center 
+                        , TW.text_lg                                   
                         ]                        
                     ]
                     [ HS.div
                         []
                         [ HS.text user.handle                
                         ] 
-                    , connection 
                     ]   
                 , HS.div
                     [ HSA.css
-                        [ TW.flex                           
+                        [ TW.flex   
+                        , TW.text_sm                        
                         ]                        
                     ]
                     [ HS.text <| "Participating in " ++ (String.fromInt num_games) ++ " games"                
@@ -175,11 +159,12 @@ dataPanel model =
             , TW.text_right
             , TW.flex
             , TW.flex_col
+            , TW.overflow_clip
+            , TW.items_end
             ]
         ]
         [ titleBar model
         , userCard model.user (List.length model.user_games)
-        , HS.text "data panel"
         , DataPanel.root model
         ]
 
@@ -196,8 +181,7 @@ gameArea model =
             , TW.flex_col
             ]
         ]
-        [ HS.text "game area"
-        , HS.div
+        [ HS.div
             [ HSA.css
                 [ TW.box_border
                 , TW.flex

@@ -152,8 +152,18 @@ updateFromFrontend sessionId clientId msg model =
         Types.UpdateGame reqs ->
             case Game.updateGame model.game_store reqs of
                 Game.Updated games ->
+                    let
+                        client_id_next_player =
+                            Connectivity.getClientId reqs.current_player.state
+
+                        updated_games =
+                            Game.getGames games reqs.current_player
+                    in
                     ( { model | game_store = games }
-                    , Lamdera.sendToFrontend clientId (Types.UpdateGameResponse <| Response.SuccessUpdateGame reqs)
+                    , Cmd.batch 
+                        [ Lamdera.sendToFrontend clientId (Types.UpdateGameResponse <| Response.SuccessUpdateGame reqs)
+                        , Lamdera.sendToFrontend client_id_next_player (Types.RequestGamesResponse (Response.SuccessRequestGames updated_games))
+                        ]
                     )
 
                 Game.Failed error ->
