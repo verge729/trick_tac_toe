@@ -283,57 +283,72 @@ update msg model =
                     )
 
                 Just game ->
-                    case game.board of
-                        Board.NotSelected ->
+                    case game.player_two of
+                        Just player_two ->
+                            let
+                                other_player2 =
+                                    if game.current_player == game.player_one then
+                                        player_two
+
+                                    else
+                                        game.player_one
+                            in
+                            case game.board of
+                                Board.NotSelected ->
+                                    ( model
+                                    , Cmd.none
+                                    )
+
+                                Board.Regular board ->
+                                    let
+                                        processed_claim =
+                                            Engine.processTurn
+                                                (Engine.Claim
+                                                    model.current_player
+                                                    other_player
+                                                    sector
+                                                    (Coordinates.Regular sector.coordinate)
+                                                    model.turn
+                                                    (Board.Regular board)
+                                                    model.seed
+                                                )
+                                    in
+                                    ( updateModelwithProcessedClaim processed_claim model
+                                    , Cmd.none
+                                    )
+
+                                Board.Ultimate board ->
+                                    let
+                                        next_low =
+                                            Maybe.withDefault Coordinates.Zero model.next_coordinate_low
+
+                                        next_mid =
+                                            Maybe.withDefault Coordinates.Zero model.next_coordinate_mid
+
+                                        coordinates =
+                                            { low = next_low, mid = next_mid }
+
+                                        processed_claim =
+                                            Engine.processTurn
+                                                (Engine.Claim
+                                                    model.current_player
+                                                    other_player
+                                                    sector
+                                                    (Coordinates.Ultimate coordinates)
+                                                    model.turn
+                                                    (Board.Ultimate board)
+                                                    model.seed
+                                                )
+                                    in
+                                    ( { model
+                                        | current_coordinate = Just { coordinates | mid = next_low }
+                                    }
+                                        |> updateModelwithProcessedClaim processed_claim
+                                    , Cmd.none
+                                    )
+
+                        Nothing ->
                             ( model
-                            , Cmd.none
-                            )
-
-                        Board.Regular board ->
-                            let
-                                processed_claim =
-                                    Engine.processTurn
-                                        (Engine.Claim
-                                            model.current_player
-                                            other_player
-                                            sector
-                                            (Coordinates.Regular sector.coordinate)
-                                            model.turn
-                                            (Board.Regular board)
-                                            model.seed
-                                        )
-                            in
-                            ( updateModelwithProcessedClaim processed_claim model
-                            , Cmd.none
-                            )
-
-                        Board.Ultimate board ->
-                            let
-                                next_low =
-                                    Maybe.withDefault Coordinates.Zero model.next_coordinate_low
-
-                                next_mid =
-                                    Maybe.withDefault Coordinates.Zero model.next_coordinate_mid
-
-                                coordinates =
-                                    { low = next_low, mid = next_mid }
-
-                                processed_claim =
-                                    Engine.processTurn
-                                        (Engine.Claim
-                                            model.current_player
-                                            other_player
-                                            sector
-                                            (Coordinates.Ultimate coordinates)
-                                            model.turn
-                                            (Board.Ultimate board)
-                                            model.seed
-                                        )
-                            in
-                            ( { model
-                                | current_coordinate = Just { coordinates | mid = next_low }
-                            }
-                                |> updateModelwithProcessedClaim processed_claim
                             , Cmd.none
                             )
 

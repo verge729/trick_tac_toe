@@ -15,8 +15,7 @@ import Types.Player as Player
 import Types.SectorAttribute as SectorAttribute
 import Types.Ultimate.Sector as UltimateSector
 import Types.Victory as Victory
-import Types.Coordinates exposing (Sector)
-
+import Types.Storage.User as User
 
 root : Board.Board -> Maybe Coordinates.Coordinates -> Victory.PathToVictory -> HS.Html Types.FrontendMsg
 root board m_current_coordinates claimed_victory =

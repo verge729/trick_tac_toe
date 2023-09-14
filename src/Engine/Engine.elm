@@ -16,6 +16,7 @@ import Types.SectorAttribute as SectorAttribute
 import Types.Tricks.Trick as Trick
 import Random
 import Types.Ultimate.Board as UltimateBoard
+import Types.Storage.User as User
 
 type alias Claim =
     { submitting_player : Player.Player

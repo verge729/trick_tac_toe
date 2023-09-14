@@ -15,3 +15,20 @@ testing =
     , keyphrase = "journey"
     , state = Connectivity.Connected "R1p5ekMiSsztXvs+KW3gLA==" 
     }
+
+
+testingAgain : User
+testingAgain =
+    { handle = "verge2"
+    , id = "1991082595"
+    , keyphrase = "journey"
+    , state = Connectivity.Connected "R1p5ekMiSsztXvs+KW3gLA==" 
+    }
+
+testingAgainDC : User
+testingAgainDC =
+    { handle = "verge2"
+    , id = "1991082595"
+    , keyphrase = "journey"
+    , state = Connectivity.Disconnected
+    }

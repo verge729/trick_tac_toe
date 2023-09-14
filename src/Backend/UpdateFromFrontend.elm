@@ -50,12 +50,20 @@ updateFromFrontend sessionId clientId msg model =
             case Auth.authenticateUser model.user_store reqs of
                 Auth.Pass user ->
                     let
+                        _ = Debug.log "user" user   
                         updated_connectivity =
                             updateConnectivityOnGames user model.game_store
+
+                        _ = Debug.log "updated_connectivity" updated_connectivity
 
                         clients_to_update =
                             Game.getFullGames updated_connectivity user
                                 |> clientsToUpdateGames user
+
+                        user_games =
+                            Game.getGames updated_connectivity user
+
+                        _ = Debug.log "user_games" user_games
 
                         cmds =
                             List.map
@@ -68,7 +76,7 @@ updateFromFrontend sessionId clientId msg model =
                     , Cmd.batch
                         ( List.append
                             [ Lamdera.sendToFrontend clientId (Types.LoginResponse <| Response.SuccessLogin { user | state = Connectivity.Connected clientId })
-                            , Lamdera.sendToFrontend clientId (Types.RequestGamesResponse (Response.SuccessRequestGames <| Game.getGames model.game_store user))
+                            , Lamdera.sendToFrontend clientId (Types.RequestGamesResponse (Response.SuccessRequestGames <| Game.getGames updated_connectivity user))
                             ]
                             cmds
                         )

@@ -7,6 +7,8 @@ import Types.Player as Player
 import Types.Storage.IdGenerator as IdGenerator
 import Dict
 import Types.Storage.User as User
+import Types.Base.Board as BaseBoard
+import Types.Ultimate.Board as UltimateBoard
 
 type GameId
     = GameId String
@@ -41,7 +43,7 @@ type alias GameCreationReqs =
 type alias GameJoinReqs =
     { game_id : String
     , player_two : User.User
-    }
+    } 
 
 type alias CreateGame =
     { name : String
@@ -65,6 +67,79 @@ createGame seed reqs =
       }
     , game_id.next_seed
     )
+
+testGameWaiting : Random.Seed -> (Game, Random.Seed)
+testGameWaiting seed =
+    let
+        game_id =
+            IdGenerator.generateIdGame seed
+    in
+    ( { id = GameId game_id.id
+      , board = Board.Ultimate <| Tuple.first UltimateBoard.boardUltimate
+      , player_one = User.testing
+      , player_two = Nothing--Just User.testingAgain
+      , current_player = User.testing
+      , turn = 0
+      , event_log = []
+      , game_name = "Waiting"
+      }
+    , game_id.next_seed
+    )
+
+testGameConnected : Random.Seed -> (Game, Random.Seed)
+testGameConnected seed =
+    let
+        game_id =
+            IdGenerator.generateIdGame seed
+    in
+    ( { id = GameId game_id.id
+      , board = Board.Ultimate <| Tuple.first UltimateBoard.boardUltimate
+      , player_one = User.testing
+      , player_two = Just User.testingAgain
+      , current_player = User.testing
+      , turn = 0
+      , event_log = []
+      , game_name = "Connected"
+      }
+    , game_id.next_seed
+    )
+
+testGameDisconnected : Random.Seed -> (Game, Random.Seed)
+testGameDisconnected seed =
+    let
+        game_id =
+            IdGenerator.generateIdGame seed
+    in
+    ( { id = GameId game_id.id
+      , board = Board.Ultimate <| Tuple.first UltimateBoard.boardUltimate
+      , player_one = User.testing
+      , player_two = Just User.testingAgainDC
+      , current_player = User.testing
+      , turn = 0
+      , event_log = []
+      , game_name = "Disconnected"
+      }
+    , game_id.next_seed
+    )
+
+testGame : Random.Seed -> (Game, Random.Seed)
+testGame seed =
+    let
+        game_id =
+            IdGenerator.generateIdGame seed
+    in
+    ( { id = GameId game_id.id
+      , board = Board.Regular <| Tuple.first BaseBoard.boardRegular
+      , player_one = User.testing
+      , player_two = Just User.testingAgain
+      , current_player = User.testing
+      , turn = 0
+      , event_log = []
+      , game_name = "Freedom"
+      }
+    , game_id.next_seed
+    )
+
 
 getId : GameId -> String
 getId (GameId id) =

@@ -23,6 +23,7 @@ import Types.Ultimate.Board as UltimateBoard
 import Types.Victory as Victory
 import Url
 import Types.Storage.User as User
+import Types.Storage.Game as StorageGame
 
 
 type alias Model =
@@ -60,11 +61,16 @@ init url key =
       , turn = 0
       , list_events = []
       , seed = Random.initialSeed 42
-      , user = Nothing --Just User.testing --Nothing
+      , user = Nothing--Just User.testing --Nothing
       , game = Nothing
-      , user_games = []
+      , user_games = 
+        [ (Tuple.first <| StorageGame.testGameWaiting <| Random.initialSeed 42 )
+        , (Tuple.first <| StorageGame.testGameConnected <| Random.initialSeed 41 )
+        , (Tuple.first <| StorageGame.testGameDisconnected <| Random.initialSeed 40 )
+        , (Tuple.first <| StorageGame.testGame <| Random.initialSeed 43 ) 
+        ]
       , view_data_panel = Navigation.Menu
-      , view_game_area = Navigation.CreateGame
+      , view_game_area = Navigation.GameList
       , view_full_area = Navigation.Authenticate
       , login_register_handle = Nothing
       , login_register_keyphrase = Nothing

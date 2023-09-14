@@ -10,6 +10,7 @@ import Types.Ultimate.Sector as UltimateSector
 import Types.Victory as Victory
 import Types.Board as Board
 
+import Types.Storage.User as User
 
 type alias UltimateBoard =
     Array.Array UltimateSector.Sector

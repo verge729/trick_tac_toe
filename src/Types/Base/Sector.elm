@@ -3,6 +3,7 @@ module Types.Base.Sector exposing (..)
 import Types.Player as Player
 import Types.Coordinates as Coordinates
 import Types.SectorAttribute as SectorAttribute
+import Types.Storage.User as User
 
 
 type alias Sector =

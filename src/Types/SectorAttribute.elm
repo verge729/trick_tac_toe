@@ -2,6 +2,7 @@ module Types.SectorAttribute exposing (..)
 
 import Types.Player as Player
 import Types.Tricks.Trick as Trick
+import Types.Storage.User as User
 
 
 type Treat

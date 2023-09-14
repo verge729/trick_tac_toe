@@ -67,6 +67,9 @@ updateFromBackend msg model =
         Types.RequestGamesResponse response ->
             case response of
                 Response.SuccessRequestGames games ->
+                    let
+                        _ = Debug.log "games" games
+                    in 
                     ( { model | user_games = games }
                     , Cmd.none
                     )

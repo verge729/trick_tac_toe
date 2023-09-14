@@ -10,6 +10,7 @@ import Array
 import Types.Base.Sector as Sector
 import Types.SectorAttribute as SectorAttribute
 import Types.Board as Board
+import Types.Storage.User as User
 
 
 type PathToVictory
