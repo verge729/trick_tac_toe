@@ -56,10 +56,10 @@ menu model =
             , TW.items_center    
             ]            
         ]
-        [ Button.button "Create Game" (Types.GameViewAreaNavTo Navigation.CreateGame ) Button.Wide
-        , Button.button "Join Game" (Types.GameViewAreaNavTo Navigation.JoinGame ) Button.Wide
-        , Button.button "View Games" (Types.GameViewAreaNavTo Navigation.GameList ) Button.Wide
-        , Button.button "Help" (Types.GameViewAreaNavTo Navigation.Help ) Button.Wide  
+        [ Button.button "Create Game" (Types.GameViewAreaNavTo Navigation.CreateGame ) Button.Wide Button.Unselected
+        , Button.button "Join Game" (Types.GameViewAreaNavTo Navigation.JoinGame ) Button.Wide Button.Unselected
+        , Button.button "View Games" (Types.GameViewAreaNavTo Navigation.GameList ) Button.Wide Button.Unselected
+        , Button.button "Help" (Types.GameViewAreaNavTo Navigation.Help ) Button.Wide Button.Unselected
         ]
 
 gameDetails : Types.FrontendModel -> HS.Html Types.FrontendMsg

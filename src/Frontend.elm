@@ -60,15 +60,17 @@ init url key =
       , turn = 0
       , list_events = []
       , seed = Random.initialSeed 42
-      , user = Just User.testing --Nothing
+      , user = Nothing --Just User.testing --Nothing
       , game = Nothing
       , user_games = []
       , view_data_panel = Navigation.Menu
-      , view_game_area = Navigation.NotIdentified
-      , view_full_area = Navigation.Authenticated
+      , view_game_area = Navigation.CreateGame
+      , view_full_area = Navigation.Authenticate
       , login_register_handle = Nothing
       , login_register_keyphrase = Nothing
       , m_error_message = Nothing
+      , game_creation_name = Nothing
+      , game_creation_board = Nothing
       }
     , Random.generate Types.CatchRandomGeneratorSeedFE Random.independentSeed
     )

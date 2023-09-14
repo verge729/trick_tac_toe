@@ -22,6 +22,10 @@ type Board
     | Regular RegularBoard
     | Ultimate UltimateBoard
 
+type SelectBoard 
+    = SelectRegular
+    | SelectUltimate
+
 checkAndUpdateForBlock : UltimateBoard -> UltimateBoard
 checkAndUpdateForBlock board =
     let

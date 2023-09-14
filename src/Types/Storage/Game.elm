@@ -43,6 +43,11 @@ type alias GameJoinReqs =
     , player_two : User.User
     }
 
+type alias CreateGame =
+    { name : String
+    , board : Board.SelectBoard
+    }
+
 createGame : Random.Seed -> GameCreationReqs -> ( Game, Random.Seed )
 createGame seed reqs =
     let

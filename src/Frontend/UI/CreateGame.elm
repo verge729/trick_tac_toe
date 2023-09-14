@@ -1,15 +1,18 @@
-module Frontend.UI.Authentication exposing (..)
+module Frontend.UI.CreateGame exposing (..)
+
 
 import Html.Styled as HS
 import Html.Styled.Attributes as HSA
 import Html.Styled.Events as HSE
 import Tailwind.Theme as TW
-import Tailwind.Utilities as TW 
+import Tailwind.Utilities as TW
 import Types
+import Types.Storage.Game as StorageGame
 import Types.Button as Button
+import Types.Board as Board
 
-type alias AuthData =
-    { target : Maybe String 
+type alias InputData =
+    { target : Maybe String
     , handler : String -> Types.FrontendMsg
     , placeholder : String
     }
@@ -17,18 +20,24 @@ type alias AuthData =
 root : Types.FrontendModel -> HS.Html Types.FrontendMsg
 root model =
     let
-        handler_data = 
-            { target = model.login_register_handle
-            , handler = Types.FillHandler
-            , placeholder = "Handler"            
+        input_data =
+            { target = model.game_creation_name
+            , handler = Types.FillGameName
+            , placeholder = "Game name"
             }
 
-        keyphrase_data =
-            { target = model.login_register_keyphrase
-            , handler = Types.FillKeyphrase
-            , placeholder = "Keyphrase"                
-            }
-    in 
+        (selected_ult, selected_reg) =
+            case model.game_creation_board of
+                Just board ->
+                    case board of
+                        Board.SelectUltimate ->
+                            (Button.Selected, Button.Unselected)
+
+                        Board.SelectRegular ->
+                            (Button.Unselected, Button.Selected)
+                Nothing ->
+                    (Button.Unselected, Button.Unselected)
+    in
     HS.div
         [ HSA.css
             [ TW.box_border
@@ -39,23 +48,21 @@ root model =
             , TW.items_center
             , TW.p_6
             , TW.h_full
-            ]            
+            , TW.space_y_2
+            ]              
         ]
-        [ title
-        , elementInputText handler_data (Just "* Do not use your real name *")
-        , elementInputText keyphrase_data Nothing
+        [ elementInputText input_data 
         , HS.div
             [ HSA.css
                 [ TW.box_border
-                , TW.flex
-                , TW.flex_row 
-                , TW.w_1over3 
-                , TW.my_3                 
+                , TW.flex  
+                , TW.w_7over12                  
                 ]                
             ]
-            [ Button.button "Login" Types.Login Button.Regular Button.Unselected
-            , Button.button "Register" Types.Register Button.Regular Button.Unselected           
-            ]   
+            [ Button.button "Ultimate" (Types.SelectBoard Board.SelectUltimate) Button.Regular selected_ult              
+            , Button.button "Regular" (Types.SelectBoard Board.SelectRegular) Button.Regular selected_reg
+            ] 
+        , Button.button "Create" Types.SubmitGameCreation Button.Regular Button.Unselected         
         , error model.m_error_message      
         ]
 
@@ -76,25 +83,9 @@ error m_str =
         [ HS.text <| Maybe.withDefault "" m_str            
         ]
 
-title : HS.Html Types.FrontendMsg
-title =
-    HS.h1
-        [ HSA.css
-            [ TW.box_border
-            , TW.w_fit
-            , TW.h_fit
-            , TW.flex
-            , TW.flex_col 
-            , TW.justify_center
-            , TW.items_center  
-            , TW.text_6xl          
-            ]            
-        ]
-        [ HS.text "Trick Tac Toe"            
-        ]
 
-elementInputText : AuthData -> Maybe String -> HS.Html Types.FrontendMsg
-elementInputText { target, handler, placeholder } m_notice =
+elementInputText : InputData -> HS.Html Types.FrontendMsg
+elementInputText { target, handler, placeholder } =
     let
         input =
             case target of
@@ -107,7 +98,7 @@ elementInputText { target, handler, placeholder } m_notice =
     HS.div
         [ HSA.css   
             [ TW.box_border
-            , TW.w_1over3
+            , TW.w_7over12
             , TW.h_fit
             , TW.flex
             , TW.flex_col 
@@ -130,14 +121,14 @@ elementInputText { target, handler, placeholder } m_notice =
             ]
             [ 
             ]
-        , HS.div
-            [ HSA.css
-                [ TW.box_border
-                , TW.flex
-                , TW.items_center 
-                , TW.text_sm                  
-                ]                
-            ]
-            [ HS.text <| Maybe.withDefault "" m_notice                
-            ]
+        -- , HS.div
+        --     [ HSA.css
+        --         [ TW.box_border
+        --         , TW.flex
+        --         , TW.items_center 
+        --         , TW.text_sm                  
+        --         ]                
+        --     ]
+        --     [ HS.text <| Maybe.withDefault "" m_notice                
+        --     ]
         ]

@@ -1,9 +1,10 @@
 module Frontend.UpdateFromBackend exposing (..)
 
+import Lamdera
 import Types
-import Types.Storage.Response as Response
-import Types.Storage.Response as Response
 import Types.Navigation as Navigation
+import Types.Storage.Response as Response
+
 
 updateFromBackend : Types.ToFrontend -> Types.FrontendModel -> ( Types.FrontendModel, Cmd Types.FrontendMsg )
 updateFromBackend msg model =
@@ -14,9 +15,10 @@ updateFromBackend msg model =
         Types.RegistrationResponse response ->
             case response of
                 Response.SuccessRegistration user ->
-                    ( { model | user = Just user 
-                    , view_full_area = Navigation.Authenticated
-                    }
+                    ( { model
+                        | user = Just user
+                        , view_full_area = Navigation.Authenticated
+                      }
                     , Cmd.none
                     )
 
@@ -28,9 +30,10 @@ updateFromBackend msg model =
         Types.LoginResponse response ->
             case response of
                 Response.SuccessLogin user ->
-                    ( { model | user = Just user 
-                    , view_full_area = Navigation.Authenticated
-                    }
+                    ( { model
+                        | user = Just user
+                        , view_full_area = Navigation.Authenticated
+                      }
                     , Cmd.none
                     )
 
@@ -42,12 +45,24 @@ updateFromBackend msg model =
         Types.CreateGameRespnse response ->
             case response of
                 Response.SuccessCreateGame game ->
-                    ( { model | game = Just game }
-                    , Cmd.none
-                    )
+                    case model.user of
+                        Just user ->
+                            ( { model | game = Just game }
+                            , Lamdera.sendToBackend <| Types.RequestGames user
+                            )
+
+                        Nothing ->
+                            ( { model
+                                | game = Just game
+                                , m_error_message = Just "User not logged in"
+                              }
+                            , Cmd.none
+                            )
 
                 Response.FailureCreateGame error ->
-                    ( model, Cmd.none)
+                    ( { model | m_error_message = Just error }
+                    , Cmd.none
+                    )
 
         Types.RequestGamesResponse response ->
             case response of
@@ -57,7 +72,9 @@ updateFromBackend msg model =
                     )
 
                 Response.FailureRequestGames error ->
-                    ( model, Cmd.none)
+                    ( { model | m_error_message = Just error }
+                    , Cmd.none
+                    )
 
         Types.JoinGameResponse response ->
             case response of
@@ -67,7 +84,9 @@ updateFromBackend msg model =
                     )
 
                 Response.FailureJoinGame error ->
-                    ( model, Cmd.none)
+                    ( { model | m_error_message = Just error }
+                    , Cmd.none
+                    )
 
         Types.UpdateGameResponse response ->
             case response of
@@ -77,4 +96,6 @@ updateFromBackend msg model =
                     )
 
                 Response.FailureUpdateGame error ->
-                    ( model, Cmd.none)
+                    ( { model | m_error_message = Just error }
+                    , Cmd.none
+                    )

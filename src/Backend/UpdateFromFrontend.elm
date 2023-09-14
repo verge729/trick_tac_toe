@@ -66,8 +66,11 @@ updateFromFrontend sessionId clientId msg model =
                     in
                     ( { model | game_store = updated_connectivity }
                     , Cmd.batch
-                        (Lamdera.sendToFrontend clientId (Types.LoginResponse <| Response.SuccessLogin { user | state = Connectivity.Connected clientId })
-                            :: cmds
+                        ( List.append
+                            [ Lamdera.sendToFrontend clientId (Types.LoginResponse <| Response.SuccessLogin { user | state = Connectivity.Connected clientId })
+                            , Lamdera.sendToFrontend clientId (Types.RequestGamesResponse (Response.SuccessRequestGames <| Game.getGames model.game_store user))
+                            ]
+                            cmds
                         )
                     )
 

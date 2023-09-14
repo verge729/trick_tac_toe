@@ -13,6 +13,7 @@ import Types.Storage.Game as StorageGame
 import Types.Storage.Response as StorageResponse
 import Types.Storage.User as StorageUser
 import Url exposing (Url)
+import Types.Board as Board
 
 
 type alias FrontendModel =
@@ -33,9 +34,13 @@ type FrontendMsg
     | CatchRandomGeneratorSeedFE Random.Seed
     | FillHandler String
     | FillKeyphrase String
+    | FillGameName String
+    | SelectBoard Board.SelectBoard
     | Login
     | Register
     | GameViewAreaNavTo Navigation.GameArea
+    | SelectGame StorageGame.GameId
+    | SubmitGameCreation
 
 
 type ToBackend

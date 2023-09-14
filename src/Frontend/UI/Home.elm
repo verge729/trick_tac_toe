@@ -10,8 +10,10 @@ import Types
 import Types.Navigation as Navigation
 import Frontend.UI.Authentication as Authentication
 import Types.Storage.User as User
-import Types.Storage.Connectivity exposing (Connectivity)
 import Types.Storage.Connectivity as Connectivity
+import Frontend.UI.GameList as GameList
+import Frontend.UI.CreateGame as CreateGame
+import Types.Board as Board
 
 root : Types.FrontendModel -> HS.Html Types.FrontendMsg
 root model =
@@ -211,13 +213,22 @@ displayGameArea : Types.FrontendModel -> HS.Html Types.FrontendMsg
 displayGameArea model =
     case model.view_game_area of
         Navigation.GameList ->
-            Authentication.root model
+            GameList.root model.user_games
 
         Navigation.Game ->
-            GameBoard.root model.board model.current_coordinate model.path_to_victory
+            let
+                board =
+                    case model.game of
+                        Just game ->
+                            game.board
+
+                        Nothing ->
+                            Board.NotSelected
+            in 
+            GameBoard.root board model.current_coordinate model.path_to_victory
 
         Navigation.CreateGame ->
-            HS.div [] []
+            CreateGame.root model
 
         Navigation.Help ->
             HS.div [] []

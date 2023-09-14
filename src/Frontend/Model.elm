@@ -35,4 +35,6 @@ type alias FrontendModel =
     , login_register_handle : Maybe String
     , login_register_keyphrase : Maybe String
     , m_error_message : Maybe String
+    , game_creation_name : Maybe String
+    , game_creation_board : Maybe Board.SelectBoard
     }
