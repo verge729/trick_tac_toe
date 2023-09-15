@@ -67,7 +67,7 @@ update msg model =
 
                         else
                             selected
-                    ) (Nothing, Victory.Unacheived) model.user_games
+                    ) (Nothing, Victory.Unacheived) (StorageGame.combineGames model.user_games)
 
 
                 (m_coordinates, m_sector) =

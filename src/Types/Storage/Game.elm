@@ -215,3 +215,29 @@ updateGame games game =
         Nothing ->
             Failed "Game not found"
 
+type alias GameTypes =
+    { active : List Game
+    , waiting : List Game
+    , finished : List Game        
+    }
+
+separateGames : List Game -> GameTypes
+separateGames list_games =
+    let
+        active =
+            List.filter (\game -> game.player_two /= Nothing && game.path_to_victory == Victory.Unacheived) list_games
+
+        waiting =
+            List.filter (\game -> game.player_two == Nothing) list_games
+
+        finished =
+            List.filter (\game -> game.path_to_victory /= Victory.Unacheived) list_games
+    in 
+    { active = active
+    , waiting = waiting
+    , finished = finished        
+    }
+
+combineGames : GameTypes -> List Game
+combineGames game_types =
+    game_types.active ++ game_types.waiting ++ game_types.finished

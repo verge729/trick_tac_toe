@@ -7,6 +7,7 @@ import Html.Styled.Events as HSE
 import Tailwind.Theme as TW 
 import Tailwind.Utilities as TW
 import Tailwind.Utilities exposing (bg_color)
+import Css
 
 type Width 
     = Wide
@@ -42,7 +43,8 @@ button label handler width bg_color =
             , TW.h_8
             , TW.mx_3  
             , TW.bg_color b_color  
-            , TW.text_color TW.white           
+            , TW.text_color TW.white  
+            , Css.cursor Css.pointer         
             ] 
         , HSE.onClick handler           
         ]

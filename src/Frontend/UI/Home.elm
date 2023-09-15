@@ -164,7 +164,7 @@ dataPanel model =
             ]
         ]
         [ titleBar model
-        , userCard model.user (List.length model.user_games)
+        , userCard model.user (List.length model.user_games.active)
         , DataPanel.root model
         ]
 
@@ -199,9 +199,14 @@ displayGameArea model =
     case model.user of
         Just user ->
             case model.view_game_area of
-                Navigation.GameList ->
-                    GameList.root user model.user_games
+                Navigation.GameListActive ->
+                    GameList.root user model.user_games.active
 
+                Navigation.GameListWaiting ->
+                    GameList.root user model.user_games.waiting
+
+                Navigation.GameListFinished ->
+                    GameList.root user model.user_games.finished
 
                 Navigation.Game ->
                     case model.game of
@@ -227,5 +232,8 @@ displayGameArea model =
                 Navigation.JoinGame ->
                     JoinGame.root model
         Nothing ->
-            HS.div [] []
+            HS.div 
+                [] 
+                [ HS.text "You must be logged in to play"                    
+                ]
 

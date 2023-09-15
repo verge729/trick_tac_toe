@@ -48,6 +48,8 @@ menu model =
             case model.game of
                 Just _ ->
                     Button.button "Game Details" (Types.DataPanelNavTo Navigation.GameDetails ) Button.Wide Button.Unselected
+                    
+
                 Nothing ->
                     HS.div [] []
     in 
@@ -55,7 +57,7 @@ menu model =
         [ HSA.css
             [ TW.box_border
             , TW.w_full 
-            , TW.h_2over6
+            , TW.h_3over6
             , TW.space_y_2  
             , TW.justify_center 
             , TW.flex
@@ -66,9 +68,16 @@ menu model =
         [ button_game_detail
         , Button.button "Create Game" (Types.GameViewAreaNavTo Navigation.CreateGame ) Button.Wide Button.Unselected
         , Button.button "Join Game" (Types.GameViewAreaNavTo Navigation.JoinGame ) Button.Wide Button.Unselected
-        , Button.button "View Games" (Types.GameViewAreaNavTo Navigation.GameList ) Button.Wide Button.Unselected
+        , Button.button (gameCount "View Active Games" model.user_games.active) (Types.GameViewAreaNavTo Navigation.GameListActive ) Button.Wide Button.Unselected
+        , Button.button (gameCount "View Waiting Games" model.user_games.waiting ) (Types.GameViewAreaNavTo Navigation.GameListWaiting ) Button.Wide Button.Unselected
+        , Button.button (gameCount "View Completed Games" model.user_games.finished ) (Types.GameViewAreaNavTo Navigation.GameListFinished ) Button.Wide Button.Unselected
         , Button.button "Help" (Types.GameViewAreaNavTo Navigation.Help ) Button.Wide Button.Unselected
         ]
+
+gameCount : String -> List StorageGame.Game -> String
+gameCount label list_games =
+    label ++ " (" ++ (String.fromInt <| List.length list_games) ++ ")"
+
 
 gameDetailsArea : Types.FrontendModel -> HS.Html Types.FrontendMsg
 gameDetailsArea model =
@@ -104,12 +113,13 @@ gameDetailsArea model =
                             [ HSA.css
                                 [ TW.box_border
                                 , TW.w_full 
-                                , TW.flex
-                                , TW.flex_col   
-                                , TW.items_end   
+                                , TW.flex  
+                                , TW.items_center
+                                , TW.justify_center
+                                , TW.mt_4
+                                ]
                                 ]            
-                            ]
-                            [ Button.button "Menu" (Types.DataPanelNavTo Navigation.Menu ) Button.Regular Button.Unselected
+                            [ Button.button "Menu" (Types.DataPanelNavTo Navigation.Menu ) Button.Wide Button.Unselected
                             ]
                         , HS.div
                             [ HSA.css
@@ -354,131 +364,3 @@ eventsRegular list_events =
             ]            
         ]
         events
-
-focusedBoard : Board.Board -> Maybe Coordinates.Coordinates -> HS.Html Types.FrontendMsg
-focusedBoard board m_coordinate =
-    HS.div
-        [] 
-        (case board of
-            Board.Ultimate board_ultimate ->
-                (case m_coordinate of
-                    Just coordinate ->
-                            case Array.get (Coordinates.toIntSector coordinate.mid) board_ultimate of
-                                Just sector ->
-                                    List.map (\entry ->
-                                        HS.div
-                                            [ HSA.css
-                                                [ TW.box_border
-                                                , TW.m_2                                                    
-                                                ]                                                
-                                            ]
-                                            [ HS.div 
-                                                [] 
-                                                [ HS.text <| "Coordinate : " ++ (Coordinates.toStringSector entry.coordinate)                                                
-                                                ]
-                                            , HS.div
-                                                []
-                                                [ HS.text <| "State : " ++ (SectorAttribute.toStringState entry.state)
-                                                ]
-                                            ]
-                                    ) (Array.toList sector.board)
-
-                                Nothing ->
-                                    [ HS.text "No board selected"                    
-                                    ]
-                            
-                    
-                    Nothing ->
-                        [ HS.text "No board selected (lacking coordinates)"                    
-                        ]
-                )
-            _ ->
-                [ HS.text "No board selected (incompatiable board)"                    
-                ]
-        )
-
-pathToVictory : Victory.PathToVictory -> HS.Html Types.FrontendMsg
-pathToVictory path_to_victory =
-    HS.div
-        []
-        [ HS.div
-            [ HSA.css
-                [ TW.box_border
-                , TW.w_10over12
-                , TW.ml_2                    
-                ]                
-            ]
-            [ HS.text <| Victory.toStringPathToVictory path_to_victory
-            ]
-        ]
-
-currentPlayer : Player.Player -> HS.Html Types.FrontendMsg
-currentPlayer player =
-    HS.div
-        []
-        [ HS.div
-            [ HSA.css
-                [ TW.box_border
-                , TW.w_10over12
-                , TW.ml_2                    
-                ]                
-            ]
-            [ HS.text "Handle: "
-            , HS.text player.handle
-            ]
-        , HS.div
-            [ HSA.css
-                [ TW.box_border
-                , TW.w_10over12
-                , TW.ml_2                    
-                ]                
-            ]
-            [ HS.text "Icon: "
-            , HS.text player.icon
-            ]
-        ]
-
-coordinates : Maybe Coordinates.Coordinates -> Maybe Coordinates.Sector -> Maybe Coordinates.Sector -> HS.Html Types.FrontendMsg
-coordinates m_current m_next_low m_next_mid =
-    HS.div
-        [ HSA.css
-            [ TW.box_border
-            , TW.w_full                
-            ]            
-        ]
-        [ HS.div
-            [ HSA.css
-                [ TW.box_border
-                , TW.w_10over12
-                , TW.ml_2                    
-                ]                
-            ]
-            [ HS.text "Current: "
-            , HS.text <| Maybe.withDefault "No Coordinates selected" <|
-                Maybe.map Coordinates.toStringCoordinates m_current
-            ]
-        , HS.div
-            [ HSA.css
-                [ TW.box_border
-                , TW.w_10over12
-                , TW.ml_2                    
-                ]                
-            ]
-            [ HS.text "Next low: "
-            , HS.text <| Maybe.withDefault "No Coordinates selected" <|
-                Maybe.map Coordinates.toStringSector m_next_low
-            ]
-        , HS.div
-            [ HSA.css
-                [ TW.box_border
-                , TW.w_10over12
-                , TW.ml_2                    
-                ]                
-            ]
-            [ HS.text "Next mid: "
-            , HS.text <| Maybe.withDefault "No Coordinates selected" <|
-                Maybe.map Coordinates.toStringSector m_next_mid
-            ]
-        ]            
-
- 

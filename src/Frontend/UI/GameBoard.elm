@@ -54,7 +54,7 @@ root logged_in ({board, current_coordinate, path_to_victory} as game) =
                 _ ->
                     HS.div
                         []
-                        [ HS.text "No board selected" ]
+                        [ HS.text "No board selected to show" ]
 
         _ = Debug.log "logged_in" logged_in
         _ = Debug.log "game.current_player" game.current_player

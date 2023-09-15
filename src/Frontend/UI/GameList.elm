@@ -19,11 +19,13 @@ root logged_in_user list_games =
     HS.div
         [ HSA.css
             [ TW.box_border
-            , TW.w_10over12
+            , TW.w_11over12
             , TW.flex
             , TW.flex_wrap
             , TW.items_center
             , TW.justify_center
+            , TW.h_5over6
+            , TW.overflow_auto
             ]
         ]
         (List.map ( gameCardLayer logged_in_user) list_games
@@ -60,7 +62,7 @@ gameCardGameOver logged_in_user victor game =
             , TW.flex_col
             , TW.p_3
             , TW.items_start
-            , TW.w_5over12
+            , TW.w_4over12
             , TW.m_2
             , TW.bg_color TW.stone_600
             , Css.cursor Css.pointer
@@ -124,7 +126,7 @@ gameCard logged_in_user game =
             , TW.flex_col
             , TW.p_3
             , TW.items_start
-            , TW.w_5over12
+            , TW.w_4over12
             , TW.m_2
             , TW.bg_color TW.stone_600
             ]

@@ -6,6 +6,7 @@ import Types.Coordinates as Coordinates
 import Types.Navigation as Navigation
 import Types.Storage.Response as Response
 import Types.Player as Player
+import Types.Storage.Game as Game
 
 updateFromBackend : Types.ToFrontend -> Types.FrontendModel -> ( Types.FrontendModel, Cmd Types.FrontendMsg )
 updateFromBackend msg model =
@@ -132,7 +133,7 @@ updateFromBackend msg model =
                                     )
                     in
                     ( { model
-                        | user_games = games
+                        | user_games = Game.separateGames games
                         , game = m_game
                         , current_coordinate = coordinates
                         , player_one = player_one

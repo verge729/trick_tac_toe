@@ -2,7 +2,9 @@ module Types.Navigation exposing (..)
 
 type GameArea
     = Game
-    | GameList
+    | GameListActive
+    | GameListWaiting
+    | GameListFinished
     | CreateGame
     | Help
     | NotIdentified

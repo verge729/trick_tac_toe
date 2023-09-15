@@ -28,7 +28,7 @@ type alias FrontendModel =
     , seed : Random.Seed
     , user : Maybe User.User
     , game : Maybe StorageGame.Game
-    , user_games : List StorageGame.Game
+    , user_games : StorageGame.GameTypes
     , view_data_panel : Navigation.DataPanel
     , view_game_area : Navigation.GameArea
     , view_full_area : Navigation.FullView
