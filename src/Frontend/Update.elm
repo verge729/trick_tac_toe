@@ -439,7 +439,11 @@ update msg model =
                                                 )
 
                                         current_coordinate =
-                                            { coordinates | mid = next_low }
+                                            case sector.state of
+                                                SectorAttribute.Orphaned ->
+                                                    { coordinates | mid = next_mid }
+                                                _ -> 
+                                                    { coordinates | mid = next_low }
 
                                         updated_game =
                                             updateGamewithProcessedClaim processed_claim game

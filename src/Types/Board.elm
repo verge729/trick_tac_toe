@@ -45,7 +45,7 @@ checkAndUpdateForBlock board =
                             board = 
                                 Array.map (\sector_2 ->
                                     if sector_2.coordinate == sector_low && sector_2.state == SectorAttribute.Free then
-                                        { sector_2 | state = SectorAttribute.Blocked }
+                                        { sector_2 | state = SectorAttribute.Orphaned }
                                     else
                                         sector_2
                                 ) sector.board

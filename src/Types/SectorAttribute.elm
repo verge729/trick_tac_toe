@@ -14,7 +14,7 @@ type Content
 
 type State 
     = Free
-    | Blocked
+    | Orphaned
     | Claimed Player.Player
 
 toStringState : State -> String
@@ -23,8 +23,8 @@ toStringState state =
         Free ->
             "Free"
 
-        Blocked ->
-            "Blocked"
+        Orphaned ->
+            "Orphaned"
 
         Claimed player ->
             "Claimed by " ++ player.handle

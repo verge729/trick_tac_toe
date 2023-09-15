@@ -50,7 +50,7 @@ updateBoard board coordinates state current_player =
                         SectorAttribute.Claimed _ ->
                             { board_low | board = updated_board }
 
-                        SectorAttribute.Blocked ->
+                        SectorAttribute.Orphaned ->
                             board_low
 
                 finalized_board =
@@ -88,7 +88,7 @@ checkAndUpdateForBlock board =
                                     Array.map
                                         (\sector_2 ->
                                             if sector_2.coordinate == sector_low && sector_2.state == SectorAttribute.Free then
-                                                { sector_2 | state = SectorAttribute.Blocked }
+                                                { sector_2 | state = SectorAttribute.Orphaned }
 
                                             else
                                                 sector_2

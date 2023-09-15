@@ -333,18 +333,6 @@ viewSector is_focused sector =
 
         div_sector =
             case sector.state of
-                SectorAttribute.Blocked ->
-                    HS.div
-                        shared_portion
-                        [ HS.div
-                            [ HSA.css
-                                [ TW.box_border
-                                ]
-                            ]
-                            [ HS.text "BLK"
-                            ]                            
-                        ]
-
                 SectorAttribute.Claimed player ->
                     HS.div
                         shared_portion
@@ -357,7 +345,7 @@ viewSector is_focused sector =
                             ]                            
                         ]
 
-                SectorAttribute.Free ->
+                _ ->
                     HS.div
                         ((HSE.onClick <| Types.ClaimSector sector) :: shared_portion)
                         [                             
