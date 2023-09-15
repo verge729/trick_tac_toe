@@ -46,7 +46,8 @@ titleBar  =
             , TW.border_r_0
             , TW.border_t_0
             , TW.border_b
-            , TW.border_solid              
+            , TW.border_solid 
+            , TW.pr_2             
             ]            
         ]
         [ HS.h1
@@ -106,6 +107,7 @@ informationArea =
             , TW.p_4
             , TW.flex
             , TW.flex_col
+            , TW.items_center
             ]
         ]
         [ HS.div
@@ -115,6 +117,7 @@ informationArea =
                 , TW.flex_col
                 , TW.justify_center
                 , TW.h_full
+                , TW.w_9over12
                 ]
             ]
             [ sectionTitle "Ultimate Tic Tac Toe"
@@ -131,7 +134,7 @@ sectionTitle title =
         [ HSA.css
             [ TW.box_border
             , TW.w_full
-            , TW.my_3    
+            , TW.mb_0    
             ]            
         ]
         [ HS.div
@@ -148,8 +151,7 @@ explainUltimate =
         [ HS.p
             [ HSA.css
                 [ TW.box_border
-                , TW.w_full
-                , TW.my_1   
+                , TW.w_full  
                 ]                
             ]
             [ paragraph "The game of Ultimate Tic Tac Toe takes the classic game of Tic Tac Toe to a new level. Instead of a 9 sector game, there are now 81 sectors to claim and more space to outwit your opponent."
@@ -169,7 +171,6 @@ explainTrick =
             [ HSA.css
                 [ TW.box_border
                 , TW.w_full
-                , TW.my_1   
                 ]                
             ]
             [ paragraph "Trick Tac Toe offers a twist on the classic and Ultimate versions of Tic Tac Toe. When each game is created, a random amount of \"Tricks\" are placed throughout the board. These are designed to change the environment of the board. The best part is that you will only find a Trick after you claim a tricked-out mini-sector!"
@@ -185,7 +186,7 @@ paragraph content =
         [ HSA.css
             [ TW.box_border
             , TW.w_full
-            , TW.my_1 
+            , TW.my_3
             ]            
         ]
         [ HS.text content            

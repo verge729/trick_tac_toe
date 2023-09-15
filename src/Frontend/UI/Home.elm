@@ -108,7 +108,8 @@ titleBar model =
             , TW.border_r_0
             , TW.border_t_0
             , TW.border_b
-            , TW.border_solid              
+            , TW.border_solid 
+            , TW.pr_2                  
             ]            
         ]
         [ HS.h1
@@ -246,7 +247,7 @@ displayGameArea model =
                     CreateGame.root model
 
                 Navigation.Help ->
-                    HS.div [] []
+                    Help.informationArea
 
                 Navigation.NotIdentified ->
                     HS.div [] []
