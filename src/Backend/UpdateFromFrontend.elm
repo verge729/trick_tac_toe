@@ -174,7 +174,7 @@ updateFromFrontend sessionId clientId msg model =
                     in
                     ( { model | game_store = games }
                     , Cmd.batch 
-                        [ Lamdera.sendToFrontend clientId (Types.UpdateGameResponse <| Response.SuccessUpdateGame reqs)
+                        [ Lamdera.sendToFrontend clientId (Types.RequestGamesResponse <| Response.SuccessRequestGames updated_games)
                         , Lamdera.sendToFrontend client_id_next_player (Types.RequestGamesResponse (Response.SuccessRequestGames updated_games))
                         ]
                     )

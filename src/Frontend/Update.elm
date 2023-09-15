@@ -471,7 +471,7 @@ updateModelwithProcessedClaim claim_result model =
         , board = claim_result.board
         , current_player = claim_result.next_player
         , path_to_victory = claim_result.path_to_victory
-        , list_events = claim_result.event :: model.list_events
+        , list_events = claim_result.event ++ model.list_events
     }
 
 updateGamewithProcessedClaim : Engine.ClaimResult -> StorageGame.Game -> StorageGame.Game
@@ -488,7 +488,7 @@ updateGamewithProcessedClaim result game =
     { game
         | current_player = next_user
         , board = result.board
-        , event_log = result.event :: game.event_log
+        , event_log = result.event ++ game.event_log
         , turn = result.turn
         , path_to_victory = result.path_to_victory
     }

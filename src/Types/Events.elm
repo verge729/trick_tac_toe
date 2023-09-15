@@ -13,6 +13,7 @@ import Types.Tricks.Trick as Trick
 type EventType
     = Turn
     | Trick Trick.Trick
+    | ClaimedSector
 
 
 type alias Event =
@@ -39,6 +40,9 @@ toStringEventType eventType =
 
         Trick trick ->
             "triggered the " ++ Trick.toString trick ++ " trick!"
+
+        ClaimedSector ->
+            "claimed a sector!"
 
 testTurn : Event
 testTurn =

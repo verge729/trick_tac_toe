@@ -27,7 +27,7 @@ boardUltimate =
     )
 
 
-updateBoard : UltimateBoard -> Coordinates.Coordinates -> SectorAttribute.State -> Player.Player -> UltimateBoard
+updateBoard : UltimateBoard -> Coordinates.Coordinates -> SectorAttribute.State -> Player.Player -> (UltimateBoard, Victory.PathToVictory)
 updateBoard board coordinates state current_player =
     let
         int_sector =
@@ -57,10 +57,10 @@ updateBoard board coordinates state current_player =
                     Array.set int_sector updated_ultimate_sector board
                         |> checkAndUpdateForBlock
             in
-            finalized_board
+            (finalized_board, claimed_victory)
 
         Nothing ->
-            board
+            (board, Victory.Unacheived)
 
 
 checkAndUpdateForBlock : UltimateBoard -> UltimateBoard
@@ -109,11 +109,6 @@ checkForBlockRegularBoard board =
     Array.filter (\i -> i.state /= SectorAttribute.Free) board
         |> Array.length
         |> (\i -> i == Array.length board)
-
-
-checkSectors : Coordinates.Coordinates -> List Coordinates.Sector -> Bool
-checkSectors coordinates sectors =
-    List.member coordinates.low sectors && List.member coordinates.mid sectors
 
 
 addTricks : UltimateBoard -> Random.Seed -> ( UltimateBoard, Random.Seed )

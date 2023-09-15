@@ -4,9 +4,10 @@ import Lamdera
 import Types
 import Types.Coordinates as Coordinates
 import Types.Navigation as Navigation
-import Types.Storage.Response as Response
 import Types.Player as Player
 import Types.Storage.Game as Game
+import Types.Storage.Response as Response
+
 
 updateFromBackend : Types.ToFrontend -> Types.FrontendModel -> ( Types.FrontendModel, Cmd Types.FrontendMsg )
 updateFromBackend msg model =
@@ -21,6 +22,7 @@ updateFromBackend msg model =
                         | user = Just user
                         , view_full_area = Navigation.Authenticated
                         , view_game_area = Navigation.GameListActive
+                        , m_error_message = Nothing
                       }
                     , Cmd.none
                     )
@@ -37,6 +39,7 @@ updateFromBackend msg model =
                         | user = Just user
                         , view_full_area = Navigation.Authenticated
                         , view_game_area = Navigation.GameListActive
+                        , m_error_message = Nothing
                       }
                     , Cmd.none
                     )
@@ -51,7 +54,10 @@ updateFromBackend msg model =
                 Response.SuccessCreateGame game ->
                     case model.user of
                         Just user ->
-                            ( { model | view_game_area = Navigation.GameListWaiting }
+                            ( { model
+                                | view_game_area = Navigation.GameListWaiting
+                                , m_error_message = Nothing
+                              }
                             , Lamdera.sendToBackend <| Types.RequestGames user
                             )
 
@@ -99,8 +105,6 @@ updateFromBackend msg model =
                                 Nothing ->
                                     ( model.game, model.current_coordinate, model.next_coordinate_mid )
 
-                                
-
                         ( player_one, player_two, current_player ) =
                             case m_game of
                                 Just game ->
@@ -116,12 +120,12 @@ updateFromBackend msg model =
 
                                                 current_p =
                                                     Player.getPlayerFromUser created_p_one created_p_two game.current_player
-
-                                            in                                    
+                                            in
                                             ( created_p_one
                                             , created_p_two
                                             , current_p
                                             )
+
                                         Nothing ->
                                             ( created_p_one
                                             , Player.defaultTwo
@@ -130,7 +134,7 @@ updateFromBackend msg model =
 
                                 Nothing ->
                                     ( Player.defaultOne
-                                    , Player.defaultTwo 
+                                    , Player.defaultTwo
                                     , Player.defaultOne
                                     )
                     in
@@ -142,6 +146,7 @@ updateFromBackend msg model =
                         , player_two = player_two
                         , current_player = current_player
                         , next_coordinate_mid = sector
+                        , m_error_message = Nothing
                       }
                     , Cmd.none
                     )
@@ -154,8 +159,10 @@ updateFromBackend msg model =
         Types.JoinGameResponse response ->
             case response of
                 Response.SuccessJoinGame game ->
-                    ( { model | view_game_area = Navigation.GameListActive
-                     }
+                    ( { model
+                        | view_game_area = Navigation.GameListActive
+                        , m_error_message = Nothing
+                      }
                     , Cmd.none
                     )
 
@@ -167,7 +174,10 @@ updateFromBackend msg model =
         Types.UpdateGameResponse response ->
             case response of
                 Response.SuccessUpdateGame game ->
-                    ( { model | game = Just game }
+                    ( { model
+                        | game = Just game
+                        , m_error_message = Nothing
+                      }
                     , Cmd.none
                     )
 

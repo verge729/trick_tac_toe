@@ -18,7 +18,7 @@ import Types.Victory as Victory
 import Types.Storage.User as User
 import Types.Storage.Game as StorageGame
 
-root : User.User -> StorageGame.Game{-Board.Board -> Maybe Coordinates.Coordinates -> Victory.PathToVictory-} -> HS.Html Types.FrontendMsg
+root : User.User -> StorageGame.Game -> HS.Html Types.FrontendMsg
 root logged_in ({board, current_coordinate, path_to_victory} as game) =
     let
         main_view =
@@ -39,6 +39,17 @@ root logged_in ({board, current_coordinate, path_to_victory} as game) =
                             HS.div
                                 []
                                 [ HS.text "No board selected" ]
+
+
+                (Board.Ultimate data, Nothing) ->
+                            let
+                                matrix =
+                                    { top = Array.slice 0 3 data
+                                    , middle = Array.slice 3 6 data
+                                    , bottom = Array.slice 6 9 data
+                                    }
+                            in
+                            boardUltimate matrix (Nothing) path_to_victory
 
                 (Board.Regular data, _) ->
                     let

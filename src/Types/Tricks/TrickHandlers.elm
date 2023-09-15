@@ -12,6 +12,7 @@ import Types.SectorAttribute as SectorAttribute
 import Array
 import Random
 import Types.Ultimate.Board as UltimateBoard
+import Types.Victory as Victory
 
 {- ANCHOR TrickHandler -}
 
@@ -52,7 +53,7 @@ handleTrick handler_info =
 
         (Board.Ultimate ultimate, Coordinates.Ultimate coordinates) ->
             let
-                (updated_board, seed) =
+                ((updated_board, claimed_victory), seed) =
                     handleTrickUltimate
                         { trick_type = handler_info.trick_type
                         , player = handler_info.player
@@ -69,11 +70,11 @@ handleTrick handler_info =
 
 {- ANCHOR handle ultimate -}
 
-handleTrickUltimate : TrickHandlerSpecialized Board.UltimateBoard Coordinates.Coordinates -> (Board.UltimateBoard, Random.Seed)
+handleTrickUltimate : TrickHandlerSpecialized Board.UltimateBoard Coordinates.Coordinates -> ((Board.UltimateBoard, Victory.PathToVictory), Random.Seed)
 handleTrickUltimate handler_info =
     (case handler_info.trick_type of
         Trick.Vanish ->
-            (handler_info.board, handler_info.seed)
+            ((handler_info.board, Victory.Unacheived), handler_info.seed)
         
         Trick.WrongDestination ->
             let
@@ -92,8 +93,8 @@ handleTrickUltimate handler_info =
             )
     ) |> removeTrickUltimate handler_info.coordinates
 
-removeTrickUltimate : Coordinates.Coordinates -> (Board.UltimateBoard, Random.Seed) -> (Board.UltimateBoard, Random.Seed)
-removeTrickUltimate coordinate (board, seed) =
+removeTrickUltimate : Coordinates.Coordinates -> ((Board.UltimateBoard, Victory.PathToVictory), Random.Seed) -> ((Board.UltimateBoard, Victory.PathToVictory), Random.Seed)
+removeTrickUltimate coordinate ((board,claimed_victory), seed) =
     let
         int_coordinate =
             Coordinates.toIntSector coordinate.mid
@@ -118,7 +119,7 @@ removeTrickUltimate coordinate (board, seed) =
                 Nothing ->
                     (board, seed)
     in 
-    (updated_board, n_seed)
+    ((updated_board, claimed_victory), n_seed)
 
 findFreeCoordinateUltimate : Board.UltimateBoard -> Coordinates.Coordinates -> Random.Seed -> (Coordinates.Coordinates, Random.Seed)
 findFreeCoordinateUltimate board start_coordinate seed =

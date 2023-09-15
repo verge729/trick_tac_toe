@@ -62,8 +62,8 @@ init url key =
       , turn = 0
       , list_events = []
       , seed = Random.initialSeed 42
-      , user = Just User.testing --Nothing
-      , game = Just <| Tuple.first (StorageGame.testGameConnected <| Random.initialSeed 42)--Nothing
+      , user = Nothing--Just User.testing --Nothing
+      , game = Nothing-- Just <| Tuple.first (StorageGame.testGameConnected <| Random.initialSeed 42)--Nothing
       , user_games = 
             { waiting = []
             , active = []
@@ -85,9 +85,9 @@ init url key =
         --   , (Tuple.first <| StorageGame.testGameDisconnected <| Random.initialSeed 40 )
         --   , (Tuple.first <| StorageGame.testGame <| Random.initialSeed 43 ) 
         --   ]
-      , view_data_panel = Navigation.GameDetails
-      , view_game_area = Navigation.Game
-      , view_full_area = Navigation.Authenticated
+      , view_data_panel = Navigation.Menu
+      , view_game_area = Navigation.GameListActive
+      , view_full_area = Navigation.Authenticate
       , login_register_handle = Nothing
       , login_register_keyphrase = Nothing
       , m_error_message = Nothing

@@ -24,7 +24,7 @@ root logged_in_user list_games =
             , TW.flex_wrap
             , TW.items_center
             , TW.justify_center
-            , TW.h_5over6
+            , TW.h_fit
             , TW.overflow_auto
             ]
         ]

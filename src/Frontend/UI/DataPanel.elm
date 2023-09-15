@@ -342,6 +342,9 @@ eventsRegular list_events =
                             Events.Trick _ ->
                                 (TW.text_color TW.red_400 :: base_event_attrs)
 
+                            Events.ClaimedSector ->
+                                (TW.text_color TW.green_400 :: base_event_attrs)
+
                             _ ->
                                 base_event_attrs
 
