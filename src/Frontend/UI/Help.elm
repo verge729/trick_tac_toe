@@ -181,6 +181,7 @@ explainGame =
             , paragraph "You will know if your opponent is online by the colored dot located by their handle on the Game Card for your game with them. Green means they are online. Red means they are offline."
             , paragraph "Your opponent will recieve your turn as soon as you claim a sector, so be careful to not click prematurely!"
             , paragraph "There is not restriction on how many games you can participate in at once."
+            , paragraph "FYI, the game does not yet recognize a draw, so keep that in mind."
             , paragraph <| "If you have any feedback, please email the feedback to " ++ Types.supportEmail ++ " ."
             ]            
         ]
