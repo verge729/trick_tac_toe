@@ -20,6 +20,7 @@ updateFromBackend msg model =
                     ( { model
                         | user = Just user
                         , view_full_area = Navigation.Authenticated
+                        , view_game_area = Navigation.GameListActive
                       }
                     , Cmd.none
                     )
@@ -35,6 +36,7 @@ updateFromBackend msg model =
                     ( { model
                         | user = Just user
                         , view_full_area = Navigation.Authenticated
+                        , view_game_area = Navigation.GameListActive
                       }
                     , Cmd.none
                     )
@@ -49,7 +51,7 @@ updateFromBackend msg model =
                 Response.SuccessCreateGame game ->
                     case model.user of
                         Just user ->
-                            ( { model | game = Just game }
+                            ( { model | view_game_area = Navigation.GameListWaiting }
                             , Lamdera.sendToBackend <| Types.RequestGames user
                             )
 
@@ -152,7 +154,8 @@ updateFromBackend msg model =
         Types.JoinGameResponse response ->
             case response of
                 Response.SuccessJoinGame game ->
-                    ( { model | game = Just game }
+                    ( { model | view_game_area = Navigation.GameListActive
+                     }
                     , Cmd.none
                     )
 
