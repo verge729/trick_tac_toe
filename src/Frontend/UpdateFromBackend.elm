@@ -5,7 +5,7 @@ import Types
 import Types.Coordinates as Coordinates
 import Types.Navigation as Navigation
 import Types.Storage.Response as Response
-
+import Types.Player as Player
 
 updateFromBackend : Types.ToFrontend -> Types.FrontendModel -> ( Types.FrontendModel, Cmd Types.FrontendMsg )
 updateFromBackend msg model =
@@ -66,10 +66,6 @@ updateFromBackend msg model =
                     )
 
         Types.RequestGamesResponse response ->
-            let
-                _ =
-                    Debug.log "response" "responded"
-            in
             case response of
                 Response.SuccessRequestGames games ->
                     let
@@ -99,13 +95,50 @@ updateFromBackend msg model =
 
                                 Nothing ->
                                     ( model.game, model.current_coordinate, model.next_coordinate_mid )
+
+                                
+
+                        ( player_one, player_two, current_player ) =
+                            case m_game of
+                                Just game ->
+                                    let
+                                        created_p_one =
+                                            Player.createPlayerOne game.player_one
+                                    in
+                                    case game.player_two of
+                                        Just p_two ->
+                                            let
+                                                created_p_two =
+                                                    Player.createPlayerTwo p_two
+
+                                                current_p =
+                                                    Player.getPlayerFromUser created_p_one created_p_two game.current_player
+
+                                            in                                    
+                                            ( created_p_one
+                                            , created_p_two
+                                            , current_p
+                                            )
+                                        Nothing ->
+                                            ( created_p_one
+                                            , Player.defaultTwo
+                                            , created_p_one
+                                            )
+
+                                Nothing ->
+                                    ( Player.defaultOne
+                                    , Player.defaultTwo 
+                                    , Player.defaultOne
+                                    )
                     in
                     ( { model
                         | user_games = games
                         , game = m_game
                         , current_coordinate = coordinates
-
-                        -- , next_coordinate_mid = sector
+                        , player_one = player_one
+                        , player_two = player_two
+                        , current_player = current_player
+                        , next_coordinate_mid = sector
                       }
                     , Cmd.none
                     )

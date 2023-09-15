@@ -16,39 +16,57 @@ import Types.SectorAttribute as SectorAttribute
 import Types.Ultimate.Sector as UltimateSector
 import Types.Victory as Victory
 import Types.Storage.User as User
+import Types.Storage.Game as StorageGame
 
-root : Board.Board -> Maybe Coordinates.Coordinates -> Victory.PathToVictory -> HS.Html Types.FrontendMsg
-root board m_current_coordinates claimed_victory =
+root : User.User -> StorageGame.Game{-Board.Board -> Maybe Coordinates.Coordinates -> Victory.PathToVictory-} -> HS.Html Types.FrontendMsg
+root logged_in ({board, current_coordinate, path_to_victory} as game) =
     let
         main_view =
-            case board of
-                Board.NotSelected ->
+            case (board, current_coordinate) of
+                (Board.Ultimate data, Just coordinates) ->
+                    case coordinates of
+                        Coordinates.Ultimate coords ->
+                            let
+                                matrix =
+                                    { top = Array.slice 0 3 data
+                                    , middle = Array.slice 3 6 data
+                                    , bottom = Array.slice 6 9 data
+                                    }
+                            in
+                            boardUltimate matrix (Just coords) path_to_victory
+
+                        _ ->
+                            HS.div
+                                []
+                                [ HS.text "No board selected" ]
+
+                (Board.Regular data, _) ->
+                    let
+                        matrix =
+                            { top = Array.slice 0 3 data
+                            , middle = Array.slice 3 6 data
+                            , bottom = Array.slice 6 9 data
+                            }
+                    in
+                    boardRegular matrix path_to_victory False
+
+                
+                _ ->
                     HS.div
                         []
                         [ HS.text "No board selected" ]
 
-                Board.Regular data ->
-                    let
-                        matrix =
-                            { top = Array.slice 0 3 data
-                            , middle = Array.slice 3 6 data
-                            , bottom = Array.slice 6 9 data
-                            }
-                    in
-                    boardRegular matrix claimed_victory False
+        _ = Debug.log "logged_in" logged_in
+        _ = Debug.log "game.current_player" game.current_player
+        not_your_turn_mask =
+            if logged_in.id == game.current_player.id then
+                HS.div [] []
+            else
+                jammerMask
 
-                Board.Ultimate data ->
-                    let
-                        matrix =
-                            { top = Array.slice 0 3 data
-                            , middle = Array.slice 3 6 data
-                            , bottom = Array.slice 6 9 data
-                            }
-                    in
-                    boardUltimate matrix m_current_coordinates claimed_victory
 
         (victory_view, victory_attrs, jammer_mask) =
-            case claimed_victory of
+            case path_to_victory of
                 Victory.Unacheived ->
                     ( HS.div [] []
                     , []
@@ -87,13 +105,14 @@ root board m_current_coordinates claimed_victory =
         [ victory_view
         , main_view
         , jammer_mask
+        , not_your_turn_mask
         ]
 
 {- ANCHOR ultimate board -}
 
 
 boardUltimate : Board.BoardRows Board.UltimateBoard -> Maybe Coordinates.Coordinates -> Victory.PathToVictory -> HS.Html Types.FrontendMsg
-boardUltimate data m_current_coordinate claimed_victory =
+boardUltimate data m_current_coordinate path_to_victory =
     HS.div
         [ HSA.css
             [ TW.box_border
@@ -210,12 +229,12 @@ boardRegularMidLayer :
     -> Coordinates.Sector
     -> Bool
     -> HS.Html Types.FrontendMsg
-boardRegularMidLayer data claimed_victory mid_coordinate is_focused =
+boardRegularMidLayer data path_to_victory mid_coordinate is_focused =
     HS.div
         [ HSE.onMouseEnter <| Types.NextCoordinateMidHover (Just mid_coordinate)
         , HSE.onMouseLeave <| Types.NextCoordinateMidHover Nothing
         ]
-        [ boardRegular data (Victory.toPathToVictoryState claimed_victory) is_focused
+        [ boardRegular data (Victory.toPathToVictoryState path_to_victory) is_focused
         ]
 
 
@@ -224,10 +243,10 @@ boardRegularMidLayer data claimed_victory mid_coordinate is_focused =
 
 
 boardRegular : Board.BoardRows Board.RegularBoard -> Victory.PathToVictory -> Bool -> HS.Html Types.FrontendMsg
-boardRegular data claimed_victory is_focused =
+boardRegular data path_to_victory is_focused =
     let
         ( mask, opacity ) =
-            case claimed_victory of
+            case path_to_victory of
                 Victory.Unacheived ->
                     ( HS.div [] []
                     , TW.opacity_100
@@ -304,6 +323,7 @@ viewSector is_focused sector =
                     , TW.items_center
                     , TW.justify_center
                     , TW.m_2
+                    , Css.cursor Css.pointer
                     ]
                     bg_trick
                 )

@@ -72,79 +72,160 @@ menu model =
 
 gameDetailsArea : Types.FrontendModel -> HS.Html Types.FrontendMsg
 gameDetailsArea model =
-    let
-        opposing_player =
-            case model.user of
-                Just user ->
-                    if (Player.getPlayerFromUser model.player_one model.player_two user) == model.player_one then
-                        model.player_two
-                    else
-                        model.player_one
+    case model.game of
+        Just game ->
+            case game.player_two of
+                Just player_two ->
+                    let
+                        opposing_player =
+                            case model.user of
+                                Just user ->
+                                    if (Player.getPlayerFromUser model.player_one model.player_two user) == model.player_one then
+                                        model.player_two
+                                    else
+                                        model.player_one
 
+                                Nothing ->
+                                    model.player_two
+                    in
+                    HS.div
+                        [ HSA.css
+                            [ TW.box_border
+                            , TW.w_full 
+                            , TW.h_5over6
+                            , TW.space_y_2  
+                            , TW.flex
+                            , TW.flex_col   
+                            , TW.items_end  
+                            , TW.overflow_clip 
+                            ]            
+                        ]
+                        [ HS.div
+                            [ HSA.css
+                                [ TW.box_border
+                                , TW.w_full 
+                                , TW.flex
+                                , TW.flex_col   
+                                , TW.items_end   
+                                ]            
+                            ]
+                            [ Button.button "Menu" (Types.DataPanelNavTo Navigation.Menu ) Button.Regular Button.Unselected
+                            ]
+                        , HS.div
+                            [ HSA.css
+                                [ TW.box_border
+                                , TW.w_full 
+                                , TW.flex
+                                , TW.flex_col   
+                                , TW.items_end   
+                                ]            
+                            ]
+                            [ sectionTitle "Game details"  
+                            , gameDetails opposing_player game              
+                            ]
+                        , HS.div
+                            [ HSA.css
+                                [ TW.box_border
+                                , TW.w_full 
+                                , TW.flex
+                                , TW.flex_col   
+                                , TW.items_end   
+                                ]            
+                            ]
+                            [ sectionTitle "Turn details"   
+                            , turnDetails model.current_player game  
+                            ]  
+                        , HS.div
+                            [ HSA.css
+                                [ TW.box_border
+                                , TW.w_full 
+                                , TW.flex
+                                , TW.flex_col   
+                                , TW.items_end  
+                                , TW.overflow_clip
+                                ]            
+                            ]
+                            [ sectionTitle "Event log"   
+                            , eventsRegular game.event_log
+                            ]      
+                        ]
                 Nothing ->
-                    model.player_two
-    in
-    HS.div
-        [ HSA.css
-            [ TW.box_border
-            , TW.w_full 
-            , TW.h_5over6
-            , TW.space_y_2  
-            , TW.flex
-            , TW.flex_col   
-            , TW.items_end  
-            , TW.overflow_clip 
-            ]            
-        ]
-        [ HS.div
-            [ HSA.css
-                [ TW.box_border
-                , TW.w_full 
-                , TW.flex
-                , TW.flex_col   
-                , TW.items_end   
-                ]            
-            ]
-            [ Button.button "Menu" (Types.DataPanelNavTo Navigation.Menu ) Button.Regular Button.Unselected
-            ]
-        , HS.div
-            [ HSA.css
-                [ TW.box_border
-                , TW.w_full 
-                , TW.flex
-                , TW.flex_col   
-                , TW.items_end   
-                ]            
-            ]
-            [ sectionTitle "Game details"  
-            , gameDetails opposing_player model.game              
-            ]
-        , HS.div
-            [ HSA.css
-                [ TW.box_border
-                , TW.w_full 
-                , TW.flex
-                , TW.flex_col   
-                , TW.items_end   
-                ]            
-            ]
-            [ sectionTitle "Turn details"   
-            , turnDetails model.current_player model.game  
-            ]  
-        , HS.div
-            [ HSA.css
-                [ TW.box_border
-                , TW.w_full 
-                , TW.flex
-                , TW.flex_col   
-                , TW.items_end  
-                , TW.overflow_clip
-                ]            
-            ]
-            [ sectionTitle "Event log"   
-            , eventsRegular model.list_events
-            ]      
-        ]
+                    HS.div
+                        [ HSA.css
+                            [ TW.box_border
+                            , TW.w_full 
+                            , TW.h_5over6
+                            , TW.space_y_2  
+                            , TW.flex
+                            , TW.flex_col   
+                            , TW.items_end  
+                            , TW.overflow_clip 
+                            ]            
+                        ]
+                        [ HS.div
+                            [ HSA.css
+                                [ TW.box_border
+                                , TW.w_full 
+                                , TW.flex
+                                , TW.flex_col   
+                                , TW.items_end   
+                                ]            
+                            ]
+                            [ Button.button "Menu" (Types.DataPanelNavTo Navigation.Menu ) Button.Regular Button.Unselected
+                            ]
+                        , HS.div
+                            [ HSA.css
+                                [ TW.box_border
+                                , TW.w_full 
+                                , TW.flex
+                                , TW.flex_col   
+                                , TW.items_end  
+                                , TW.overflow_clip
+                                ]            
+                            ]
+                            [ HS.text "Missing player two"                        
+                            ]
+                        ]
+
+
+        Nothing ->
+            HS.div
+                [ HSA.css
+                    [ TW.box_border
+                    , TW.w_full 
+                    , TW.h_5over6
+                    , TW.space_y_2  
+                    , TW.flex
+                    , TW.flex_col   
+                    , TW.items_end  
+                    , TW.overflow_clip 
+                    ]            
+                ]
+                [ HS.div
+                    [ HSA.css
+                        [ TW.box_border
+                        , TW.w_full 
+                        , TW.flex
+                        , TW.flex_col   
+                        , TW.items_end   
+                        ]            
+                    ]
+                    [ Button.button "Menu" (Types.DataPanelNavTo Navigation.Menu ) Button.Regular Button.Unselected
+                    ]
+                , HS.div
+                    [ HSA.css
+                        [ TW.box_border
+                        , TW.w_full 
+                        , TW.flex
+                        , TW.flex_col   
+                        , TW.items_end  
+                        , TW.overflow_clip
+                        ]            
+                    ]
+                    [ HS.text "No game selected"                        
+                    ]
+                ]
+    
 
 sectionTitle : String -> HS.Html Types.FrontendMsg
 sectionTitle title =
@@ -162,11 +243,44 @@ sectionTitle title =
             ]            
         ]
 
-gameDetails : Player.Player -> Maybe StorageGame.Game -> HS.Html Types.FrontendMsg
-gameDetails opposing m_game =
-    case m_game of
-        Just game ->
-            HS.div 
+gameDetails : Player.Player -> StorageGame.Game -> HS.Html Types.FrontendMsg
+gameDetails opposing game =
+    HS.div 
+        [ HSA.css
+            [ TW.box_border
+            , TW.flex
+            , TW.flex_col 
+            , TW.items_end  
+            , TW.w_full
+            -- , TW.border_solid                     
+            ]                    
+        ]
+        [ HS.div
+            [ HSA.css
+                [ TW.box_border
+                , TW.ml_2  
+                , TW.flex                
+                ]                        
+            ]
+            [ HS.text <| "Current game: " ++ game.game_name                    
+            ]  
+        , HS.div
+            [ HSA.css
+                [ TW.box_border
+                , TW.ml_2  
+                , TW.flex                
+                ]                        
+            ]
+            [ HS.text <| "Opponent: " ++ opposing.handle                    
+            ]         
+        ]
+
+
+turnDetails : Player.Player -> StorageGame.Game -> HS.Html Types.FrontendMsg
+turnDetails current_player game =
+    case game.player_two of
+        Just player_two ->
+            HS.div
                 [ HSA.css
                     [ TW.box_border
                     , TW.flex
@@ -183,65 +297,24 @@ gameDetails opposing m_game =
                         , TW.flex                
                         ]                        
                     ]
-                    [ HS.text <| "Current game: " ++ game.game_name                    
-                    ]  
-                , HS.div
+                    [ HS.text <| "Turn: " ++ (String.fromInt game.turn)                    
+                    ]   
+                , HS.div  
                     [ HSA.css
                         [ TW.box_border
-                        , TW.ml_2  
-                        , TW.flex                
-                        ]                        
+                        , TW.flex
+                        , TW.flex_col 
+                        , TW.items_end  
+                        , TW.w_full                    
+                        ]                    
                     ]
-                    [ HS.text <| "Opponent: " ++ opposing.handle                    
-                    ]         
+                    [ HS.text <| "Current Player: " ++ current_player.handle                    
+                    ]               
                 ]
-
+            
         Nothing ->
             HS.div [] []
 
-turnDetails : Player.Player -> Maybe StorageGame.Game -> HS.Html Types.FrontendMsg
-turnDetails current_player m_game =
-    case m_game of
-        Just game ->
-            case game.player_two of
-                Just player_two ->
-                    HS.div
-                        [ HSA.css
-                            [ TW.box_border
-                            , TW.flex
-                            , TW.flex_col 
-                            , TW.items_end  
-                            , TW.w_full
-                            -- , TW.border_solid                     
-                            ]                    
-                        ]
-                        [ HS.div
-                            [ HSA.css
-                                [ TW.box_border
-                                , TW.ml_2  
-                                , TW.flex                
-                                ]                        
-                            ]
-                            [ HS.text <| "Turn: " ++ (String.fromInt game.turn)                    
-                            ]   
-                        , HS.div  
-                            [ HSA.css
-                                [ TW.box_border
-                                , TW.flex
-                                , TW.flex_col 
-                                , TW.items_end  
-                                , TW.w_full                    
-                                ]                    
-                            ]
-                            [ HS.text <| "Current Player: " ++ current_player.handle                    
-                            ]               
-                        ]
-                    
-                Nothing ->
-                    HS.div [] []
-
-        Nothing ->
-            HS.div [] []
 
 eventsRegular : List Events.Event -> HS.Html Types.FrontendMsg
 eventsRegular list_events =

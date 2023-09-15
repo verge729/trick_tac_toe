@@ -157,16 +157,20 @@ updateFromFrontend sessionId clientId msg model =
                     )
 
         Types.UpdateGame reqs ->
+            let
+                _ = Debug.log "UpdateGame" 0
+                _ = Debug.log "reqs" reqs
+            in 
             case Game.updateGame model.game_store reqs of
                 Game.Updated games ->
                     let
                         client_id_next_player =
                             Connectivity.getClientId reqs.current_player.state
 
-                        _ = Debug.log "client_id_next_player" client_id_next_player
-
                         updated_games =
                             Game.getGames games reqs.current_player
+
+                        _ = Debug.log "client_id_next_player" client_id_next_player
                     in
                     ( { model | game_store = games }
                     , Cmd.batch 

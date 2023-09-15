@@ -60,39 +60,15 @@ update msg model =
 
         Types.SelectGame game_id ->
             let
-                m_game =
+                (m_game, path_to_victory) =
                     List.foldl (\game selected ->
                         if game.id == game_id then
-                            Just game
+                            (Just game, game.path_to_victory)
 
                         else
                             selected
-                    ) Nothing model.user_games
+                    ) (Nothing, Victory.Unacheived) model.user_games
 
-                -- let
-                --         (m_game, coordinates, sector) =
-                --             case model.game of
-                --                 Just game ->
-                --                     List.foldl (\g (m_g, m_g_coordinates, m_g_sector) ->
-                --                         if g.id == game.id then
-                --                             case g.current_coordinate of    
-                --                                 Just stuff ->
-                --                                     case stuff of
-                --                                         Coordinates.Ultimate coords ->
-                --                                             (Just g, Just coords, Nothing)
-
-                --                                         Coordinates.Regular sect ->
-                --                                             (Just g, Nothing, Just sect)
-
-                --                                 Nothing ->
-                --                                     (Just g, Nothing, Nothing)
-                --                         else
-                --                             (m_g, m_g_coordinates, m_g_sector)
-                --                     ) (Nothing, Nothing, Nothing) games
-
-                --                 Nothing ->
-                --                     (model.game, model.current_coordinate, model.next_coordinate_mid)
-                --     in
 
                 (m_coordinates, m_sector) =
                     case m_game of
@@ -151,6 +127,7 @@ update msg model =
             , player_two = player_two
             , current_player = current_player
             , current_coordinate = m_coordinates
+            , path_to_victory = path_to_victory
             }
             , Cmd.none
             )
@@ -425,7 +402,7 @@ update msg model =
                                                     other_player
                                                     sector
                                                     (Coordinates.Regular sector.coordinate)
-                                                    model.turn
+                                                    game.turn
                                                     (Board.Regular board)
                                                     model.seed
                                                 )
@@ -456,7 +433,7 @@ update msg model =
                                                     other_player
                                                     sector
                                                     (Coordinates.Ultimate coordinates)
-                                                    model.turn
+                                                    game.turn
                                                     (Board.Ultimate board)
                                                     model.seed
                                                 )

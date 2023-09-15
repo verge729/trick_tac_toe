@@ -196,36 +196,36 @@ gameArea model =
 
 displayGameArea : Types.FrontendModel -> HS.Html Types.FrontendMsg
 displayGameArea model =
-    case model.view_game_area of
-        Navigation.GameList ->
-            case model.user of
-                Just user ->
+    case model.user of
+        Just user ->
+            case model.view_game_area of
+                Navigation.GameList ->
                     GameList.root user model.user_games
 
-                Nothing ->
-                    HS.div [] []
 
-        Navigation.Game ->
-            let
-                board =
+                Navigation.Game ->
                     case model.game of
                         Just game ->
-                            game.board
-
+                            GameBoard.root 
+                                user 
+                                game
                         Nothing ->
-                            Board.NotSelected
-            in 
-            GameBoard.root board model.current_coordinate model.path_to_victory
+                            HS.div [] []
+                            -- board 
+                            -- model.current_coordinate 
+                            -- model.path_to_victory
 
-        Navigation.CreateGame ->
-            CreateGame.root model
+                Navigation.CreateGame ->
+                    CreateGame.root model
 
-        Navigation.Help ->
+                Navigation.Help ->
+                    HS.div [] []
+
+                Navigation.NotIdentified ->
+                    HS.div [] []
+
+                Navigation.JoinGame ->
+                    JoinGame.root model
+        Nothing ->
             HS.div [] []
-
-        Navigation.NotIdentified ->
-            HS.div [] []
-
-        Navigation.JoinGame ->
-            JoinGame.root model
 
