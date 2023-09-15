@@ -22,4 +22,4 @@ type FullView
 
 type HelpSection
     = Home
-    
+    | KnownIssues

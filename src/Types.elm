@@ -73,3 +73,7 @@ type ToFrontend
     | RequestGamesResponse StorageResponse.RequestGames
     | JoinGameResponse StorageResponse.JoinGame
     | UpdateGameResponse StorageResponse.UpdateGame
+
+supportEmail : String
+supportEmail =
+    "trick_tac_toe@crazy-cockatoo.com"

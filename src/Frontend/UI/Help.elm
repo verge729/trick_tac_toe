@@ -108,6 +108,7 @@ informationArea =
             , TW.flex
             , TW.flex_col
             , TW.items_center
+            , TW.overflow_auto
             ]
         ]
         [ HS.div
@@ -124,6 +125,8 @@ informationArea =
             , explainUltimate
             , sectionTitle "Trick Tic Tac Toe"
             , explainTrick
+            , sectionTitle "About this game"
+            , explainGame
             ]
         ]
 
@@ -142,7 +145,27 @@ sectionTitle title =
             [ HS.text title   
             ]
         ]             
-            
+
+explainGame : HS.Html Types.FrontendMsg
+explainGame =
+    HS.div
+        []
+        [ HS.p
+            [ HSA.css
+                [ TW.box_border
+                , TW.w_full  
+                ]                
+            ]
+            [ paragraph "This game does not collect personal information. You are asked to provide a handler and keyphrase so your games can be connected to you. This also allows you to play the game with friends."
+            , paragraph "If you want to play a game with somone you know, after logging in, you will see a \"Create a game\" button where you can host a game and give it a name and choose if it is a classic or Ultimate game. You will then see a code on the Game Card for the new game. Share this code with a friend."
+            , paragraph "To join a game, you will need to enter a join code in the \"Join a game\" page. This can be found by clicking the \"Join a game\" button after logging in."
+            , paragraph "You will know if your opponent is online by the colored dot located by their handle on the Game Card for your game with them. Green means they are online. Red means they are offline."
+            , paragraph "Your opponent will recieve your turn as soon as you claim a sector, so be careful to not click prematurely!"
+            , paragraph "There is not restriction on how many games you can participate in at once."
+            , paragraph <| "If you have any feedback, please email the feedback to " ++ Types.supportEmail ++ " ."
+            ]            
+        ]
+
 
 explainUltimate : HS.Html Types.FrontendMsg
 explainUltimate =

@@ -60,6 +60,24 @@ root model =
         , Button.button "What is Trick Tac Toe?" (Types.FullViewNavTo Navigation.WhatIsThis) Button.Small Button.Unselected
         , error model.m_error_message  
         , imageLinks
+        , feedback
+        ]
+
+feedback : HS.Html Types.FrontendMsg
+feedback =
+    HS.div
+        [ HSA.css
+            [ TW.box_border
+            , TW.text_sm  
+            , TW.mt_4 
+            , TW.flex
+            , TW.flex_col
+            , TW.items_center
+            , TW.justify_center             
+            ]            
+        ]
+        [ HS.div [] [ HS.text <| "Please provide any feedback to" ]  
+        , HS.div [] [ HS.text Types.supportEmail ]       
         ]
 
 imageLinks : HS.Html Types.FrontendMsg
