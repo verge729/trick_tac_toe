@@ -58,7 +58,63 @@ root model =
             , Button.button "Register" Types.Register Button.Regular Button.Unselected           
             ]   
         , Button.button "What is Trick Tac Toe?" (Types.FullViewNavTo Navigation.WhatIsThis) Button.Small Button.Unselected
-        , error model.m_error_message      
+        , error model.m_error_message  
+        , imageLinks
+        ]
+
+imageLinks : HS.Html Types.FrontendMsg
+imageLinks =
+    HS.div
+        [ HSA.css
+            [ TW.box_border
+            , TW.flex  
+            , TW.items_center
+            , TW.justify_around
+            , TW.w_3over12   
+            , TW.px_4       
+            ]            
+        ]
+        [ HS.a
+            [ HSA.href "https://github.com/verge729/trick_tac_toe"
+            , HSA.target "_blank"
+            ]
+            [ HS.img
+                [ HSA.src "/assets/images/github-mark-white.png"
+                , HSA.css
+                    [ TW.w_10
+                    , TW.object_contain
+                    , TW.object_center
+                    ]
+                ]
+                []
+            ] 
+        , HS.div
+            [ HSA.css
+                [ TW.box_border 
+                , TW.border_solid 
+                , TW.border_r
+                , TW.border_l_0
+                , TW.border_t
+                , TW.border_b 
+                , TW.h_4over6             
+                ]  
+            ] 
+            [               
+            ]
+        , HS.a
+            [ HSA.href "https://crazy-cockatoo-games.com"
+            , HSA.target "_blank"
+            ]
+            [ HS.img
+                [ HSA.src "/assets/images/ccg_logo.png"
+                , HSA.css
+                    [ TW.w_10
+                    , TW.object_contain
+                    , TW.object_center
+                    ]
+                ]
+                []
+            ]           
         ]
 
 error : Maybe String -> HS.Html Types.FrontendMsg
@@ -67,7 +123,7 @@ error m_str =
         [ HSA.css
             [ TW.box_border
             , TW.w_1over3
-            , TW.h_fit
+            , TW.h_12
             , TW.flex
             , TW.flex_col 
             , TW.justify_center
@@ -75,24 +131,59 @@ error m_str =
             , TW.text_color TW.red_500          
             ]            
         ]
-        [ HS.text <| Maybe.withDefault "" m_str            
+        [ HS.div
+            []
+            [ HS.text <| Maybe.withDefault "" m_str   
+            ]         
         ]
 
 title : HS.Html Types.FrontendMsg
 title =
-    HS.h1
+    HS.div
         [ HSA.css
             [ TW.box_border
-            , TW.w_fit
-            , TW.h_fit
             , TW.flex
-            , TW.flex_col 
-            , TW.justify_center
-            , TW.items_center  
-            , TW.text_6xl          
+            , TW.flex_col
+            , TW.items_center 
+            , TW.mb_4               
             ]            
         ]
-        [ HS.text "Trick Tac Toe"            
+        [ HS.h1
+            [ HSA.css
+                [ TW.box_border
+                , TW.w_fit
+                , TW.h_fit
+                , TW.flex
+                , TW.flex_col 
+                , TW.justify_center
+                , TW.items_center  
+                , TW.text_6xl  
+                , TW.mb_0        
+                ]            
+            ]
+            [ HS.text "Trick Tac Toe"            
+            ]
+        , HS.div
+            [ HSA.css
+                [ TW.text_sm                    
+                ]                
+            ]
+            [ HS.text "Elm Game Jam 6 Edition"            
+            ]
+        , HS.div
+            [ HSA.css
+                [ TW.text_sm                    
+                ]                
+            ]
+            [ HS.text "Designed and engineered by Matt Virgin"            
+            ]
+        , HS.div
+            [ HSA.css
+                [ TW.text_sm                    
+                ]                
+            ]
+            [ HS.text "Copyright 2023 Crazy Cockatoo Games™"            
+            ]
         ]
 
 elementInputText : AuthData -> Maybe String -> HS.Html Types.FrontendMsg
