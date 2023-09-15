@@ -30,7 +30,7 @@ root model =
             , TW.flex
             , TW.flex_col
             , TW.items_center
-            , TW.overflow_x_clip
+            , TW.overflow_clip
             , TW.p_1
             ]
         ]
@@ -202,6 +202,7 @@ gameArea model =
             , TW.p_1
             , TW.flex
             , TW.flex_col
+            , TW.overflow_clip
             ]
         ]
         [ HS.div

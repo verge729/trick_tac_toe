@@ -93,7 +93,7 @@ imageLinks =
             ]            
         ]
         [ HS.a
-            [ HSA.href "https://github.com/verge729/trick_tac_toe"
+            [ HSA.href Types.githubRepo
             , HSA.target "_blank"
             ]
             [ HS.img
@@ -120,7 +120,7 @@ imageLinks =
             [               
             ]
         , HS.a
-            [ HSA.href "https://crazy-cockatoo-games.com"
+            [ HSA.href Types.ccgHome
             , HSA.target "_blank"
             ]
             [ HS.img
@@ -195,13 +195,14 @@ title =
             ]
             [ HS.text "Designed and engineered by Matt Virgin"            
             ]
-        , HS.div
-            [ HSA.css
-                [ TW.text_sm                    
-                ]                
-            ]
-            [ HS.text "Copyright 2023 Crazy Cockatoo Games™"            
-            ]
+        , Types.helpLink "Copyright 2023 Crazy Cockatoo Games™" Types.ccgHome
+        -- , HS.div
+        --     [ HSA.css
+        --         [ TW.text_sm                    
+        --         ]                
+        --     ]
+        --     [ HS.text "Copyright 2023 Crazy Cockatoo Games™"            
+        --     ]
         ]
 
 elementInputText : AuthData -> Maybe String -> HS.Html Types.FrontendMsg

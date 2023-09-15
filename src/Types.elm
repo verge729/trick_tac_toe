@@ -14,6 +14,10 @@ import Types.Storage.Response as StorageResponse
 import Types.Storage.User as StorageUser
 import Url exposing (Url)
 import Types.Board as Board
+import Html.Styled as HS
+import Html.Styled.Attributes as HSA
+import Tailwind.Utilities as TW
+import Tailwind.Theme as TW
 
 
 type alias FrontendModel =
@@ -77,3 +81,25 @@ type ToFrontend
 supportEmail : String
 supportEmail =
     "trick_tac_toe@crazy-cockatoo.com"
+
+githubRepo : String
+githubRepo =
+    "https://github.com/verge729/trick_tac_toe"
+
+ccgHome : String
+ccgHome =
+    "https://crazy-cockatoo-games.com"
+
+
+helpLink : String -> String -> HS.Html msg
+helpLink display href =
+    HS.a
+        [ HSA.href href
+        , HSA.target "_blank"
+        , HSA.css
+            [ TW.underline
+            , TW.font_bold
+            , TW.text_color TW.blue_400
+            ]
+        ]
+        [ HS.text display ]

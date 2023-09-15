@@ -28,8 +28,6 @@ root m_user =
             , TW.h_full
             , TW.flex
             , TW.flex_row
-            , TW.items_center
-            , TW.justify_center
             ]            
         ]
         [ dataPanel m_user
@@ -116,7 +114,6 @@ informationArea =
                 [ TW.box_border
                 , TW.flex
                 , TW.flex_col
-                , TW.justify_center
                 , TW.h_full
                 , TW.w_9over12
                 ]
@@ -127,6 +124,8 @@ informationArea =
             , explainTrick
             , sectionTitle "About this game"
             , explainGame
+            , sectionTitle "Open Source"
+            , openSource
             ]
         ]
 
@@ -144,7 +143,27 @@ sectionTitle title =
             []
             [ HS.text title   
             ]
-        ]             
+        ]  
+
+openSource : HS.Html Types.FrontendMsg
+openSource =
+    HS.div
+        [ HSA.css
+            [ TW.box_border
+            , TW.w_full 
+            , TW.flex 
+            ]            
+        ]
+        [ HS.div 
+            [ HSA.css
+                [ TW.box_border
+                , TW.mr_1                    
+                ]                
+            ] 
+            [ HS.text "This game is open source! You can find the source code at " 
+            ]
+        , Types.helpLink "the github repository" Types.githubRepo
+        ]           
 
 explainGame : HS.Html Types.FrontendMsg
 explainGame =
