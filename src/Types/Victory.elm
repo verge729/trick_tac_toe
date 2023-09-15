@@ -1,21 +1,20 @@
-module Types.Victory exposing (PathToVictory(..), checkVictory, toStringPathToVictory, toPathToVictoryState, toStatePathToVictory)
+module Types.Victory exposing (PathToVictory(..), checkVictory, toPathToVictoryState, toStatePathToVictory, toStringPathToVictory)
 
 {-| This module is responsible for checking if a player has won the game.
 -}
 
-import Types.Player as Player
-import Types.Coordinates as Coordinates
-import Types.Base.Board as Board
 import Array
-import Types.Base.Sector as Sector
-import Types.SectorAttribute as SectorAttribute
+import Types.Base.Board as Board
 import Types.Board as Board
-import Types.Storage.User as User
+import Types.Coordinates as Coordinates
+import Types.Player as Player
+import Types.SectorAttribute as SectorAttribute
 
 
 type PathToVictory
     = Acheived Player.Player
     | Unacheived
+
 
 toStatePathToVictory : PathToVictory -> SectorAttribute.State
 toStatePathToVictory path_to_victory =
@@ -26,6 +25,7 @@ toStatePathToVictory path_to_victory =
         Unacheived ->
             SectorAttribute.Free
 
+
 toPathToVictoryState : SectorAttribute.State -> PathToVictory
 toPathToVictoryState state =
     case state of
@@ -34,6 +34,7 @@ toPathToVictoryState state =
 
         _ ->
             Unacheived
+
 
 checkVictory : Board.Board -> Player.Player -> PathToVictory
 checkVictory board player =
@@ -46,6 +47,7 @@ checkVictory board player =
 
         Board.NotSelected ->
             Unacheived
+
 
 checkVictory1 : Array.Array { a | state : SectorAttribute.State, coordinate : Coordinates.Sector } -> Player.Player -> PathToVictory
 checkVictory1 board player_current =
@@ -64,49 +66,74 @@ checkVictory1 board player_current =
     in
     if claimed_victory then
         Acheived player_current
+
     else
         Unacheived
+
 
 checkVictoryHorizontal : List Coordinates.Sector -> Bool
 checkVictoryHorizontal list_sector =
     let
-        top = compareLists list_sector horizontalVictoryGroups.top
-        mid = compareLists list_sector horizontalVictoryGroups.mid
-        bottom = compareLists list_sector horizontalVictoryGroups.bottom 
+        top =
+            compareLists list_sector horizontalVictoryGroups.top
+
+        mid =
+            compareLists list_sector horizontalVictoryGroups.mid
+
+        bottom =
+            compareLists list_sector horizontalVictoryGroups.bottom
     in
     top || mid || bottom
+
 
 checkVictoryVertical : List Coordinates.Sector -> Bool -> Bool
 checkVictoryVertical list_sector claimed =
     if claimed then
-        claimed 
+        claimed
+
     else
         let
-            left = compareLists list_sector verticalVictoryGroups.left
-            center = compareLists list_sector verticalVictoryGroups.center
-            right = compareLists list_sector verticalVictoryGroups.right 
+            left =
+                compareLists list_sector verticalVictoryGroups.left
+
+            center =
+                compareLists list_sector verticalVictoryGroups.center
+
+            right =
+                compareLists list_sector verticalVictoryGroups.right
         in
         left || center || right
+
 
 checkVictoryDiagonal : List Coordinates.Sector -> Bool -> Bool
 checkVictoryDiagonal list_sector claimed =
     if claimed then
-        claimed 
+        claimed
+
     else
         let
-            left_to_right = compareLists list_sector diagonalVictoryGroups.left_to_right
-            right_to_left = compareLists list_sector diagonalVictoryGroups.right_to_left
+            left_to_right =
+                compareLists list_sector diagonalVictoryGroups.left_to_right
+
+            right_to_left =
+                compareLists list_sector diagonalVictoryGroups.right_to_left
         in
         left_to_right || right_to_left
 
+
 compareLists : List Coordinates.Sector -> List Coordinates.Sector -> Bool
 compareLists claimed victory =
-    List.foldl (\sector acheived ->
-        if List.member sector claimed then
-            acheived
-        else
-            False
-    ) True victory
+    List.foldl
+        (\sector acheived ->
+            if List.member sector claimed then
+                acheived
+
+            else
+                False
+        )
+        True
+        victory
+
 
 toStringPathToVictory : PathToVictory -> String
 toStringPathToVictory path_to_victory =
@@ -117,39 +144,46 @@ toStringPathToVictory path_to_victory =
         Unacheived ->
             "No one has won the game yet."
 
+
 type alias VictoryGrouping =
     List Coordinates.Sector
+
 
 type alias Horizontal =
     { top : VictoryGrouping
     , mid : VictoryGrouping
-    , bottom : VictoryGrouping        
+    , bottom : VictoryGrouping
     }
+
 
 type alias Vertical =
     { left : VictoryGrouping
     , center : VictoryGrouping
-    , right : VictoryGrouping        
+    , right : VictoryGrouping
     }
+
 
 type alias Diagonal =
     { left_to_right : VictoryGrouping
     , right_to_left : VictoryGrouping
     }
 
+
 horizontalVictoryGroups : Horizontal
 horizontalVictoryGroups =
     { top = [ Coordinates.Zero, Coordinates.One, Coordinates.Two ]
     , mid = [ Coordinates.Three, Coordinates.Four, Coordinates.Five ]
-    , bottom = [ Coordinates.Six, Coordinates.Seven, Coordinates.Eight ]        
+    , bottom = [ Coordinates.Six, Coordinates.Seven, Coordinates.Eight ]
     }
+
 
 verticalVictoryGroups : Vertical
 verticalVictoryGroups =
     { left = [ Coordinates.Zero, Coordinates.Three, Coordinates.Six ]
     , center = [ Coordinates.One, Coordinates.Four, Coordinates.Seven ]
-    , right = [ Coordinates.Two, Coordinates.Five, Coordinates.Eight ]        
+    , right = [ Coordinates.Two, Coordinates.Five, Coordinates.Eight ]
     }
+
 
 diagonalVictoryGroups : Diagonal
 diagonalVictoryGroups =

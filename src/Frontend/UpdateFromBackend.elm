@@ -23,6 +23,8 @@ updateFromBackend msg model =
                         , view_full_area = Navigation.Authenticated
                         , view_game_area = Navigation.GameListActive
                         , m_error_message = Nothing
+                        , login_register_handle = Nothing
+                        , login_register_keyphrase = Nothing
                       }
                     , Cmd.none
                     )
@@ -40,6 +42,8 @@ updateFromBackend msg model =
                         , view_full_area = Navigation.Authenticated
                         , view_game_area = Navigation.GameListActive
                         , m_error_message = Nothing
+                        , login_register_handle = Nothing
+                        , login_register_keyphrase = Nothing
                       }
                     , Cmd.none
                     )
@@ -57,6 +61,8 @@ updateFromBackend msg model =
                             ( { model
                                 | view_game_area = Navigation.GameListWaiting
                                 , m_error_message = Nothing
+                                , game_creation_name = Nothing
+                                , game_creation_board = Nothing
                               }
                             , Lamdera.sendToBackend <| Types.RequestGames user
                             )
@@ -162,6 +168,7 @@ updateFromBackend msg model =
                     ( { model
                         | view_game_area = Navigation.GameListActive
                         , m_error_message = Nothing
+                        , m_join_code = Nothing
                       }
                     , Cmd.none
                     )

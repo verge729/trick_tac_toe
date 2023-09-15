@@ -1,5 +1,6 @@
 module Types.Navigation exposing (..)
 
+
 type GameArea
     = Game
     | GameListActive
@@ -9,16 +10,18 @@ type GameArea
     | Help
     | NotIdentified
     | JoinGame
-    
+
 
 type DataPanel
     = Menu
     | GameDetails
 
+
 type FullView
     = Authenticate
     | Authenticated
     | WhatIsThis
+
 
 type HelpSection
     = Home

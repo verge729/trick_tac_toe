@@ -1,14 +1,13 @@
 module Backend.Update exposing (update)
 
-import Types 
-import Types.Storage.User as User
-import Types.Storage.Game as Game
-import Lamdera exposing (ClientId)
-import Types.Storage.Connectivity as Connectivity
-import Types.Storage.Storage as Storage
-import Dict
-import Types.Storage.Response as Response
 import Backend.Utils as Utils
+import Dict
+import Lamdera
+import Types
+import Types.Storage.Connectivity as Connectivity
+import Types.Storage.Game as Game
+import Types.Storage.Response as Response
+
 
 update : Types.BackendMsg -> Types.BackendModel -> ( Types.BackendModel, Cmd Types.BackendMsg )
 update msg model =
@@ -24,27 +23,25 @@ update msg model =
 
         Types.ClientDisconnected session_id client_id ->
             let
-                _ = Debug.log "helo" 0
                 m_user =
                     Dict.values model.user_store
                         |> List.filter (\user -> user.state == Connectivity.Connected client_id)
-                        |> List.head 
-                _ = Debug.log "m_user" m_user
+                        |> List.head
             in
             case m_user of
                 Just user ->
                     let
                         updated_user =
                             { user | state = Connectivity.Disconnected }
+
                         updated_user_store =
                             Dict.insert updated_user.handle updated_user model.user_store
+
                         updated_game_store =
                             Utils.updateConnectivityOnGames updated_user model.game_store
 
                         clients_to_update =
                             Utils.clientsToUpdateGames updated_user (Dict.values updated_game_store)
-
-                        _ = Debug.log "clients_to_update" clients_to_update
 
                         cmds =
                             List.map
@@ -56,11 +53,9 @@ update msg model =
                     ( { model
                         | user_store = updated_user_store
                         , game_store = updated_game_store
-                      
-                    }
-                    , Cmd.batch cmds 
+                      }
+                    , Cmd.batch cmds
                     )
 
                 Nothing ->
                     ( model, Cmd.none )
-

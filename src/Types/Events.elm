@@ -1,8 +1,8 @@
-module Types.Events exposing 
-    ( EventType(..)
-    , Event
-    , toStringEvent 
-    , test       
+module Types.Events exposing
+    ( Event
+    , EventType(..)
+    , test
+    , toStringEvent
     )
 
 import Types.Coordinates as Coordinates
@@ -23,6 +23,7 @@ type alias Event =
     , coordinates : Coordinates.CoordinateSystem
     }
 
+
 toStringEvent : Event -> String
 toStringEvent event =
     toString event.turn event.player event.event
@@ -31,6 +32,7 @@ toStringEvent event =
 toString : Int -> Player.Player -> EventType -> String
 toString turn player eventType =
     "Turn " ++ String.fromInt turn ++ ": " ++ player.handle ++ " has " ++ toStringEventType eventType
+
 
 toStringEventType : EventType -> String
 toStringEventType eventType =
@@ -44,12 +46,13 @@ toStringEventType eventType =
         ClaimedSector ->
             "claimed a sector!"
 
+
 testTurn : Event
 testTurn =
     { turn = 1
     , event = Turn
     , player = Player.Player "test" "x"
-    , coordinates = Coordinates.Ultimate { low = Coordinates.Eight, mid = Coordinates.Eight}        
+    , coordinates = Coordinates.Ultimate { low = Coordinates.Eight, mid = Coordinates.Eight }
     }
 
 
@@ -58,41 +61,13 @@ testTrick =
     { turn = 1
     , event = Trick <| Trick.getTrickFromType Trick.Vanish
     , player = Player.Player "test" "x"
-    , coordinates = Coordinates.Ultimate { low = Coordinates.Eight, mid = Coordinates.Eight}        
+    , coordinates = Coordinates.Ultimate { low = Coordinates.Eight, mid = Coordinates.Eight }
     }
+
 
 test : List Event
 test =
     [ testTurn
     , testTrick
     , testTurn
-    -- , testTrick
-    -- , testTurn
-    -- , testTrick
-    -- , testTurn
-    -- , testTrick
-    -- , testTurn
-    -- , testTrick
-    -- , testTurn
-    -- , testTrick
-    -- , testTurn
-    -- , testTrick
-    -- , testTurn
-    -- , testTrick
-    -- , testTurn
-    -- , testTrick
-    -- , testTurn
-    -- , testTrick
-    -- , testTurn
-    -- , testTrick
-    -- , testTurn
-    -- , testTrick
-    -- , testTurn
-    -- , testTrick
-    -- , testTurn
-    -- , testTrick
-    -- , testTurn
-    -- , testTrick
-    -- , testTurn
-
     ]

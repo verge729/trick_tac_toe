@@ -13,17 +13,18 @@ import Types.Board as Board
 import Types.Coordinates as Coordinates
 import Types.Player as Player
 import Types.SectorAttribute as SectorAttribute
+import Types.Storage.Game as StorageGame
+import Types.Storage.User as User
 import Types.Ultimate.Sector as UltimateSector
 import Types.Victory as Victory
-import Types.Storage.User as User
-import Types.Storage.Game as StorageGame
+
 
 root : User.User -> StorageGame.Game -> HS.Html Types.FrontendMsg
-root logged_in ({board, current_coordinate, path_to_victory} as game) =
+root logged_in ({ board, current_coordinate, path_to_victory } as game) =
     let
         main_view =
-            case (board, current_coordinate) of
-                (Board.Ultimate data, Just coordinates) ->
+            case ( board, current_coordinate ) of
+                ( Board.Ultimate data, Just coordinates ) ->
                     case coordinates of
                         Coordinates.Ultimate coords ->
                             let
@@ -40,18 +41,17 @@ root logged_in ({board, current_coordinate, path_to_victory} as game) =
                                 []
                                 [ HS.text "No board selected" ]
 
+                ( Board.Ultimate data, Nothing ) ->
+                    let
+                        matrix =
+                            { top = Array.slice 0 3 data
+                            , middle = Array.slice 3 6 data
+                            , bottom = Array.slice 6 9 data
+                            }
+                    in
+                    boardUltimate matrix Nothing path_to_victory
 
-                (Board.Ultimate data, Nothing) ->
-                            let
-                                matrix =
-                                    { top = Array.slice 0 3 data
-                                    , middle = Array.slice 3 6 data
-                                    , bottom = Array.slice 6 9 data
-                                    }
-                            in
-                            boardUltimate matrix (Nothing) path_to_victory
-
-                (Board.Regular data, _) ->
+                ( Board.Regular data, _ ) ->
                     let
                         matrix =
                             { top = Array.slice 0 3 data
@@ -61,54 +61,51 @@ root logged_in ({board, current_coordinate, path_to_victory} as game) =
                     in
                     boardRegular matrix path_to_victory False
 
-                
                 _ ->
                     HS.div
                         []
                         [ HS.text "No board selected to show" ]
 
-        _ = Debug.log "logged_in" logged_in
-        _ = Debug.log "game.current_player" game.current_player
         not_your_turn_mask =
             if logged_in.id == game.current_player.id then
                 HS.div [] []
+
             else
                 jammerMask
 
-
-        (victory_view, victory_attrs, jammer_mask) =
+        ( victory_view, victory_attrs, jammer_mask ) =
             case path_to_victory of
                 Victory.Unacheived ->
                     ( HS.div [] []
                     , []
                     , HS.div [] []
                     )
-                
+
                 Victory.Acheived player ->
-                    ( HS.div 
+                    ( HS.div
                         [ HSA.css
                             [ TW.box_border
                             , TW.flex
                             , TW.justify_center
-                            , TW.items_center                                
-                            ]                            
-                        ] 
+                            , TW.items_center
+                            ]
+                        ]
                         [ HS.h2
                             []
-                            [ HS.text <| player.handle ++ " has won the game!"                                
-                            ]                            
+                            [ HS.text <| player.handle ++ " has won the game!"
+                            ]
                         ]
                     , [ TW.border_solid
-                      , TW.border_4                        
+                      , TW.border_4
                       ]
                     , jammerMask
                     )
     in
     HS.div
         [ HSA.css
-            ( List.append
-                [ TW.box_border  
-                , TW.relative           
+            (List.append
+                [ TW.box_border
+                , TW.relative
                 ]
                 victory_attrs
             )
@@ -118,6 +115,8 @@ root logged_in ({board, current_coordinate, path_to_victory} as game) =
         , jammer_mask
         , not_your_turn_mask
         ]
+
+
 
 {- ANCHOR ultimate board -}
 
@@ -340,14 +339,13 @@ viewSector is_focused sector =
                                 ]
                             ]
                             [ HS.text player.icon
-                            ]                            
+                            ]
                         ]
 
                 _ ->
                     HS.div
                         ((HSE.onClick <| Types.ClaimSector sector) :: shared_portion)
-                        [                             
-                        ]
+                        []
     in
     HS.div
         [ HSA.css

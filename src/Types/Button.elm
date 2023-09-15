@@ -1,22 +1,24 @@
 module Types.Button exposing (..)
 
-import Types
+import Css
 import Html.Styled as HS
 import Html.Styled.Attributes as HSA
 import Html.Styled.Events as HSE
-import Tailwind.Theme as TW 
+import Tailwind.Theme as TW
 import Tailwind.Utilities as TW
-import Tailwind.Utilities exposing (bg_color)
-import Css
+import Types
 
-type Width 
+
+type Width
     = Wide
     | Regular
     | Small
 
-type BackgroundColor 
+
+type BackgroundColor
     = Selected
     | Unselected
+
 
 button : String -> Types.FrontendMsg -> Width -> BackgroundColor -> HS.Html Types.FrontendMsg
 button label handler width bg_color =
@@ -39,18 +41,18 @@ button label handler width bg_color =
 
                 Unselected ->
                     TW.stone_600
-    in 
+    in
     HS.button
-        [ HSA.css   
+        [ HSA.css
             [ TW.box_border
-            , b_width 
+            , b_width
             , TW.h_8
-            , TW.mx_3  
-            , TW.bg_color b_color  
-            , TW.text_color TW.white  
-            , Css.cursor Css.pointer         
-            ] 
-        , HSE.onClick handler           
+            , TW.mx_3
+            , TW.bg_color b_color
+            , TW.text_color TW.white
+            , Css.cursor Css.pointer
+            ]
+        , HSE.onClick handler
         ]
         [ HS.text label
         ]

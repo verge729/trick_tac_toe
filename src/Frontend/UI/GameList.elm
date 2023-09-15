@@ -28,8 +28,8 @@ root logged_in_user list_games =
             , TW.overflow_auto
             ]
         ]
-        (List.map ( gameCardLayer logged_in_user) list_games
-        )
+        (List.map (gameCardLayer logged_in_user) list_games)
+
 
 gameCardLayer : User.User -> StorageGame.Game -> HS.Html Types.FrontendMsg
 gameCardLayer logged_in_user game =
@@ -53,6 +53,7 @@ gameCardLayer logged_in_user game =
         Victory.Unacheived ->
             gameCard logged_in_user game
 
+
 gameCardGameOver : User.User -> User.User -> StorageGame.Game -> HS.Html Types.FrontendMsg
 gameCardGameOver logged_in_user victor game =
     let
@@ -68,27 +69,27 @@ gameCardGameOver logged_in_user victor game =
             , Css.cursor Css.pointer
             ]
 
-        (updated_css, phrase) =
+        ( updated_css, phrase ) =
             if logged_in_user.id == victor.id then
-                ( List.append 
-                    base_css 
-                    [ TW.bg_color TW.green_500 
-                    , TW.bg_opacity_40                               
+                ( List.append
+                    base_css
+                    [ TW.bg_color TW.green_500
+                    , TW.bg_opacity_40
                     ]
                 , gameOverPhrase "YOU" (game.turn - 1) "Way to go!"
                 )
-                
+
             else
-                ( List.append 
-                    base_css 
+                ( List.append
+                    base_css
                     [ TW.bg_color TW.red_500
-                    , TW.bg_opacity_40                         
+                    , TW.bg_opacity_40
                     ]
                 , gameOverPhrase victor.handle (game.turn - 1) "Lame sauce."
-                ) 
+                )
     in
     HS.div
-        [ HSA.css updated_css 
+        [ HSA.css updated_css
         , HSE.onClick <| Types.SelectGame game.id
         ]
         [ HS.h1
@@ -110,12 +111,14 @@ gameCardGameOver logged_in_user victor game =
                 [ HS.text phrase
                 ]
             , viewOpponent logged_in_user game.player_one game.player_two game.id
-            -- , currentPlayer game.current_player
             ]
         ]
+
+
 gameOverPhrase : String -> Int -> String -> String
 gameOverPhrase victor_handle num_turns phrase =
     victor_handle ++ " won in " ++ String.fromInt num_turns ++ " turns! " ++ phrase
+
 
 gameCard : User.User -> StorageGame.Game -> HS.Html Types.FrontendMsg
 gameCard logged_in_user game =
@@ -136,24 +139,25 @@ gameCard logged_in_user game =
                 Just _ ->
                     ( [ HSE.onClick <| Types.SelectGame game.id
                       ]
-                    , List.append 
-                        base_css 
-                        [ Css.cursor Css.pointer                            
+                    , List.append
+                        base_css
+                        [ Css.cursor Css.pointer
                         ]
                     )
 
                 Nothing ->
                     ( []
-                    , List.append 
-                        base_css 
+                    , List.append
+                        base_css
                         [ TW.bg_color TW.yellow_200
-                        , TW.bg_opacity_40                         
-                        ] 
+                        , TW.bg_opacity_40
+                        ]
                     )
 
         current_player =
             if logged_in_user.id == game.current_player.id then
                 "YOU"
+
             else
                 game.current_player.handle
     in
@@ -178,7 +182,6 @@ gameCard logged_in_user game =
                 [ HS.text <| "Turn " ++ String.fromInt game.turn ++ " and waiting on " ++ current_player ++ "!"
                 ]
             , viewOpponent logged_in_user game.player_one game.player_two game.id
-            -- , currentPlayer game.current_player
             ]
         ]
 
@@ -202,6 +205,7 @@ gameTypeView board =
         [ HS.text board_type
         ]
 
+
 currentPlayer : User.User -> HS.Html Types.FrontendMsg
 currentPlayer user =
     HS.div
@@ -209,59 +213,58 @@ currentPlayer user =
         [ HS.text <| "It's " ++ user.handle ++ "'s turn"
         ]
 
+
 viewOpponent : User.User -> User.User -> Maybe User.User -> StorageGame.GameId -> HS.Html Types.FrontendMsg
 viewOpponent logged_in player_one m_player_two game_id =
-        case m_player_two of
-            Just player_two ->
-                let
-                    user =
-                        if logged_in.id == player_one.id then
-                            player_two
+    case m_player_two of
+        Just player_two ->
+            let
+                user =
+                    if logged_in.id == player_one.id then
+                        player_two
 
-                        else
-                            player_one
+                    else
+                        player_one
 
-                    connection_color =
-                        case user.state of
-                            Connectivity.Connected _ ->
-                                TW.green_500
+                connection_color =
+                    case user.state of
+                        Connectivity.Connected _ ->
+                            TW.green_500
 
-                            Connectivity.Disconnected ->
-                                TW.red_500
+                        Connectivity.Disconnected ->
+                            TW.red_500
 
-                    connection =
-                        HS.div
-                            [ HSA.css
-                                [ TW.box_border
-                                , TW.bg_color connection_color
-                                , TW.w_3
-                                , TW.h_3
-                                , TW.rounded_2xl
-                                ]
-                            ]
-                            []
-                in
-                HS.div
-                    [ HSA.css
-                        [ TW.box_border
-                        , TW.flex
-                        -- , TW.space_x_2
-                        , TW.items_center
-                        -- , TW.justify_center
-                        ]
-                    ]
-                    [ HS.div
+                connection =
+                    HS.div
                         [ HSA.css
-                            [ TW.mr_2                                
-                            ]                            
+                            [ TW.box_border
+                            , TW.bg_color connection_color
+                            , TW.w_3
+                            , TW.h_3
+                            , TW.rounded_2xl
+                            ]
                         ]
-                        [ HS.text user.handle
-                        ]
-                    , connection
+                        []
+            in
+            HS.div
+                [ HSA.css
+                    [ TW.box_border
+                    , TW.flex
+                    , TW.items_center
                     ]
+                ]
+                [ HS.div
+                    [ HSA.css
+                        [ TW.mr_2
+                        ]
+                    ]
+                    [ HS.text user.handle
+                    ]
+                , connection
+                ]
 
-            Nothing ->
-                HS.div
-                    []
-                    [ HS.text <| "No opponent. Invite someone with code " ++ StorageGame.getId game_id
-                    ]
+        Nothing ->
+            HS.div
+                []
+                [ HS.text <| "No opponent. Invite someone with code " ++ StorageGame.getId game_id
+                ]

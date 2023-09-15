@@ -2,13 +2,16 @@ module Types.Coordinates exposing (..)
 
 import Random
 
+
 randomGeneratorUltimate : Random.Generator (List Sector)
 randomGeneratorUltimate =
     randomGeneratorList 3 8 randomGeneratorSector
 
+
 randomGeneratorRegular : Random.Generator (List Sector)
 randomGeneratorRegular =
     randomGeneratorList 1 3 randomGeneratorSector
+
 
 randomGeneratorList : Int -> Int -> Random.Generator Sector -> Random.Generator (List Sector)
 randomGeneratorList start end generator =
@@ -23,21 +26,24 @@ randomGeneratorSector : Random.Generator Sector
 randomGeneratorSector =
     Random.uniform Zero [ One, Two, Three, Four, Five, Six, Seven, Eight ]
 
+
 type alias RandomCoordinates =
     { coordinates : Coordinates
-    , seed : Random.Seed       
+    , seed : Random.Seed
     }
+
 
 generateRandomCoordinates : Random.Seed -> RandomCoordinates
 generateRandomCoordinates seed =
     let
-        (low, seed1) =
+        ( low, seed1 ) =
             Random.step randomGeneratorSector seed
 
-        (mid, seed2) =
+        ( mid, seed2 ) =
             Random.step randomGeneratorSector seed1
     in
     { coordinates = { low = low, mid = mid }, seed = seed2 }
+
 
 type alias Coordinates =
     { low : Sector
@@ -49,9 +55,11 @@ type Level
     = Low
     | Mid
 
-type CoordinateSystem 
+
+type CoordinateSystem
     = Regular Sector
     | Ultimate Coordinates
+
 
 type Sector
     = Zero
@@ -104,7 +112,6 @@ toIntSector sector =
 
         Eight ->
             8
-
 
 
 toStringSector : Sector -> String

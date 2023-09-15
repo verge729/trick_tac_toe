@@ -3,7 +3,7 @@ module Backend exposing (..)
 import Backend.Update as BackendUpdate
 import Backend.UpdateFromFrontend as BackendUpdateFromFrontend
 import Dict
-import Lamdera exposing (ClientId, SessionId)
+import Lamdera
 import Random
 import Types exposing (..)
 

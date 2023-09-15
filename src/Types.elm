@@ -3,9 +3,14 @@ module Types exposing (..)
 import Backend.Model as BackendModel
 import Browser exposing (UrlRequest)
 import Frontend.Model as FrontendModel
+import Html.Styled as HS
+import Html.Styled.Attributes as HSA
 import Lamdera exposing (ClientId, SessionId)
 import Random
+import Tailwind.Theme as TW
+import Tailwind.Utilities as TW
 import Types.Base.Sector as Sector
+import Types.Board as Board
 import Types.Coordinates as Coordinates
 import Types.Navigation as Navigation
 import Types.Storage.Auth as StorageAuth
@@ -13,11 +18,6 @@ import Types.Storage.Game as StorageGame
 import Types.Storage.Response as StorageResponse
 import Types.Storage.User as StorageUser
 import Url exposing (Url)
-import Types.Board as Board
-import Html.Styled as HS
-import Html.Styled.Attributes as HSA
-import Tailwind.Utilities as TW
-import Tailwind.Theme as TW
 
 
 type alias FrontendModel =
@@ -51,7 +51,6 @@ type FrontendMsg
     | SubmitJoinGame
 
 
-
 type ToBackend
     = NoOpToBackend
     | AddUser StorageAuth.AuthReqs
@@ -78,17 +77,25 @@ type ToFrontend
     | JoinGameResponse StorageResponse.JoinGame
     | UpdateGameResponse StorageResponse.UpdateGame
 
+
 supportEmail : String
 supportEmail =
     "trick_tac_toe@crazy-cockatoo.com"
+
 
 githubRepo : String
 githubRepo =
     "https://github.com/verge729/trick_tac_toe"
 
+
 ccgHome : String
 ccgHome =
     "https://crazy-cockatoo-games.com"
+
+
+gameJamHost : String
+gameJamHost =
+    "https://lue-bird.itch.io/"
 
 
 helpLink : String -> String -> HS.Html msg

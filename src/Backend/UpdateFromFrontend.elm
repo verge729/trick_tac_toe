@@ -1,5 +1,6 @@
 module Backend.UpdateFromFrontend exposing (..)
 
+import Backend.Utils as Utils
 import Dict
 import Lamdera exposing (ClientId, SessionId)
 import Types
@@ -8,9 +9,6 @@ import Types.Storage.Connectivity as Connectivity
 import Types.Storage.Game as Game
 import Types.Storage.Registration as Registration
 import Types.Storage.Response as Response
-import Types.Storage.Storage as Storage
-import Types.Storage.User as User
-import Backend.Utils as Utils
 
 
 updateFromFrontend :
@@ -51,7 +49,9 @@ updateFromFrontend sessionId clientId msg model =
             case Auth.authenticateUser model.user_store reqs of
                 Auth.Pass user ->
                     let
-                        updated_user = { user | state = Connectivity.Connected clientId }
+                        updated_user =
+                            { user | state = Connectivity.Connected clientId }
+
                         updated_user_store =
                             Dict.insert user.handle updated_user model.user_store
 
@@ -62,18 +62,16 @@ updateFromFrontend sessionId clientId msg model =
                             Game.getFullGames updated_connectivity updated_user
                                 |> Utils.clientsToUpdateGames updated_user
 
-
                         cmds =
                             List.map
                                 (\( client, player ) ->
-                                    Debug.log client <| 
-                                        Lamdera.sendToFrontend 
-                                            client 
-                                            (Types.RequestGamesResponse 
-                                                (Response.SuccessRequestGames <| 
-                                                    Game.getGames updated_connectivity player
-                                                )
+                                    Lamdera.sendToFrontend
+                                        client
+                                        (Types.RequestGamesResponse
+                                            (Response.SuccessRequestGames <|
+                                                Game.getGames updated_connectivity player
                                             )
+                                        )
                                 )
                                 clients_to_update
                     in
@@ -126,7 +124,6 @@ updateFromFrontend sessionId clientId msg model =
                         updated_connectivity =
                             Utils.updateConnectivityOnGames reqs.player_two updated_dict
 
-                        -- _ = Debug.log "updated_connectivity" updated_connectivity
                         full_games =
                             Game.getFullGames updated_connectivity reqs.player_two
 
@@ -157,10 +154,6 @@ updateFromFrontend sessionId clientId msg model =
                     )
 
         Types.UpdateGame reqs ->
-            let
-                _ = Debug.log "UpdateGame" 0
-                _ = Debug.log "reqs" reqs
-            in 
             case Game.updateGame model.game_store reqs of
                 Game.Updated games ->
                     let
@@ -169,11 +162,9 @@ updateFromFrontend sessionId clientId msg model =
 
                         updated_games =
                             Game.getGames games reqs.current_player
-
-                        _ = Debug.log "client_id_next_player" client_id_next_player
                     in
                     ( { model | game_store = games }
-                    , Cmd.batch 
+                    , Cmd.batch
                         [ Lamdera.sendToFrontend clientId (Types.RequestGamesResponse <| Response.SuccessRequestGames updated_games)
                         , Lamdera.sendToFrontend client_id_next_player (Types.RequestGamesResponse (Response.SuccessRequestGames updated_games))
                         ]
@@ -183,6 +174,3 @@ updateFromFrontend sessionId clientId msg model =
                     ( model
                     , Lamdera.sendToFrontend clientId (Types.UpdateGameResponse <| Response.FailureUpdateGame error)
                     )
-
-
-

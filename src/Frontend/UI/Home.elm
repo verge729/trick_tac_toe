@@ -1,22 +1,20 @@
 module Frontend.UI.Home exposing (..)
 
+import Frontend.UI.Authentication as Authentication
+import Frontend.UI.CreateGame as CreateGame
 import Frontend.UI.DataPanel as DataPanel
 import Frontend.UI.GameBoard as GameBoard
+import Frontend.UI.GameList as GameList
+import Frontend.UI.Help as Help
+import Frontend.UI.JoinGame as JoinGame
 import Html.Styled as HS
 import Html.Styled.Attributes as HSA
 import Tailwind.Theme as TW
 import Tailwind.Utilities as TW
 import Types
 import Types.Navigation as Navigation
-import Frontend.UI.Authentication as Authentication
-import Types.Storage.User as User
-import Types.Storage.Connectivity as Connectivity
-import Frontend.UI.GameList as GameList
-import Frontend.UI.CreateGame as CreateGame
-import Types.Board as Board
-import Frontend.UI.JoinGame as JoinGame
-import Frontend.UI.Help as Help
 import Types.Storage.User as StorageUser
+
 
 root : Types.FrontendModel -> HS.Html Types.FrontendMsg
 root model =
@@ -37,6 +35,7 @@ root model =
         [ authLayer model
         ]
 
+
 authLayer : Types.FrontendModel -> HS.Html Types.FrontendMsg
 authLayer model =
     case model.view_full_area of
@@ -49,6 +48,7 @@ authLayer model =
         Navigation.WhatIsThis ->
             helpLayout model.user
 
+
 helpLayout : Maybe StorageUser.User -> HS.Html Types.FrontendMsg
 helpLayout user =
     HS.div
@@ -60,9 +60,9 @@ helpLayout user =
             , TW.flex_row
             , TW.items_center
             , TW.justify_center
-            ]            
+            ]
         ]
-        [ Help.root user       
+        [ Help.root user
         ]
 
 
@@ -75,11 +75,12 @@ authLayout model =
             , TW.h_full
             , TW.flex
             , TW.items_center
-            , TW.justify_center            
-            ]            
+            , TW.justify_center
+            ]
         ]
-        [ Authentication.root model            
+        [ Authentication.root model
         ]
+
 
 mainLayout : Types.FrontendModel -> HS.Html Types.FrontendMsg
 mainLayout model =
@@ -92,11 +93,12 @@ mainLayout model =
             , TW.flex_row
             , TW.items_center
             , TW.justify_center
-            ]            
+            ]
         ]
         [ dataPanel model
-        , gameArea model           
+        , gameArea model
         ]
+
 
 titleBar : Types.FrontendModel -> HS.Html Types.FrontendMsg
 titleBar model =
@@ -108,17 +110,18 @@ titleBar model =
             , TW.border_r_0
             , TW.border_t_0
             , TW.border_b
-            , TW.border_solid 
-            , TW.pr_2                  
-            ]            
+            , TW.border_solid
+            , TW.pr_2
+            ]
         ]
         [ HS.h1
             []
-            [ HS.text "Trick Tac Toe"                
-            ]            
+            [ HS.text "Trick Tac Toe"
+            ]
         ]
 
-userCard : Maybe User.User -> Int -> HS.Html Types.FrontendMsg
+
+userCard : Maybe StorageUser.User -> Int -> HS.Html Types.FrontendMsg
 userCard m_user num_games =
     case m_user of
         Just user ->
@@ -131,40 +134,41 @@ userCard m_user num_games =
                     , TW.border_t_0
                     , TW.border_b
                     , TW.border_solid
-                    , TW.flex 
+                    , TW.flex
                     , TW.flex_col
-                    , TW.space_x_2 
-                    , TW.items_end  
-                    , TW.p_2                    
-                    ]            
+                    , TW.space_x_2
+                    , TW.items_end
+                    , TW.p_2
+                    ]
                 ]
                 [ HS.div
                     [ HSA.css
                         [ TW.box_border
-                        , TW.flex   
-                        , TW.space_x_2  
+                        , TW.flex
+                        , TW.space_x_2
                         , TW.items_center
-                        , TW.justify_center 
-                        , TW.text_lg                                   
-                        ]                        
+                        , TW.justify_center
+                        , TW.text_lg
+                        ]
                     ]
                     [ HS.div
                         []
-                        [ HS.text user.handle                
-                        ] 
-                    ]   
+                        [ HS.text user.handle
+                        ]
+                    ]
                 , HS.div
                     [ HSA.css
-                        [ TW.flex   
-                        , TW.text_sm                        
-                        ]                        
+                        [ TW.flex
+                        , TW.text_sm
+                        ]
                     ]
-                    [ HS.text <| "Participating in " ++ (String.fromInt num_games) ++ " games"                
-                    ]         
+                    [ HS.text <| "Participating in " ++ String.fromInt num_games ++ " games"
+                    ]
                 ]
-        
+
         Nothing ->
             HS.div [] []
+
 
 dataPanel : Types.FrontendModel -> HS.Html Types.FrontendMsg
 dataPanel model =
@@ -218,6 +222,7 @@ gameArea model =
             ]
         ]
 
+
 displayGameArea : Types.FrontendModel -> HS.Html Types.FrontendMsg
 displayGameArea model =
     case model.user of
@@ -235,14 +240,12 @@ displayGameArea model =
                 Navigation.Game ->
                     case model.game of
                         Just game ->
-                            GameBoard.root 
-                                user 
+                            GameBoard.root
+                                user
                                 game
+
                         Nothing ->
                             HS.div [] []
-                            -- board 
-                            -- model.current_coordinate 
-                            -- model.path_to_victory
 
                 Navigation.CreateGame ->
                     CreateGame.root model
@@ -255,9 +258,9 @@ displayGameArea model =
 
                 Navigation.JoinGame ->
                     JoinGame.root model
-        Nothing ->
-            HS.div 
-                [] 
-                [ HS.text "You must be logged in to play"                    
-                ]
 
+        Nothing ->
+            HS.div
+                []
+                [ HS.text "You must be logged in to play"
+                ]

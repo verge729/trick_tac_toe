@@ -5,26 +5,14 @@ import Browser.Navigation as Nav
 import Frontend.UI.Home as Home
 import Frontend.Update as FrontendUpdate
 import Frontend.UpdateFromBackend as UpdateFromBackend
-import Html
-import Html.Attributes as Attr
 import Html.Styled as HS
-import Html.Styled.Attributes as HSA
 import Lamdera
 import Random
-import Task
 import Types exposing (..)
-import Types.Base.Board as BaseBoard
-import Types.Board as Board
-import Types.Coordinates as Coordinates
 import Types.Navigation as Navigation
 import Types.Player as Player
-import Types.Tricks.Trick as Trick
-import Types.Ultimate.Board as UltimateBoard
 import Types.Victory as Victory
 import Url
-import Types.Storage.User as User
-import Types.Storage.Game as StorageGame
-import Types.Storage.Connectivity as Connectivity
 
 
 type alias Model =
@@ -46,45 +34,23 @@ app =
 init : Url.Url -> Nav.Key -> ( Model, Cmd FrontendMsg )
 init url key =
     ( { key = key
-      , message = "Welcome to Lamdera! You're looking at the auto-generated base implementation. Check out src/Frontend.elm to start coding!"
       , current_coordinate = Nothing
       , next_coordinate_low = Nothing
       , next_coordinate_mid = Nothing
-
-      --   , board = Board.Ultimate UltimateBoard.boardUltimate
-      , board = Board.NotSelected --Board.Regular <| BaseBoard.addTricks BaseBoard.boardRegular
       , player_one = Player.defaultOne
       , player_two = Player.defaultTwo
       , current_player = Player.defaultOne
-
-      --   , path_to_victory = Victory.Acheived Player.defaultOne
       , path_to_victory = Victory.Unacheived
       , turn = 0
       , list_events = []
       , seed = Random.initialSeed 42
-      , user = Nothing--Just User.testing --Nothing
-      , game = Nothing-- Just <| Tuple.first (StorageGame.testGameConnected <| Random.initialSeed 42)--Nothing
-      , user_games = 
+      , user = Nothing
+      , game = Nothing
+      , user_games =
             { waiting = []
             , active = []
-            , finished = []                
+            , finished = []
             }
-            --[]
-          -- List.sortWith (\a b -> Connectivity.sort a.state b.state)
-        --   [ (Tuple.first <| StorageGame.testGameWaiting <| Random.initialSeed 42 )
-        --   , (Tuple.first <| StorageGame.testGameConnected <| Random.initialSeed 41 )
-        --   , (Tuple.first <| StorageGame.testGameDisconnected <| Random.initialSeed 40 )
-        --   , (Tuple.first <| StorageGame.testGame <| Random.initialSeed 43 ) 
-        --   , (Tuple.first <| StorageGame.testGameConnected <| Random.initialSeed 41 )
-        --   , (Tuple.first <| StorageGame.testGameDisconnected <| Random.initialSeed 40 )
-        --   , (Tuple.first <| StorageGame.testGame <| Random.initialSeed 43 ) 
-        --   , (Tuple.first <| StorageGame.testGameConnected <| Random.initialSeed 41 )
-        --   , (Tuple.first <| StorageGame.testGameDisconnected <| Random.initialSeed 40 )
-        --   , (Tuple.first <| StorageGame.testGame <| Random.initialSeed 43 ) 
-        --   , (Tuple.first <| StorageGame.testGameConnected <| Random.initialSeed 41 )
-        --   , (Tuple.first <| StorageGame.testGameDisconnected <| Random.initialSeed 40 )
-        --   , (Tuple.first <| StorageGame.testGame <| Random.initialSeed 43 ) 
-        --   ]
       , view_data_panel = Navigation.Menu
       , view_game_area = Navigation.GameListActive
       , view_full_area = Navigation.Authenticate

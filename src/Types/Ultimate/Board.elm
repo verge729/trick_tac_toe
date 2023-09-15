@@ -3,14 +3,13 @@ module Types.Ultimate.Board exposing (..)
 import Array
 import Random
 import Types.Base.Board as BaseBoard
+import Types.Board as Board
 import Types.Coordinates as Coordinates
 import Types.Player as Player
 import Types.SectorAttribute as SectorAttribute
 import Types.Ultimate.Sector as UltimateSector
 import Types.Victory as Victory
-import Types.Board as Board
 
-import Types.Storage.User as User
 
 type alias UltimateBoard =
     Array.Array UltimateSector.Sector
@@ -27,7 +26,7 @@ boardUltimate =
     )
 
 
-updateBoard : UltimateBoard -> Coordinates.Coordinates -> SectorAttribute.State -> Player.Player -> (UltimateBoard, Victory.PathToVictory)
+updateBoard : UltimateBoard -> Coordinates.Coordinates -> SectorAttribute.State -> Player.Player -> ( UltimateBoard, Victory.PathToVictory )
 updateBoard board coordinates state current_player =
     let
         int_sector =
@@ -57,10 +56,10 @@ updateBoard board coordinates state current_player =
                     Array.set int_sector updated_ultimate_sector board
                         |> checkAndUpdateForBlock
             in
-            (finalized_board, claimed_victory)
+            ( finalized_board, claimed_victory )
 
         Nothing ->
-            (board, Victory.Unacheived)
+            ( board, Victory.Unacheived )
 
 
 checkAndUpdateForBlock : UltimateBoard -> UltimateBoard

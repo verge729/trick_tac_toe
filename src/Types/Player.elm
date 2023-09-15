@@ -5,14 +5,16 @@ import Types.Storage.User as User
 
 type alias Player =
     { handle : String
-    , icon : String        
+    , icon : String
     }
+
 
 defaultOne : Player
 defaultOne =
     { handle = "Player 1"
     , icon = "X"
     }
+
 
 defaultTwo : Player
 defaultTwo =
@@ -27,22 +29,27 @@ createPlayerOne user =
     , icon = "X"
     }
 
-createPlayerTwo : User.User -> Player   
+
+createPlayerTwo : User.User -> Player
 createPlayerTwo user =
     { handle = user.handle
     , icon = "O"
     }
 
+
 getUserFromPlayer : User.User -> User.User -> Player -> User.User
 getUserFromPlayer user_one user_two player =
     if user_one.handle == player.handle then
         user_one
+
     else
         user_two
+
 
 getPlayerFromUser : Player -> Player -> User.User -> Player
 getPlayerFromUser player_one player_two user =
     if player_one.handle == user.handle then
         player_one
+
     else
         player_two

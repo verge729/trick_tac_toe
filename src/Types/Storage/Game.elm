@@ -1,16 +1,16 @@
 module Types.Storage.Game exposing (..)
 
-import Random
-import Types.Board as Board
-import Types.Events as Event
-import Types.Player as Player
-import Types.Storage.IdGenerator as IdGenerator
 import Dict
-import Types.Storage.User as User
+import Random
 import Types.Base.Board as BaseBoard
+import Types.Board as Board
+import Types.Coordinates as Coordinates
+import Types.Events as Event
+import Types.Storage.IdGenerator as IdGenerator
+import Types.Storage.User as User
 import Types.Ultimate.Board as UltimateBoard
 import Types.Victory as Victory
-import Types.Coordinates as Coordinates
+
 
 type GameId
     = GameId String
@@ -19,6 +19,7 @@ type GameId
 type JoinGameResult
     = Success Game
     | Fail String
+
 
 type UpdateGameResult
     = Updated (Dict.Dict String Game)
@@ -38,21 +39,25 @@ type alias Game =
     , current_coordinate : Maybe Coordinates.CoordinateSystem
     }
 
+
 type alias GameCreationReqs =
     { board : Board.Board
-    , player_one : User.User  
-    , game_name : String      
+    , player_one : User.User
+    , game_name : String
     }
+
 
 type alias GameJoinReqs =
     { game_id : String
     , player_two : User.User
-    } 
+    }
+
 
 type alias CreateGame =
     { name : String
     , board : Board.SelectBoard
     }
+
 
 createGame : Random.Seed -> GameCreationReqs -> ( Game, Random.Seed )
 createGame seed reqs =
@@ -74,7 +79,8 @@ createGame seed reqs =
     , game_id.next_seed
     )
 
-testGameWaiting : Random.Seed -> (Game, Random.Seed)
+
+testGameWaiting : Random.Seed -> ( Game, Random.Seed )
 testGameWaiting seed =
     let
         game_id =
@@ -83,7 +89,7 @@ testGameWaiting seed =
     ( { id = GameId game_id.id
       , board = Board.Ultimate <| Tuple.first UltimateBoard.boardUltimate
       , player_one = User.testing
-      , player_two = Nothing--Just User.testingAgain
+      , player_two = Nothing 
       , current_player = User.testing
       , turn = 0
       , event_log = []
@@ -94,7 +100,8 @@ testGameWaiting seed =
     , game_id.next_seed
     )
 
-testGameConnected : Random.Seed -> (Game, Random.Seed)
+
+testGameConnected : Random.Seed -> ( Game, Random.Seed )
 testGameConnected seed =
     let
         game_id =
@@ -114,7 +121,8 @@ testGameConnected seed =
     , game_id.next_seed
     )
 
-testGameDisconnected : Random.Seed -> (Game, Random.Seed)
+
+testGameDisconnected : Random.Seed -> ( Game, Random.Seed )
 testGameDisconnected seed =
     let
         game_id =
@@ -134,7 +142,8 @@ testGameDisconnected seed =
     , game_id.next_seed
     )
 
-testGame : Random.Seed -> (Game, Random.Seed)
+
+testGame : Random.Seed -> ( Game, Random.Seed )
 testGame seed =
     let
         game_id =
@@ -159,26 +168,30 @@ getId : GameId -> String
 getId (GameId id) =
     id
 
+
 getGames : Dict.Dict String Game -> User.User -> List Game
 getGames games user =
     Dict.values games
-        |> List.filter (\game -> 
-            let
-                player_two_id =
-                    case game.player_two of
-                        Just player ->
-                            player.id
+        |> List.filter
+            (\game ->
+                let
+                    player_two_id =
+                        case game.player_two of
+                            Just player ->
+                                player.id
 
-                        Nothing ->
-                            ""
-            in
-            game.player_one.id == user.id || player_two_id == user.id
-        )
+                            Nothing ->
+                                ""
+                in
+                game.player_one.id == user.id || player_two_id == user.id
+            )
+
 
 getFullGames : Dict.Dict String Game -> User.User -> List Game
 getFullGames games user =
     getGames games user
         |> List.filter (\game -> game.player_two /= Nothing)
+
 
 joinGame : Dict.Dict String Game -> GameJoinReqs -> JoinGameResult
 joinGame games reqs =
@@ -215,11 +228,13 @@ updateGame games game =
         Nothing ->
             Failed "Game not found"
 
+
 type alias GameTypes =
     { active : List Game
     , waiting : List Game
-    , finished : List Game        
+    , finished : List Game
     }
+
 
 separateGames : List Game -> GameTypes
 separateGames list_games =
@@ -232,11 +247,12 @@ separateGames list_games =
 
         finished =
             List.filter (\game -> game.path_to_victory /= Victory.Unacheived) list_games
-    in 
+    in
     { active = active
     , waiting = waiting
-    , finished = finished        
+    , finished = finished
     }
+
 
 combineGames : GameTypes -> List Game
 combineGames game_types =

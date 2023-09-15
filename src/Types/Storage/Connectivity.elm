@@ -2,9 +2,11 @@ module Types.Storage.Connectivity exposing (..)
 
 import Lamdera exposing (ClientId)
 
+
 type Connectivity
     = Connected ClientId
     | Disconnected
+
 
 getClientId : Connectivity -> ClientId
 getClientId connectivity =
@@ -15,20 +17,22 @@ getClientId connectivity =
         Disconnected ->
             ""
 
+
 sort : Connectivity -> Connectivity -> Connectivity
 sort first second =
-    case (first, second) of
-        (Connected _, Disconnected) ->
+    case ( first, second ) of
+        ( Connected _, Disconnected ) ->
             first
 
-        (Disconnected, Connected _) ->
+        ( Disconnected, Connected _ ) ->
             second
 
-        (Connected firstId, Connected secondId) ->
+        ( Connected firstId, Connected secondId ) ->
             if firstId < secondId then
                 first
+
             else
                 second
 
-        (Disconnected, Disconnected) ->
+        ( Disconnected, Disconnected ) ->
             first

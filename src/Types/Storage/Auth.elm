@@ -1,15 +1,17 @@
 module Types.Storage.Auth exposing (..)
 
-import Types.Storage.User as User
 import Dict
+import Types.Storage.User as User
 
-type Authenicated 
+
+type Authenicated
     = Pass User.User
     | Fail String
 
+
 type alias AuthReqs =
     { handle : String
-    , keyphrase : String        
+    , keyphrase : String
     }
 
 
@@ -22,9 +24,11 @@ authenticateUser dict_users reqs =
         Nothing ->
             Fail "User not found"
 
+
 compareKeyphrase : User.User -> String -> Authenicated
 compareKeyphrase user submitted_phrase =
     if user.keyphrase == submitted_phrase then
         Pass user
+
     else
         Fail "Incorrect keyphrase"

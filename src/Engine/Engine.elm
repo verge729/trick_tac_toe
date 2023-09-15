@@ -12,7 +12,6 @@ import Types.Coordinates as Coordinates
 import Types.Events as Events
 import Types.Player as Player
 import Types.SectorAttribute as SectorAttribute
-import Types.Storage.User as User
 import Types.Tricks.Trick as Trick
 import Types.Tricks.TrickHandlers as TrickHandlers
 import Types.Ultimate.Board as UltimateBoard

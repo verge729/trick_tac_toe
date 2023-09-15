@@ -1,22 +1,20 @@
 module Frontend.Update exposing (..)
 
-import Array
 import Browser
 import Browser.Navigation as Nav
 import Engine.Engine as Engine
+import Lamdera
 import Types
 import Types.Base.Board as BaseBoard
-import Types.Base.Sector as Sector
 import Types.Board as Board
 import Types.Coordinates as Coordinates
+import Types.Navigation as Navigation
 import Types.Player as Player
 import Types.SectorAttribute as SectorAttribute
+import Types.Storage.Game as StorageGame
 import Types.Ultimate.Board as UltimateBoard
 import Types.Victory as Victory
 import Url
-import Lamdera
-import Types.Storage.Game as StorageGame
-import Types.Navigation as Navigation
 
 
 type alias UpdateTurn =
@@ -65,32 +63,35 @@ update msg model =
 
         Types.SelectGame game_id ->
             let
-                (m_game, path_to_victory) =
-                    List.foldl (\game selected ->
-                        if game.id == game_id then
-                            (Just game, game.path_to_victory)
+                ( m_game, path_to_victory ) =
+                    List.foldl
+                        (\game selected ->
+                            if game.id == game_id then
+                                ( Just game, game.path_to_victory )
 
-                        else
-                            selected
-                    ) (Nothing, Victory.Unacheived) (StorageGame.combineGames model.user_games)
+                            else
+                                selected
+                        )
+                        ( Nothing, Victory.Unacheived )
+                        (StorageGame.combineGames model.user_games)
 
-
-                (m_coordinates, m_sector) =
+                ( m_coordinates, m_sector ) =
                     case m_game of
                         Just game ->
                             case game.current_coordinate of
                                 Just stuff ->
                                     case stuff of
                                         Coordinates.Ultimate coords ->
-                                            (Just coords, Nothing)
+                                            ( Just coords, Nothing )
 
                                         Coordinates.Regular sect ->
-                                            (Nothing, Just sect)
+                                            ( Nothing, Just sect )
 
                                 Nothing ->
-                                    (Nothing, Nothing)
+                                    ( Nothing, Nothing )
+
                         Nothing ->
-                            (Nothing, Nothing )
+                            ( Nothing, Nothing )
 
                 ( player_one, player_two, current_player ) =
                     case m_game of
@@ -107,12 +108,12 @@ update msg model =
 
                                         current_p =
                                             Player.getPlayerFromUser created_p_one created_p_two game.current_player
-
-                                    in                                    
+                                    in
                                     ( created_p_one
                                     , created_p_two
                                     , current_p
                                     )
+
                                 Nothing ->
                                     ( created_p_one
                                     , Player.defaultTwo
@@ -121,92 +122,90 @@ update msg model =
 
                         Nothing ->
                             ( Player.defaultOne
-                            , Player.defaultTwo 
+                            , Player.defaultTwo
                             , Player.defaultOne
                             )
             in
-            ( { model | game = m_game 
-            , view_game_area = Navigation.Game
-            , view_data_panel = Navigation.GameDetails
-            , player_one = player_one
-            , player_two = player_two
-            , current_player = current_player
-            , current_coordinate = m_coordinates
-            , path_to_victory = path_to_victory
-            }
+            ( { model
+                | game = m_game
+                , view_game_area = Navigation.Game
+                , view_data_panel = Navigation.GameDetails
+                , player_one = player_one
+                , player_two = player_two
+                , current_player = current_player
+                , current_coordinate = m_coordinates
+                , path_to_victory = path_to_victory
+              }
             , Cmd.none
             )
 
         Types.CatchRandomGeneratorSeedFE seed ->
             let
                 ( board, max_turns ) =
-                    -- BaseBoard.boardRegular
                     UltimateBoard.boardUltimate
 
                 ( tricked_board, new_seed ) =
-                    -- BaseBoard.addTricks board seed
                     UltimateBoard.addTricks board seed
             in
             ( { model
                 | seed = new_seed
-                -- , board = Board.Ultimate tricked_board
               }
             , Cmd.none
             )
 
         Types.Login ->
-            case (model.login_register_handle, model.login_register_keyphrase) of
-                (Just handle, Just keyphrase) ->
+            case ( model.login_register_handle, model.login_register_keyphrase ) of
+                ( Just handle, Just keyphrase ) ->
                     let
                         auth_reqs =
                             { handle = handle
                             , keyphrase = keyphrase
                             }
-                    in 
+                    in
                     ( model
                     , Lamdera.sendToBackend <| Types.LoginUser auth_reqs
                     )
 
-                (Just _, Nothing) ->
+                ( Just _, Nothing ) ->
                     ( { model | m_error_message = Just "Missing keyphrase" }
                     , Cmd.none
                     )
 
-                (Nothing, Just _ ) ->
-                    ( { model | m_error_message = Just "Missing handle"}
+                ( Nothing, Just _ ) ->
+                    ( { model | m_error_message = Just "Missing handle" }
                     , Cmd.none
                     )
 
                 _ ->
-                    ( { model | m_error_message = Just "Missing handle and keyphrase"}
+                    ( { model | m_error_message = Just "Missing handle and keyphrase" }
                     , Cmd.none
                     )
 
         Types.Register ->
-            case (model.login_register_handle, model.login_register_keyphrase) of
-                (Just handle, Just keyphrase) ->
+            case ( model.login_register_handle, model.login_register_keyphrase ) of
+                ( Just handle, Just keyphrase ) ->
                     let
                         auth_reqs =
                             { handle = handle
                             , keyphrase = keyphrase
                             }
-                    in 
+                    in
                     ( model
                     , Lamdera.sendToBackend <| Types.AddUser auth_reqs
                     )
 
-                (Just _, Nothing) ->
+                ( Just _, Nothing ) ->
                     ( { model | m_error_message = Just "Missing keyphrase" }
                     , Cmd.none
                     )
 
-                (Nothing, Just _ ) ->
-                    ( { model | m_error_message = Just "Missing handle"}
+                ( Nothing, Just _ ) ->
+                    ( { model | m_error_message = Just "Missing handle" }
                     , Cmd.none
                     )
 
                 _ ->
-                    ( { model | m_error_message = Just "Missing handle and keyphrase"}
+                    ( { model | m_error_message = Just "Missing handle and keyphrase" }
                     , Cmd.none
                     )
 
@@ -218,7 +217,7 @@ update msg model =
 
                     else
                         Just str
-            in 
+            in
             ( { model | login_register_handle = value }
             , Cmd.none
             )
@@ -231,7 +230,7 @@ update msg model =
 
                     else
                         Just str
-            in 
+            in
             ( { model | m_join_code = value }
             , Cmd.none
             )
@@ -244,7 +243,7 @@ update msg model =
 
                     else
                         Just str
-            in 
+            in
             ( { model | game_creation_name = value }
             , Cmd.none
             )
@@ -277,34 +276,32 @@ update msg model =
 
                     else
                         Just str
-                    
-            in 
+            in
             ( { model | login_register_keyphrase = value }
             , Cmd.none
             )
 
         Types.SubmitGameCreation ->
-            case (model.game_creation_name, model.game_creation_board) of
-                (Just name, Just board) ->
+            case ( model.game_creation_name, model.game_creation_board ) of
+                ( Just name, Just board ) ->
                     case model.user of
                         Just user ->
                             let
-                                (selected_board, new_seed) =
+                                ( selected_board, new_seed ) =
                                     case board of
                                         Board.SelectRegular ->
-                                                let
-                                                    (b, s) =
-                                                        BaseBoard.addTricks (Tuple.first BaseBoard.boardRegular) model.seed
-                                                in 
-                                                (Board.Regular b, s)
+                                            let
+                                                ( b, s ) =
+                                                    BaseBoard.addTricks (Tuple.first BaseBoard.boardRegular) model.seed
+                                            in
+                                            ( Board.Regular b, s )
 
                                         Board.SelectUltimate ->
-                                                let
-                                                    (b, s) =
-                                                        UltimateBoard.addTricks (Tuple.first UltimateBoard.boardUltimate) model.seed
-                                                in 
-                                                (Board.Ultimate b, s)
-                                                 
+                                            let
+                                                ( b, s ) =
+                                                    UltimateBoard.addTricks (Tuple.first UltimateBoard.boardUltimate) model.seed
+                                            in
+                                            ( Board.Ultimate b, s )
 
                                 game_creation_reqs =
                                     { game_name = name
@@ -312,8 +309,8 @@ update msg model =
                                     , player_one = user
                                     }
                             in
-                            ( {model | seed = new_seed }
-                            , Lamdera.sendToBackend <| Types.CreateGame game_creation_reqs 
+                            ( { model | seed = new_seed }
+                            , Lamdera.sendToBackend <| Types.CreateGame game_creation_reqs
                             )
 
                         Nothing ->
@@ -321,45 +318,45 @@ update msg model =
                             , Cmd.none
                             )
 
-                (Just _, Nothing) ->
+                ( Just _, Nothing ) ->
                     ( { model | m_error_message = Just "Missing board" }
                     , Cmd.none
                     )
 
-                (Nothing, Just _ ) ->
-                    ( { model | m_error_message = Just "Missing name"}
+                ( Nothing, Just _ ) ->
+                    ( { model | m_error_message = Just "Missing name" }
                     , Cmd.none
                     )
 
                 _ ->
-                    ( { model | m_error_message = Just "Missing name and board"}
+                    ( { model | m_error_message = Just "Missing name and board" }
                     , Cmd.none
                     )
 
         Types.SubmitJoinGame ->
-            case (model.m_join_code, model.user) of
-                (Just code, Just user) -> 
+            case ( model.m_join_code, model.user ) of
+                ( Just code, Just user ) ->
                     let
                         join_reqs =
                             { game_id = code
                             , player_two = user
                             }
-                    in  
+                    in
                     ( model
                     , Lamdera.sendToBackend <| Types.JoinGame join_reqs
                     )
 
-                (Nothing, Just _) ->  
+                ( Nothing, Just _ ) ->
                     ( { model | m_error_message = Just "Missing join code" }
                     , Cmd.none
                     )
 
-                (Just _, Nothing) ->  
+                ( Just _, Nothing ) ->
                     ( { model | m_error_message = Just "User not logged in" }
                     , Cmd.none
                     )
 
-                _ ->  
+                _ ->
                     ( { model | m_error_message = Just "User not logged in and missing join code" }
                     , Cmd.none
                     )
@@ -416,7 +413,7 @@ update msg model =
                                             updateGamewithProcessedClaim processed_claim game
                                     in
                                     ( { model | game = Just updated_game }
-                                        |> updateModelwithProcessedClaim processed_claim 
+                                        |> updateModelwithProcessedClaim processed_claim
                                     , Lamdera.sendToBackend <| Types.UpdateGame updated_game
                                     )
 
@@ -447,7 +444,8 @@ update msg model =
                                             case sector.state of
                                                 SectorAttribute.Orphaned ->
                                                     { coordinates | mid = next_mid }
-                                                _ -> 
+
+                                                _ ->
                                                     { coordinates | mid = next_low }
 
                                         updated_game =
@@ -457,7 +455,7 @@ update msg model =
                                     ( { model
                                         | current_coordinate = Just current_coordinate
                                         , game = Just updated_game
-                                        }
+                                      }
                                         |> updateModelwithProcessedClaim processed_claim
                                     , Lamdera.sendToBackend <| Types.UpdateGame updated_game
                                     )
@@ -468,16 +466,15 @@ update msg model =
                             )
 
 
-
 updateModelwithProcessedClaim : Engine.ClaimResult -> Types.FrontendModel -> Types.FrontendModel
 updateModelwithProcessedClaim claim_result model =
     { model
         | turn = claim_result.turn
-        , board = claim_result.board
         , current_player = claim_result.next_player
         , path_to_victory = claim_result.path_to_victory
         , list_events = claim_result.event ++ model.list_events
     }
+
 
 updateGamewithProcessedClaim : Engine.ClaimResult -> StorageGame.Game -> StorageGame.Game
 updateGamewithProcessedClaim result game =

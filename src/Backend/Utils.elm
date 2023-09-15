@@ -1,11 +1,12 @@
 module Backend.Utils exposing (..)
 
-import Types.Storage.User as User
-import Types.Storage.Game as Game
+import Dict
 import Lamdera exposing (ClientId)
 import Types.Storage.Connectivity as Connectivity
-import Dict
+import Types.Storage.Game as Game
 import Types.Storage.Storage as Storage
+import Types.Storage.User as User
+
 
 clientsToUpdateGames : User.User -> List Game.Game -> List ( ClientId, User.User )
 clientsToUpdateGames user list_games =
@@ -34,16 +35,16 @@ clientsToUpdateGames user list_games =
         )
         []
         list_games
-        |>
-            List.foldl
-                (\( client, player ) clients ->
-                    if List.member ( client, player ) clients then
-                        clients
+        |> List.foldl
+            (\( client, player ) clients ->
+                if List.member ( client, player ) clients then
+                    clients
 
-                    else
-                        ( client, player ) :: clients
-                )
-                []
+                else
+                    ( client, player ) :: clients
+            )
+            []
+
 
 updateConnectivityOnGames : User.User -> Storage.GameStore -> Storage.GameStore
 updateConnectivityOnGames user games =

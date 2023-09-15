@@ -3,8 +3,8 @@ module Types.Tricks.Trick exposing
     , TrickType(..)
     , getTrickFromType
     , randomGeneratorRegular
-    , randomGeneratorUltimate
     , randomGeneratorTrick
+    , randomGeneratorUltimate
     , toString
     )
 
