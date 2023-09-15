@@ -7,6 +7,7 @@ import Tailwind.Theme as TW
 import Tailwind.Utilities as TW 
 import Types
 import Types.Button as Button
+import Types.Navigation as Navigation
 
 type alias AuthData =
     { target : Maybe String 
@@ -56,6 +57,7 @@ root model =
             [ Button.button "Login" Types.Login Button.Regular Button.Unselected
             , Button.button "Register" Types.Register Button.Regular Button.Unselected           
             ]   
+        , Button.button "What is Trick Tac Toe?" (Types.FullViewNavTo Navigation.WhatIsThis) Button.Small Button.Unselected
         , error model.m_error_message      
         ]
 

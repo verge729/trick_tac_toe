@@ -18,3 +18,8 @@ type DataPanel
 type FullView
     = Authenticate
     | Authenticated
+    | WhatIsThis
+
+type HelpSection
+    = Home
+    

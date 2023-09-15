@@ -87,7 +87,7 @@ init url key =
         --   ]
       , view_data_panel = Navigation.Menu
       , view_game_area = Navigation.GameListActive
-      , view_full_area = Navigation.Authenticate
+      , view_full_area = Navigation.WhatIsThis
       , login_register_handle = Nothing
       , login_register_keyphrase = Nothing
       , m_error_message = Nothing

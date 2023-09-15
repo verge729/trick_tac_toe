@@ -15,6 +15,8 @@ import Frontend.UI.GameList as GameList
 import Frontend.UI.CreateGame as CreateGame
 import Types.Board as Board
 import Frontend.UI.JoinGame as JoinGame
+import Frontend.UI.Help as Help
+import Types.Storage.User as StorageUser
 
 root : Types.FrontendModel -> HS.Html Types.FrontendMsg
 root model =
@@ -43,6 +45,26 @@ authLayer model =
 
         Navigation.Authenticated ->
             mainLayout model
+
+        Navigation.WhatIsThis ->
+            helpLayout model.user
+
+helpLayout : Maybe StorageUser.User -> HS.Html Types.FrontendMsg
+helpLayout user =
+    HS.div
+        [ HSA.css
+            [ TW.box_border
+            , TW.w_full
+            , TW.h_full
+            , TW.flex
+            , TW.flex_row
+            , TW.items_center
+            , TW.justify_center
+            ]            
+        ]
+        [ Help.root user       
+        ]
+
 
 authLayout : Types.FrontendModel -> HS.Html Types.FrontendMsg
 authLayout model =

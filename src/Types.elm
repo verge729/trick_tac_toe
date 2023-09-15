@@ -41,6 +41,7 @@ type FrontendMsg
     | Register
     | GameViewAreaNavTo Navigation.GameArea
     | DataPanelNavTo Navigation.DataPanel
+    | FullViewNavTo Navigation.FullView
     | SelectGame StorageGame.GameId
     | SubmitGameCreation
     | SubmitJoinGame

@@ -58,6 +58,11 @@ update msg model =
             , Cmd.none
             )
 
+        Types.FullViewNavTo target ->
+            ( { model | view_full_area = target }
+            , Cmd.none
+            )
+
         Types.SelectGame game_id ->
             let
                 (m_game, path_to_victory) =

@@ -12,6 +12,7 @@ import Css
 type Width 
     = Wide
     | Regular
+    | Small
 
 type BackgroundColor 
     = Selected
@@ -27,6 +28,9 @@ button label handler width bg_color =
 
                 Regular ->
                     TW.w_1over2
+
+                Small ->
+                    TW.w_1over4
 
         b_color =
             case bg_color of
